@@ -1,6 +1,5 @@
 import { Game } from "@/app/models/game";
 import { GameDay } from "@/app/models/game-day";
-import { promises } from "dns";
 import { NextResponse } from "next/server";
 
 async function getSchedule() {
