@@ -3,15 +3,15 @@
 import { useState, useEffect } from "react";
 import { Game } from "./models/game";
 import { GameDay } from "./models/game-day";
-import { GameCard } from "./components/game-card";
+import { GameCard } from "@/app/components/game-card/game-card";
 
 export default function Home() {
   const [gameDays, setData] = useState<Array<GameDay>>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://localhost:3000/api/nhl/schedule");
-      const { gameWeek }: { gameWeek: Array<GameDay> } = await response.json();
+      const response = await fetch("http://localhost:3000/api/nhl/week");
+      const gameWeek: Array<GameDay> = await response.json();
       setData(gameWeek);
     };
     fetchData();
@@ -26,7 +26,7 @@ export default function Home() {
             <div className="games-container">
               {gameDay.games &&
                 gameDay.games.map((game: Game) => (
-                  <GameCard key={game.id} game={game} />
+                  <GameCard key={game.id} game={new Game(game)} />
                 ))}
             </div>
           </div>

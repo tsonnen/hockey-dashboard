@@ -6,12 +6,15 @@ export class Team {
   commonName: LocalizedName;
   placeName: LocalizedName;
   placeNameWithPreposition: LocalizedName;
+  name?: LocalizedName;
   abbrev: string;
   logo: string;
   darkLogo: string;
   awaySplitSquad: boolean;
   radioLink: string;
   odds: Odds[];
+  score?: number;
+  sog?: number;
 
   constructor(data: Partial<Team>) {
     this.id = data.id ?? 0;
@@ -20,11 +23,14 @@ export class Team {
     this.placeNameWithPreposition = data.placeNameWithPreposition ?? {
       default: "",
     };
+    this.name = data.name;
     this.abbrev = data.abbrev ?? "";
     this.logo = data.logo ?? "";
     this.darkLogo = data.darkLogo ?? "";
     this.awaySplitSquad = data.awaySplitSquad ?? false;
     this.radioLink = data.radioLink ?? "";
     this.odds = data.odds ?? [];
+    this.score = data.score;
+    this.sog = data.sog;
   }
 }
