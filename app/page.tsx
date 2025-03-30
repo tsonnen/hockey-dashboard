@@ -23,7 +23,13 @@ export default function Home() {
 
       console.log(todayNhlGames);
 
-      const pwhlResponse = await fetch("/api/hockeytech/ohl/schedule");
+      const ohlResponse = await fetch("/api/hockeytech/ohl/schedule");
+      const ohlGames: Array<Game> = await ohlResponse.json();
+      const todayOhlGames = ohlGames.filter((game) => game.gameDate == today);
+
+      allGames.push(...todayOhlGames);
+
+      const pwhlResponse = await fetch("/api/hockeytech/pwhl/schedule");
       const pwhlGames: Array<Game> = await pwhlResponse.json();
       const todayPwhlGames = pwhlGames.filter((game) => game.gameDate == today);
 
