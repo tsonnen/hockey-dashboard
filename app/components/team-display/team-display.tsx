@@ -13,7 +13,6 @@ export function TeamDisplay({ team, gameStarted }: TeamDisplayProps) {
         <img src={team.logo} alt={`${team.placeName.default} logo`} />
       </div>
       <div className={styles.teamInfo}>
-        <div className={styles.teamName}>{team.placeName.default}</div>
         {gameStarted && (
           <div className={styles.teamStats}>
             <div className={styles.score}>{team.score ?? 0}</div>
