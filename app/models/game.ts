@@ -24,7 +24,7 @@ interface GameSituation {
   situationCode: string;
 }
 
-enum GameState {
+export enum GameState {
   FUTURE = "FUT",
   CRITICAL = "CRIT",
   LIVE = "LIVE",

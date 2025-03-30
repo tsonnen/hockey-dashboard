@@ -7,3 +7,5 @@ export const LEAGUE_KEY_MAPPINGS: {
 } = Object.freeze({
   ohl: { key: "2976319eb44abe94", client_code: "ohl" },
 });
+
+export const BASE_URL = "https://lscluster.hockeytech.com/feed";

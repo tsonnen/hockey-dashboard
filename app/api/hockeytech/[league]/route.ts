@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
 import { LEAGUE_KEY_MAPPINGS, LEAGUES } from "../const";
-
-const BASE_URL = "https://lscluster.hockeytech.com/feed/";
-
-function getKeyAndClientCode(league: LEAGUES) {
-  return LEAGUE_KEY_MAPPINGS[league];
-}
+import { getKeyAndClientCode } from "../utils";
 
 export async function GET(
   request: Request,

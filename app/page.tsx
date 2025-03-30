@@ -6,30 +6,43 @@ import { GameDay } from "./models/game-day";
 import { GameCard } from "@/app/components/game-card/game-card";
 
 export default function Home() {
-  const [gameDays, setData] = useState<Array<GameDay>>([]);
+  const [games, setData] = useState<Array<Game>>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://localhost:3000/api/nhl/week");
-      const gameWeek: Array<GameDay> = await response.json();
-      setData(gameWeek);
+      const allGames: Array<Game> = [];
+      const nhlResponse = await fetch("/api/nhl/week");
+      const nhlGameWeek: Array<GameDay> = await nhlResponse.json();
+      const today = new Date().toISOString().slice(0, 10);
+
+      const todayNhlGames = nhlGameWeek.find(
+        (gameDay) => gameDay.date === today
+      );
+
+      allGames.push(...(todayNhlGames?.games ?? new Array<Game>()));
+
+      console.log(todayNhlGames);
+
+      const pwhlResponse = await fetch("/api/hockeytech/ohl/schedule");
+      const pwhlGames: Array<Game> = await pwhlResponse.json();
+      const todayPwhlGames = pwhlGames.filter((game) => game.gameDate == today);
+
+      allGames.push(...todayPwhlGames);
+      allGames.sort(
+        (a, b) =>
+          new Date(a.startTimeUTC).getTime() -
+          new Date(b.startTimeUTC).getTime()
+      );
+      setData(allGames);
     };
     fetchData();
   }, []);
 
   return (
-    <div>
-      {gameDays &&
-        gameDays.map((gameDay: GameDay) => (
-          <div key={gameDay.date}>
-            <h2 className="px-4 pt-4">{gameDay.date}</h2>
-            <div className="games-container">
-              {gameDay.games &&
-                gameDay.games.map((game: Game) => (
-                  <GameCard key={game.id} game={new Game(game)} />
-                ))}
-            </div>
-          </div>
+    <div className="games-container">
+      {games &&
+        games.map((game: Game) => (
+          <GameCard key={game.id} game={new Game(game)} />
         ))}
     </div>
   );
