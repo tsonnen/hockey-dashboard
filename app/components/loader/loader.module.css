@@ -2,19 +2,23 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh; /* This will center vertically in the viewport */
+  width: 100%;
 }
 
 .spinner {
-  width: 64px;  /* Increased from default size */
-  height: 64px; /* Increased from default size */
-  border: 3px solid #f3f3f3; /* Slightly thicker border */
+  width: 64px;
+  height: 64px;
+  border: 3px solid #f3f3f3;
   border-bottom: 3px solid #333;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
