@@ -52,6 +52,7 @@ export class Game {
   ticketsLink: string;
   ticketsLinkFr: string;
   gameCenterLink: string;
+  league: string;
   clock?: GameClock;
   period?: number;
   situation?: GameSituation;
@@ -83,6 +84,7 @@ export class Game {
     this.clock = data.clock;
     this.period = data.period;
     this.situation = data.situation;
+    this.league = data.league ?? "";
   }
 
   get gameInProgress(): boolean {
