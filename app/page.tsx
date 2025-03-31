@@ -13,15 +13,16 @@ export default function Home() {
       const allGames: Array<Game> = [];
       const nhlResponse = await fetch("/api/nhl/week");
       const nhlGameWeek: Array<GameDay> = await nhlResponse.json();
-      const today = new Date().toISOString().slice(0, 10);
+      var tzoffset = new Date().getTimezoneOffset() * 60000;
+      const today = new Date(Date.now() - tzoffset).toISOString().slice(0, 10);
+
+      console.log(today);
 
       const todayNhlGames = nhlGameWeek.find(
         (gameDay) => gameDay.date === today
       );
 
       allGames.push(...(todayNhlGames?.games ?? new Array<Game>()));
-
-      console.log(todayNhlGames);
 
       const ohlResponse = await fetch("/api/hockeytech/ohl/schedule");
       const ohlGames: Array<Game> = await ohlResponse.json();
@@ -34,6 +35,20 @@ export default function Home() {
       const todayPwhlGames = pwhlGames.filter((game) => game.gameDate == today);
 
       allGames.push(...todayPwhlGames);
+
+      const whlResponse = await fetch("/api/hockeytech/whl/schedule");
+      const whlGames: Array<Game> = await whlResponse.json();
+      const todayWhlGames = whlGames.filter((game) => game.gameDate == today);
+
+      allGames.push(...todayWhlGames);
+
+      const qmjhlResponse = await fetch("/api/hockeytech/qmjhl/schedule");
+      const qmjhlGames: Array<Game> = await qmjhlResponse.json();
+      const todayQmjhlGames = qmjhlGames.filter(
+        (game) => game.gameDate == today
+      );
+
+      allGames.push(...todayQmjhlGames);
       allGames.sort(
         (a, b) =>
           new Date(a.startTimeUTC).getTime() -
