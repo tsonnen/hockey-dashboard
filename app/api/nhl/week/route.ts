@@ -20,7 +20,9 @@ export async function GET() {
     getScores(),
   ]);
 
-  const combined = gameWeek.map((gameDay: GameDay) => {
+  const allGames: Array<Game> = [];
+
+  gameWeek.forEach((gameDay: GameDay) => {
     const games = gameDay.games.map((game: Game) => {
       const gameScore = gameScores.find(
         (gameScore: Game) => gameScore.id === game.id
@@ -38,8 +40,8 @@ export async function GET() {
       return game;
     });
 
-    return { ...gameDay, games };
+    allGames.push(...games);
   });
 
-  return NextResponse.json(combined);
+  return NextResponse.json(allGames);
 }

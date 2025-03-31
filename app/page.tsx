@@ -2,71 +2,52 @@
 
 import { useState, useEffect } from "react";
 import { Game } from "./models/game";
-import { GameDay } from "./models/game-day";
+import { Loader } from "@/app/components/loader/loader";
 import { GameCard } from "@/app/components/game-card/game-card";
 
 export default function Home() {
   const [games, setData] = useState<Array<Game>>([]);
 
+  async function fetchGames(url: string) {
+    const curGames = games;
+    const tzoffset = new Date().getTimezoneOffset() * 60000;
+    const today = new Date(Date.now() - tzoffset).toISOString().slice(0, 10);
+    const response = await fetch(url);
+    const todayGames = (await response.json()).filter(
+      (game: Game) => game.gameDate == today
+    );
+
+    curGames.push(...todayGames);
+    curGames.sort(
+      (a, b) =>
+        new Date(a.startTimeUTC).getTime() - new Date(b.startTimeUTC).getTime()
+    );
+
+    return todayGames;
+  }
+
   useEffect(() => {
     const fetchData = async () => {
+      const allLeagueGames = await Promise.all([
+        fetchGames("/api/nhl/week"),
+        fetchGames("/api/hockeytech/ohl/schedule"),
+        fetchGames("/api/hockeytech/whl/schedule"),
+        fetchGames("/api/hockeytech/qmjhl/schedule"),
+        fetchGames("/api/hockeytech/pwhl/schedule"),
+        fetchGames("/api/hockeytech/ahl/schedule"),
+        fetchGames("/api/hockeytech/echl/schedule"),
+      ]);
+
       const allGames: Array<Game> = [];
-      const nhlResponse = await fetch("/api/nhl/week");
-      const nhlGameWeek: Array<GameDay> = await nhlResponse.json();
-      var tzoffset = new Date().getTimezoneOffset() * 60000;
-      const today = new Date(Date.now() - tzoffset).toISOString().slice(0, 10);
 
-      console.log(today);
-
-      const todayNhlGames = nhlGameWeek.find(
-        (gameDay) => gameDay.date === today
-      );
-
-      allGames.push(...(todayNhlGames?.games ?? new Array<Game>()));
-
-      const ohlResponse = await fetch("/api/hockeytech/ohl/schedule");
-      const ohlGames: Array<Game> = await ohlResponse.json();
-      const todayOhlGames = ohlGames.filter((game) => game.gameDate == today);
-
-      allGames.push(...todayOhlGames);
-
-      const pwhlResponse = await fetch("/api/hockeytech/pwhl/schedule");
-      const pwhlGames: Array<Game> = await pwhlResponse.json();
-      const todayPwhlGames = pwhlGames.filter((game) => game.gameDate == today);
-
-      allGames.push(...todayPwhlGames);
-
-      const whlResponse = await fetch("/api/hockeytech/whl/schedule");
-      const whlGames: Array<Game> = await whlResponse.json();
-      const todayWhlGames = whlGames.filter((game) => game.gameDate == today);
-
-      allGames.push(...todayWhlGames);
-
-      const qmjhlResponse = await fetch("/api/hockeytech/qmjhl/schedule");
-      const qmjhlGames: Array<Game> = await qmjhlResponse.json();
-      const todayQmjhlGames = qmjhlGames.filter(
-        (game) => game.gameDate == today
-      );
-
-      allGames.push(...todayQmjhlGames);
-
-      const ahlResponse = await fetch("/api/hockeytech/ahl/schedule");
-      const ahlGames: Array<Game> = await ahlResponse.json();
-      const todayAhlGames = ahlGames.filter((game) => game.gameDate == today);
-
-      allGames.push(...todayAhlGames);
-
-      const echlResponse = await fetch("/api/hockeytech/echl/schedule");
-      const echlGames: Array<Game> = await echlResponse.json();
-      const todayEchlGames = echlGames.filter((game) => game.gameDate == today);
-
-      allGames.push(...todayEchlGames);
+      allLeagueGames.forEach((league) => allGames.push(...league));
 
       allGames.sort(
         (a, b) =>
           new Date(a.startTimeUTC).getTime() -
           new Date(b.startTimeUTC).getTime()
       );
+
       setData(allGames);
     };
     fetchData();
@@ -74,10 +55,16 @@ export default function Home() {
 
   return (
     <div className="games-container">
-      {games &&
+      {games.length > 0 ? (
         games.map((game: Game) => (
-          <GameCard key={game.id} game={new Game(game)} />
-        ))}
+          <GameCard
+            key={`${game.id} - ${game.startTimeUTC}`}
+            game={new Game(game)}
+          />
+        ))
+      ) : (
+        <Loader />
+      )}
     </div>
   );
 }
