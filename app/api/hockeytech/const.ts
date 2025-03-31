@@ -3,6 +3,8 @@ export enum LEAGUES {
   "PWHL" = "pwhl",
   "WHL" = "whl",
   "QMJHL" = "qmjhl",
+  "AHL" = "ahl",
+  "ECHL" = "echl",
 }
 
 export const LEAGUE_KEY_MAPPINGS: {
@@ -12,6 +14,8 @@ export const LEAGUE_KEY_MAPPINGS: {
   pwhl: { key: "694cfeed58c932ee", client_code: "pwhl" },
   whl: { key: "f1aa699db3d81487", client_code: "whl" },
   qmjhl: { key: "f1aa699db3d81487", client_code: "lhjmq" },
+  ahl: { key: "ccb91f29d6744675", client_code: "ahl" },
+  echl: { key: "2c2b89ea7345cae8", client_code: "echl" },
 });
 
 export const BASE_URL = "https://lscluster.hockeytech.com/feed";

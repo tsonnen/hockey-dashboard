@@ -49,6 +49,19 @@ export default function Home() {
       );
 
       allGames.push(...todayQmjhlGames);
+
+      const ahlResponse = await fetch("/api/hockeytech/ahl/schedule");
+      const ahlGames: Array<Game> = await ahlResponse.json();
+      const todayAhlGames = ahlGames.filter((game) => game.gameDate == today);
+
+      allGames.push(...todayAhlGames);
+
+      const echlResponse = await fetch("/api/hockeytech/echl/schedule");
+      const echlGames: Array<Game> = await echlResponse.json();
+      const todayEchlGames = echlGames.filter((game) => game.gameDate == today);
+
+      allGames.push(...todayEchlGames);
+
       allGames.sort(
         (a, b) =>
           new Date(a.startTimeUTC).getTime() -
