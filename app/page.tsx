@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Game } from "./models/game";
+import { Game } from "@/app/models/game";
 import { Loader } from "@/app/components/loader/loader";
 import { GameCard } from "@/app/components/game-card/game-card";
 
