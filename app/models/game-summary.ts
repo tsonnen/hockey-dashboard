@@ -51,9 +51,22 @@ interface Penalty {
   descKey: string;
 }
 
-interface PeriodGoals {
+export class PeriodGoals {
   periodDescriptor: PeriodDescriptor;
   goals: Goal[];
+
+  constructor(data: PeriodGoals) {
+    this.goals = data.goals;
+    this.periodDescriptor = data.periodDescriptor;
+  }
+
+  get awayGoals() {
+    return this.goals.filter((goal) => !goal.isHome);
+  }
+
+  get homeGoals() {
+    return this.goals.filter((goal) => goal.isHome);
+  }
 }
 
 interface PeriodPenalties {
@@ -67,9 +80,16 @@ interface StarPlayer extends Player {
   headshot: string;
 }
 
-export interface GameSummary {
+export class GameSummary {
   scoring: PeriodGoals[];
   shootout: any[];
   threeStars: StarPlayer[];
   penalties: PeriodPenalties[];
-} 
+
+  constructor(data: GameSummary) {
+    this.scoring = data.scoring;
+    this.shootout = data.shootout;
+    this.threeStars = data.threeStars;
+    this.penalties = data.penalties;
+  }
+}

@@ -1,8 +1,9 @@
 "use client";
 
-import { GameSummary } from "@/app/models/game-summary";
+import { GameSummary, PeriodGoals } from "@/app/models/game-summary";
 import { GameMatchup } from "@/app/models/game-matchup";
 import { useState, useEffect } from "react";
+import { ScoringSummary } from "@/app/components/scoring-summary";
 
 interface GamePageProps {
   params: {
@@ -43,6 +44,11 @@ export default function GamePage({ params }: GamePageProps) {
       <h1 className="text-2xl font-bold mb-4">Game Details</h1>
       {gameDetails?.summary && (
         <div className="mb-4">
+          <ScoringSummary
+            scoring={gameDetails.summary.scoring.map(
+              (periodScoring) => new PeriodGoals(periodScoring)
+            )}
+          />
           <h2 className="text-xl font-semibold mb-2">Game Summary</h2>
           <div className="space-y-4">
             {gameDetails.summary.scoring.map((period, i) => (
