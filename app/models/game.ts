@@ -3,6 +3,7 @@ import { LocalizedName } from "./localized-name";
 import { TvBroadcast } from "./tv-broadcast";
 import { PeriodDescriptor } from "./period-descriptor";
 import startTime from "../utils/start-time";
+import { GameSummary } from "./game-summary";
 
 interface GameClock {
   timeRemaining: string;
@@ -22,6 +23,10 @@ interface GameSituation {
     strength: number;
   };
   situationCode: string;
+}
+
+interface VenueLocation {
+  default: string;
 }
 
 export enum GameState {
@@ -56,6 +61,14 @@ export class Game {
   clock?: GameClock;
   period?: number;
   situation?: GameSituation;
+  venueLocation?: VenueLocation;
+  limitedScoring?: boolean;
+  shootoutInUse?: boolean;
+  maxPeriods?: number;
+  regPeriods?: number;
+  otInUse?: boolean;
+  tiesInUse?: boolean;
+  summary?: GameSummary;
 
   constructor(data: Partial<Game>) {
     this.id = data.id ?? 0;
@@ -85,6 +98,14 @@ export class Game {
     this.period = data.period;
     this.situation = data.situation;
     this.league = data.league ?? "";
+    this.venueLocation = data.venueLocation;
+    this.limitedScoring = data.limitedScoring ?? false;
+    this.shootoutInUse = data.shootoutInUse ?? false;
+    this.maxPeriods = data.maxPeriods ?? 3;
+    this.regPeriods = data.regPeriods ?? 3;
+    this.otInUse = data.otInUse ?? false;
+    this.tiesInUse = data.tiesInUse ?? false;
+    this.summary = data.summary;
   }
 
   get gameInProgress(): boolean {
