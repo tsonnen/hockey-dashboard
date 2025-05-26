@@ -3,7 +3,7 @@
 import { GameSummary, PeriodGoals } from "@/app/models/game-summary";
 import { GameMatchup } from "@/app/models/game-matchup";
 import { useState, useEffect } from "react";
-import { ScoringSummary } from "@/app/components/scoring-summary";
+import { PeriodScoringSummary } from "@/app/components/period-scoring-summary";
 import { Game } from "@/app/models/game";
 
 interface GamePageProps {
@@ -42,7 +42,7 @@ export default function GamePage({ params }: GamePageProps) {
       {game?.summary && (
         <div className="mb-4">
           <div>
-            <ScoringSummary game={game} />
+            <PeriodScoringSummary game={game} />
           </div>
           <div>
             <h2 className="text-xl font-semibold mb-2">Game Summary</h2>
