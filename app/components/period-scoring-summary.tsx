@@ -17,30 +17,13 @@ export function PeriodScoringSummary({ game }: PeriodScoringSummaryProps) {
           <th className="border border-gray-300 p-2"></th>
           {game.summary.scoring.map((period, i) => (
             <th key={i} className="border border-gray-300 p-2">
-              {ordinal_suffix_of(period.periodDescriptor.number)}
+              {period.periodCommonName}
             </th>
           ))}
           <th className="border border-gray-300 p-2">T</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td className="border border-gray-300 p-2">
-            <img
-              src={game.homeTeam.logo}
-              alt={`${game.homeTeam.placeName.default} logo`}
-              className="h-8"
-            />
-          </td>
-          {game.summary.scoring.map((period, i) => (
-            <td key={i} className="border border-gray-300 p-2 text-center">
-              {period.homeGoals.length}
-            </td>
-          ))}
-          <td className="border border-gray-300 p-2 text-center font-bold">
-            {game.homeTeam.score}
-          </td>
-        </tr>
         <tr>
           <td className="border border-gray-300 p-2">
             <img
@@ -56,6 +39,23 @@ export function PeriodScoringSummary({ game }: PeriodScoringSummaryProps) {
           ))}
           <td className="border border-gray-300 p-2 text-center font-bold">
             {game.awayTeam.score}
+          </td>
+        </tr>
+        <tr>
+          <td className="border border-gray-300 p-2">
+            <img
+              src={game.homeTeam.logo}
+              alt={`${game.homeTeam.placeName.default} logo`}
+              className="h-8"
+            />
+          </td>
+          {game.summary.scoring.map((period, i) => (
+            <td key={i} className="border border-gray-300 p-2 text-center">
+              {period.homeGoals.length}
+            </td>
+          ))}
+          <td className="border border-gray-300 p-2 text-center font-bold">
+            {game.homeTeam.score}
           </td>
         </tr>
       </tbody>

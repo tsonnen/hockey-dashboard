@@ -1,3 +1,4 @@
+import ordinal_suffix_of from "../utils/ordinal-suffix-of";
 import { LocalizedName } from "./localized-name";
 import { PeriodDescriptor } from "./period-descriptor";
 
@@ -66,6 +67,18 @@ export class PeriodGoals {
 
   get homeGoals() {
     return this.goals.filter((goal) => goal.isHome);
+  }
+
+  get periodCommonName() {
+    if (
+      this.periodDescriptor.number <= this.periodDescriptor.maxRegulationPeriods
+    ) {
+      return ordinal_suffix_of(this.periodDescriptor.number);
+    }
+
+    return `${ordinal_suffix_of(
+      this.periodDescriptor.number - this.periodDescriptor.maxRegulationPeriods
+    )} OT`;
   }
 }
 

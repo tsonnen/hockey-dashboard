@@ -5,7 +5,10 @@ import { GameMatchup } from "@/app/models/game-matchup";
 import { useState, useEffect } from "react";
 import { PeriodScoringSummary } from "@/app/components/period-scoring-summary";
 import { Game } from "@/app/models/game";
-import { HockeyTechGameDetails, convertHockeyTechGameDetails } from "@/app/models/hockeytech-game-details";
+import {
+  HockeyTechGameDetails,
+  convertHockeyTechGameDetails,
+} from "@/app/models/hockeytech-game-details";
 import { Loader } from "@/app/components/loader/loader";
 import { useRouter } from "next/navigation";
 
@@ -28,7 +31,9 @@ export default function GamePage({ params }: GamePageProps) {
 
         switch (league) {
           case "nhl":
-            setGame(new Game(await (await fetch(`/api/nhl/game/${id}`)).json()));
+            setGame(
+              new Game(await (await fetch(`/api/nhl/game/${id}`)).json())
+            );
             break;
           case "ohl":
           case "whl":
@@ -36,7 +41,9 @@ export default function GamePage({ params }: GamePageProps) {
           case "ahl":
           case "echl":
           case "pwhl":
-            const response = await fetch(`/api/hockeytech/${league}/game/${id}`);
+            const response = await fetch(
+              `/api/hockeytech/${league}/game/${id}`
+            );
             const data: HockeyTechGameDetails = await response.json();
             setGame(new Game(convertHockeyTechGameDetails(data, league)));
             break;
@@ -102,8 +109,7 @@ export default function GamePage({ params }: GamePageProps) {
               {game.summary.scoring.map((period, i) => (
                 <div key={i} className="border rounded p-4">
                   <h3 className="font-medium mb-2">
-                    {period.periodDescriptor.periodType}{" "}
-                    {period.periodDescriptor.number}
+                    {period.periodCommonName}
                   </h3>
                   <div className="space-y-2">
                     {period.goals.map((goal, j) => (
