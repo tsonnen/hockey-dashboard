@@ -7,6 +7,7 @@ import { PeriodScoringSummary } from "@/app/components/period-scoring-summary";
 import { Game } from "@/app/models/game";
 import { HockeyTechGameDetails, convertHockeyTechGameDetails } from "@/app/models/hockeytech-game-details";
 import { Loader } from "@/app/components/loader/loader";
+import { useRouter } from "next/navigation";
 
 interface GamePageProps {
   params: {
@@ -18,6 +19,7 @@ interface GamePageProps {
 export default function GamePage({ params }: GamePageProps) {
   const [game, setGame] = useState<Game>();
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,6 +70,27 @@ export default function GamePage({ params }: GamePageProps) {
 
   return (
     <div className="p-4">
+      <button
+        onClick={() => router.back()}
+        className="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="w-5 h-5"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+          />
+        </svg>
+        Back
+      </button>
+
       {game.summary && (
         <div className="mb-4">
           <div>
