@@ -40,7 +40,7 @@ function mapGameStatusToGameState(gameStatus: string): GameState {
   }
 }
 
-export function convertHockeyTechGame(data: HockeyTechGame) {
+export function convertHockeyTechGame(data: HockeyTechGame, league: string) {
   const gameState = mapGameStatusToGameState(data.GameStatus);
 
   return {
@@ -78,5 +78,6 @@ export function convertHockeyTechGame(data: HockeyTechGame) {
           inIntermission: false, // Would need additional data
         }
       : undefined,
+    league,
   };
 }

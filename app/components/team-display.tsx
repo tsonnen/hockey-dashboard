@@ -1,4 +1,4 @@
-import { Team } from "../models/team";
+import { Team } from "@/app/models/team";
 import styles from "./team-display.module.css";
 
 interface TeamDisplayProps {

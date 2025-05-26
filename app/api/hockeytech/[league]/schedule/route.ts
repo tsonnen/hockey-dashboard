@@ -16,13 +16,11 @@ export async function GET(
   url.searchParams.append("view", "scorebar");
   url.searchParams.append("fmt", "json");
 
-  console.log(url.toString());
-
   const response = await fetch(url.toString());
   const data = await response.json();
 
   const games = data.SiteKit.Scorebar.map((game: HockeyTechGame) =>
-    convertHockeyTechGame(game)
+    convertHockeyTechGame(game, league)
   );
 
   return NextResponse.json(games);

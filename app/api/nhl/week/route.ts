@@ -37,6 +37,8 @@ export async function GET() {
         game.awayTeam = { ...game.awayTeam, ...gameScore.awayTeam };
       }
 
+      game.league = "nhl";
+
       return game;
     });
 
