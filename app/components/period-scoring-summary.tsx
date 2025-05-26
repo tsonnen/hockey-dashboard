@@ -1,5 +1,5 @@
 import { Game } from "@/app/models/game";
-import ordinal_suffix_of from "@/app/utils/ordinal-suffix-of";
+import { TeamScoringRow } from "./team-scoring-row";
 
 interface PeriodScoringSummaryProps {
   game: Game;
@@ -24,46 +24,16 @@ export function PeriodScoringSummary({ game }: PeriodScoringSummaryProps) {
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td className="border border-gray-300 p-2">
-            <div className="flex items-center space-x-4">
-              <img
-                src={game.awayTeam.logo}
-                alt={`${game.awayTeam.placeName.default} logo`}
-                className="h-10"
-              />
-              {game.awayTeam.abbrev}
-            </div>
-          </td>
-          {game.summary.scoring.map((period, i) => (
-            <td key={i} className="border border-gray-300 p-2 text-center">
-              {period.awayGoals.length}
-            </td>
-          ))}
-          <td className="border border-gray-300 p-2 text-center font-bold">
-            {game.awayTeam.score}
-          </td>
-        </tr>
-        <tr>
-          <td className="border border-gray-300 p-2">
-            <div className="flex items-center">
-              <img
-                src={game.homeTeam.logo}
-                alt={`${game.homeTeam.placeName.default} logo`}
-                className="h-10"
-              />
-              {game.homeTeam.abbrev}
-            </div>
-          </td>
-          {game.summary.scoring.map((period, i) => (
-            <td key={i} className="border border-gray-300 p-2 text-center">
-              {period.homeGoals.length}
-            </td>
-          ))}
-          <td className="border border-gray-300 p-2 text-center font-bold">
-            {game.homeTeam.score}
-          </td>
-        </tr>
+        <TeamScoringRow
+          team={game.awayTeam}
+          periods={game.summary.scoring}
+          isHome={false}
+        />
+        <TeamScoringRow
+          team={game.homeTeam}
+          periods={game.summary.scoring}
+          isHome={true}
+        />
       </tbody>
     </table>
   );
