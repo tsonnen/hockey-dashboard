@@ -4,6 +4,8 @@ import { TvBroadcast } from "./tv-broadcast";
 import { PeriodDescriptor } from "./period-descriptor";
 import startTime from "../utils/start-time";
 import { GameSummary } from "./game-summary";
+import { Play } from "./play";
+import { GameMatchup } from "./game-matchup";
 
 interface GameClock {
   timeRemaining: string;
@@ -69,6 +71,19 @@ export class Game {
   otInUse?: boolean;
   tiesInUse?: boolean;
   summary?: GameSummary;
+  matchup?: GameMatchup;
+  
+  // HockeyTech specific fields
+  gameNumber?: number;
+  gameId?: string;
+  gameUuid?: string;
+  startTime?: string;
+  endTime?: string;
+  status?: string;
+  statusCode?: number;
+  homeTeamScore?: number;
+  awayTeamScore?: number;
+  plays: Play[];
 
   constructor(data: Partial<Game>) {
     this.id = data.id ?? 0;
@@ -105,7 +120,9 @@ export class Game {
     this.regPeriods = data.regPeriods ?? 3;
     this.otInUse = data.otInUse ?? false;
     this.tiesInUse = data.tiesInUse ?? false;
-    this.summary = data.summary;
+    this.summary = data.summary ? new GameSummary(data.summary) : undefined;
+    this.matchup = data.matchup;
+    this.plays = data.plays ?? [];
   }
 
   get gameInProgress(): boolean {

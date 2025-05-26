@@ -87,7 +87,9 @@ export class GameSummary {
   penalties: PeriodPenalties[];
 
   constructor(data: GameSummary) {
-    this.scoring = data.scoring;
+    this.scoring = data.scoring.map(
+      (periodScoring) => new PeriodGoals(periodScoring)
+    );
     this.shootout = data.shootout;
     this.threeStars = data.threeStars;
     this.penalties = data.penalties;
