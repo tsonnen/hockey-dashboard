@@ -26,11 +26,14 @@ export function PeriodScoringSummary({ game }: PeriodScoringSummaryProps) {
       <tbody>
         <tr>
           <td className="border border-gray-300 p-2">
-            <img
-              src={game.awayTeam.logo}
-              alt={`${game.awayTeam.placeName.default} logo`}
-              className="h-8"
-            />
+            <div className="flex items-center space-x-4">
+              <img
+                src={game.awayTeam.logo}
+                alt={`${game.awayTeam.placeName.default} logo`}
+                className="h-10"
+              />
+              {game.awayTeam.abbrev}
+            </div>
           </td>
           {game.summary.scoring.map((period, i) => (
             <td key={i} className="border border-gray-300 p-2 text-center">
@@ -43,11 +46,14 @@ export function PeriodScoringSummary({ game }: PeriodScoringSummaryProps) {
         </tr>
         <tr>
           <td className="border border-gray-300 p-2">
-            <img
-              src={game.homeTeam.logo}
-              alt={`${game.homeTeam.placeName.default} logo`}
-              className="h-8"
-            />
+            <div className="flex items-center">
+              <img
+                src={game.homeTeam.logo}
+                alt={`${game.homeTeam.placeName.default} logo`}
+                className="h-10"
+              />
+              {game.homeTeam.abbrev}
+            </div>
           </td>
           {game.summary.scoring.map((period, i) => (
             <td key={i} className="border border-gray-300 p-2 text-center">

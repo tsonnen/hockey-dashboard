@@ -2,7 +2,7 @@ import ordinal_suffix_of from "../utils/ordinal-suffix-of";
 import { LocalizedName } from "./localized-name";
 import { PeriodDescriptor } from "./period-descriptor";
 
-interface Player {
+export interface Player {
   playerId: number;
   firstName: LocalizedName;
   lastName: LocalizedName;
@@ -17,7 +17,7 @@ interface Player {
   savePctg?: number;
 }
 
-interface Goal {
+export interface Goal {
   situationCode: string;
   eventId: number;
   strength: string;
