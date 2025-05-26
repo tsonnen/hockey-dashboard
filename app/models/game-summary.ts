@@ -55,7 +55,7 @@ export class PeriodGoals {
   periodDescriptor: PeriodDescriptor;
   goals: Goal[];
 
-  constructor(data: PeriodGoals) {
+  constructor(data: { periodDescriptor: PeriodDescriptor; goals: Goal[] }) {
     this.goals = data.goals;
     this.periodDescriptor = data.periodDescriptor;
   }
@@ -86,7 +86,12 @@ export class GameSummary {
   threeStars: StarPlayer[];
   penalties: PeriodPenalties[];
 
-  constructor(data: GameSummary) {
+  constructor(data: {
+    scoring: { periodDescriptor: PeriodDescriptor; goals: Goal[] }[];
+    shootout: any[];
+    threeStars: StarPlayer[];
+    penalties: PeriodPenalties[];
+  }) {
     this.scoring = data.scoring.map(
       (periodScoring) => new PeriodGoals(periodScoring)
     );

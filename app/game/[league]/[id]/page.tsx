@@ -5,6 +5,8 @@ import { GameMatchup } from "@/app/models/game-matchup";
 import { useState, useEffect } from "react";
 import { PeriodScoringSummary } from "@/app/components/period-scoring-summary";
 import { Game } from "@/app/models/game";
+import { HockeyTechGameDetails, convertHockeyTechGameDetails } from "@/app/models/hockeytech-game-details";
+import { Loader } from "@/app/components/loader/loader";
 
 interface GamePageProps {
   params: {
@@ -15,31 +17,58 @@ interface GamePageProps {
 
 export default function GamePage({ params }: GamePageProps) {
   const [game, setGame] = useState<Game>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const { league, id } = await params;
+      try {
+        const { league, id } = await params;
 
-      switch (league) {
-        case "nhl":
-          setGame(new Game(await (await fetch(`/api/nhl/game/${id}`)).json()));
-        case "ohl":
-        case "whl":
-        case "qmjhl":
-        case "ahl":
-        case "echl":
-        case "pwhl":
-          break;
-        default:
-          break;
+        switch (league) {
+          case "nhl":
+            setGame(new Game(await (await fetch(`/api/nhl/game/${id}`)).json()));
+            break;
+          case "ohl":
+          case "whl":
+          case "qmjhl":
+          case "ahl":
+          case "echl":
+          case "pwhl":
+            const response = await fetch(`/api/hockeytech/${league}/game/${id}`);
+            const data: HockeyTechGameDetails = await response.json();
+            setGame(new Game(convertHockeyTechGameDetails(data, league)));
+            break;
+          default:
+            break;
+        }
+      } catch (error) {
+        console.error("Error fetching game data:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="p-4">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (!game) {
+    return (
+      <div className="p-4">
+        <div className="text-center text-gray-600">Game not found</div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4">
-      {game?.summary && (
+      {game.summary && (
         <div className="mb-4">
           <div>
             <PeriodScoringSummary game={game} />
@@ -68,6 +97,12 @@ export default function GamePage({ params }: GamePageProps) {
                             <span className="text-gray-600">
                               ({goal.awayScore}-{goal.homeScore})
                             </span>
+                            {goal.situationCode === "PP" && (
+                              <span className="text-blue-600">PP</span>
+                            )}
+                            {goal.situationCode === "SH" && (
+                              <span className="text-red-600">SH</span>
+                            )}
                           </div>
                           {goal.assists.length > 0 && (
                             <div className="text-sm text-gray-500 ml-10">
@@ -87,7 +122,7 @@ export default function GamePage({ params }: GamePageProps) {
         </div>
       )}
 
-      {game?.matchup && (
+      {game.matchup && (
         <div>
           <h2 className="text-xl font-semibold mb-2">Game Matchup</h2>
           <div className="grid grid-cols-2 gap-4"></div>
