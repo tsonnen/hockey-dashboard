@@ -119,7 +119,7 @@ export interface HockeyTechPenalty {
   minutes: number;
   description: string;
   ruleNumber: string;
-  takenBy: HockeyTechPlayer["info"];
+  takenBy?: HockeyTechPlayer["info"];
   servedBy: HockeyTechPlayer["info"];
   isPowerPlay: boolean;
   isBench: boolean;
@@ -201,14 +201,17 @@ export interface HockeyTechGameDetails {
   };
 }
 
-export function convertHockeyTechGameDetails(data: HockeyTechGameDetails, league: string): Partial<Game> {
-  const periodGoals = data.periods.map(period => ({
+export function convertHockeyTechGameDetails(
+  data: HockeyTechGameDetails,
+  league: string
+): Partial<Game> {
+  const periodGoals = data.periods.map((period) => ({
     periodDescriptor: {
       number: parseInt(period.info.id),
       periodType: period.info.longName,
       maxRegulationPeriods: 3,
     },
-    goals: period.goals.map(goal => ({
+    goals: period.goals.map((goal) => ({
       situationCode: goal.properties.isPowerPlay === "1" ? "PP" : "EV",
       eventId: parseInt(goal.game_goal_id),
       strength: goal.properties.isPowerPlay === "1" ? "PP" : "EV",
@@ -224,7 +227,7 @@ export function convertHockeyTechGameDetails(data: HockeyTechGameDetails, league
       timeInPeriod: goal.time,
       shotType: "",
       goalModifier: "",
-      assists: goal.assists.map(assist => ({
+      assists: goal.assists.map((assist) => ({
         playerId: assist.id,
         firstName: { default: assist.firstName },
         lastName: { default: assist.lastName },
@@ -278,22 +281,26 @@ export function convertHockeyTechGameDetails(data: HockeyTechGameDetails, league
         playerId: mvp.player.info.id,
         firstName: { default: mvp.player.info.firstName },
         lastName: { default: mvp.player.info.lastName },
-        name: { default: `${mvp.player.info.firstName} ${mvp.player.info.lastName}` },
+        name: {
+          default: `${mvp.player.info.firstName} ${mvp.player.info.lastName}`,
+        },
         star: index + 1,
         teamAbbrev: mvp.team.abbreviation,
         headshot: mvp.playerImage,
       })),
-      penalties: data.periods.map(period => ({
+      penalties: data.periods.map((period) => ({
         periodDescriptor: {
           number: parseInt(period.info.id),
           periodType: period.info.longName,
           maxRegulationPeriods: 3,
         },
-        penalties: period.penalties.map(penalty => ({
+        penalties: period.penalties.map((penalty) => ({
           timeInPeriod: penalty.time,
           type: penalty.description,
           duration: penalty.minutes,
-          committedByPlayer: { default: `${penalty.takenBy.firstName} ${penalty.takenBy.lastName}` },
+          committedByPlayer: {
+            default: `${penalty.takenBy?.firstName} ${penalty.takenBy?.lastName}`,
+          },
           teamAbbrev: { default: penalty.againstTeam.abbreviation },
           drawnBy: { default: "" },
           descKey: penalty.description,
@@ -301,4 +308,4 @@ export function convertHockeyTechGameDetails(data: HockeyTechGameDetails, league
       })),
     }),
   };
-} 
+}
