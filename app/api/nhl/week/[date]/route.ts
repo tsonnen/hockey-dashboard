@@ -1,6 +1,7 @@
-import { Game } from "@/app/models/game";
-import { GameDay } from "@/app/models/game-day";
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+
+import type { Game } from '@/app/models/game';
+import type { GameDay } from '@/app/models/game-day';
 
 async function getSchedule(date: string) {
   const response = await fetch(`https://api-web.nhle.com/v1/schedule/${date}`);
@@ -16,7 +17,7 @@ async function getScores(date: string) {
 
 export async function GET(
   request: Request,
-  { params }: { params: { date: string } }
+  { params }: { params: { date: string } },
 ) {
   const { date } = await params;
   const [gameWeek, gameScores] = await Promise.all([
@@ -24,12 +25,12 @@ export async function GET(
     getScores(date),
   ]);
 
-  const allGames: Array<Game> = [];
+  const allGames: Game[] = [];
 
   gameWeek.forEach((gameDay: GameDay) => {
     const games = gameDay.games.map((game: Game) => {
       const gameScore = gameScores.find(
-        (gameScore: Game) => gameScore.id === game.id
+        (gameScore: Game) => gameScore.id === game.id,
       );
 
       if (gameScore) {
@@ -41,7 +42,7 @@ export async function GET(
         game.awayTeam = { ...game.awayTeam, ...gameScore.awayTeam };
       }
 
-      game.league = "nhl";
+      game.league = 'nhl';
 
       return game;
     });

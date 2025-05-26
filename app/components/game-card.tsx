@@ -1,6 +1,7 @@
-import { Game } from "@/app/models/game";
-import { TeamDisplay } from "@/app/components/team-display/team-display";
-import styles from "./game-card.module.css";
+import { TeamDisplay } from '@/app/components/team-display/team-display';
+import type { Game } from '@/app/models/game';
+
+import styles from './game-card.module.css';
 
 interface GameCardProps {
   game: Game;
@@ -9,7 +10,7 @@ interface GameCardProps {
 export function GameCard({ game }: GameCardProps) {
   return (
     <span className={styles.gameCard}>
-      <TeamDisplay team={game.awayTeam} gameStarted={game.gameStarted} />
+      <TeamDisplay gameStarted={game.gameStarted} team={game.awayTeam} />
       <div className={styles.gameStatus}>
         {game.gameStarted && game.clock && (
           <>
@@ -21,7 +22,7 @@ export function GameCard({ game }: GameCardProps) {
           <div className={styles.startTime}>{game.statusString}</div>
         )}
       </div>
-      <TeamDisplay team={game.homeTeam} gameStarted={game.gameStarted} />
+      <TeamDisplay gameStarted={game.gameStarted} team={game.homeTeam} />
     </span>
   );
 }

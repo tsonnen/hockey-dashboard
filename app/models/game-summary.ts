@@ -1,6 +1,7 @@
-import ordinal_suffix_of from "../utils/ordinal-suffix-of";
-import { LocalizedName } from "./localized-name";
-import { PeriodDescriptor } from "./period-descriptor";
+import ordinal_suffix_of from '../utils/ordinal-suffix-of';
+
+import type { LocalizedName } from './localized-name';
+import type { PeriodDescriptor } from './period-descriptor';
 
 export interface Player {
   playerId: number;
@@ -77,7 +78,7 @@ export class PeriodGoals {
     }
 
     return `${ordinal_suffix_of(
-      this.periodDescriptor.number - this.periodDescriptor.maxRegulationPeriods
+      this.periodDescriptor.number - this.periodDescriptor.maxRegulationPeriods,
     )} OT`;
   }
 }
@@ -106,7 +107,7 @@ export class GameSummary {
     penalties: PeriodPenalties[];
   }) {
     this.scoring = data.scoring.map(
-      (periodScoring) => new PeriodGoals(periodScoring)
+      (periodScoring) => new PeriodGoals(periodScoring),
     );
     this.shootout = data.shootout;
     this.threeStars = data.threeStars;

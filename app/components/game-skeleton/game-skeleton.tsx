@@ -1,4 +1,5 @@
 import React from 'react';
+
 import styles from './game-skeleton.module.css';
 
 export const GameSkeleton: React.FC = () => {
@@ -38,4 +39,4 @@ export const GameSkeleton: React.FC = () => {
       </div>
     </div>
   );
-}; 
+};

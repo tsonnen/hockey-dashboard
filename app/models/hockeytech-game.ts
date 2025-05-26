@@ -1,4 +1,4 @@
-import { Game, GameState } from "./game";
+import { Game, GameState } from './game';
 
 export interface HockeyTechGame {
   ID: string;
@@ -27,13 +27,13 @@ export interface HockeyTechGame {
 
 function mapGameStatusToGameState(gameStatus: string): GameState {
   switch (gameStatus) {
-    case "1":
+    case '1':
       return GameState.FUTURE;
-    case "2":
+    case '2':
       return GameState.LIVE;
-    case "3":
+    case '3':
       return GameState.OFFICIAL;
-    case "4":
+    case '4':
       return GameState.FINAL;
     default:
       return GameState.FUTURE;
@@ -72,11 +72,11 @@ export function convertHockeyTechGame(data: HockeyTechGame, league: string) {
     ticketsLink: data.TicketUrl,
     clock: data.GameClock
       ? {
-          timeRemaining: data.GameClock,
-          secondsRemaining: 0, // Would need conversion logic
-          running: gameState === GameState.LIVE,
-          inIntermission: false, // Would need additional data
-        }
+        timeRemaining: data.GameClock,
+        secondsRemaining: 0, // Would need conversion logic
+        running: gameState === GameState.LIVE,
+        inIntermission: false, // Would need additional data
+      }
       : undefined,
     league,
   };

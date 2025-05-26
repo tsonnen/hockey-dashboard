@@ -1,11 +1,12 @@
-import { Team } from "./team";
-import { LocalizedName } from "./localized-name";
-import { TvBroadcast } from "./tv-broadcast";
-import { PeriodDescriptor } from "./period-descriptor";
-import startTime from "@/app/utils/start-time";
-import { GameSummary } from "./game-summary";
-import { Play } from "./play";
-import { GameMatchup } from "./game-matchup";
+import startTime from '@/app/utils/start-time';
+
+import type { GameMatchup } from './game-matchup';
+import { GameSummary } from './game-summary';
+import type { LocalizedName } from './localized-name';
+import type { PeriodDescriptor } from './period-descriptor';
+import type { Play } from './play';
+import { Team } from './team';
+import type { TvBroadcast } from './tv-broadcast';
 
 interface GameClock {
   timeRemaining: string;
@@ -32,11 +33,11 @@ interface VenueLocation {
 }
 
 export enum GameState {
-  FUTURE = "FUT",
-  CRITICAL = "CRIT",
-  LIVE = "LIVE",
-  FINAL = "FINAL",
-  OFFICIAL = "OFF",
+  FUTURE = 'FUT',
+  CRITICAL = 'CRIT',
+  LIVE = 'LIVE',
+  FINAL = 'FINAL',
+  OFFICIAL = 'OFF',
 }
 
 export class Game {
@@ -72,7 +73,7 @@ export class Game {
   tiesInUse?: boolean;
   summary?: GameSummary;
   matchup?: GameMatchup;
-  
+
   // HockeyTech specific fields
   gameNumber?: number;
   gameId?: string;
@@ -90,29 +91,29 @@ export class Game {
     this.season = data.season ?? 0;
     this.gameType = data.gameType ?? 0;
     this.gameDate = data.gameDate;
-    this.venue = data.venue ?? { default: "" };
+    this.venue = data.venue ?? { default: '' };
     this.neutralSite = data.neutralSite ?? false;
-    this.startTimeUTC = data.startTimeUTC ?? "";
-    this.easternUTCOffset = data.easternUTCOffset ?? "";
-    this.venueUTCOffset = data.venueUTCOffset ?? "";
-    this.venueTimezone = data.venueTimezone ?? "";
-    this.gameState = data.gameState ?? "";
-    this.gameScheduleState = data.gameScheduleState ?? "";
+    this.startTimeUTC = data.startTimeUTC ?? '';
+    this.easternUTCOffset = data.easternUTCOffset ?? '';
+    this.venueUTCOffset = data.venueUTCOffset ?? '';
+    this.venueTimezone = data.venueTimezone ?? '';
+    this.gameState = data.gameState ?? '';
+    this.gameScheduleState = data.gameScheduleState ?? '';
     this.tvBroadcasts = data.tvBroadcasts ?? [];
     this.awayTeam = data.awayTeam ? new Team(data.awayTeam) : new Team({});
     this.homeTeam = data.homeTeam ? new Team(data.homeTeam) : new Team({});
     this.periodDescriptor = data.periodDescriptor ?? {
       number: 0,
-      periodType: "",
+      periodType: '',
       maxRegulationPeriods: 0,
     };
-    this.ticketsLink = data.ticketsLink ?? "";
-    this.ticketsLinkFr = data.ticketsLinkFr ?? "";
-    this.gameCenterLink = data.gameCenterLink ?? "";
+    this.ticketsLink = data.ticketsLink ?? '';
+    this.ticketsLinkFr = data.ticketsLinkFr ?? '';
+    this.gameCenterLink = data.gameCenterLink ?? '';
     this.clock = data.clock;
     this.period = data.period;
     this.situation = data.situation;
-    this.league = data.league ?? "";
+    this.league = data.league ?? '';
     this.venueLocation = data.venueLocation;
     this.limitedScoring = data.limitedScoring ?? false;
     this.shootoutInUse = data.shootoutInUse ?? false;
@@ -137,11 +138,11 @@ export class Game {
     switch (this.gameState) {
       case GameState.FINAL:
       case GameState.OFFICIAL:
-        return "Final";
+        return 'Final';
       case GameState.LIVE:
-        return "Live";
+        return 'Live';
       case GameState.CRITICAL:
-        return "CRITICAL";
+        return 'CRITICAL';
       default:
         return startTime(this.startTimeUTC);
     }

@@ -1,6 +1,6 @@
-import { Game } from "./game";
-import { Team } from "./team";
-import { PeriodGoals, GameSummary } from "./game-summary";
+import type { Game } from './game';
+import { PeriodGoals, GameSummary } from './game-summary';
+import { Team } from './team';
 
 export interface HockeyTechPlayer {
   info: {
@@ -59,22 +59,22 @@ export interface HockeyTechTeam {
     videoUrl: string;
     webcastUrl: string;
   };
-  coaches: Array<{
+  coaches: {
     firstName: string;
     lastName: string;
     role: string;
-  }>;
+  }[];
   skaters: HockeyTechPlayer[];
   goalies: HockeyTechPlayer[];
-  goalieLog: Array<{
-    info: HockeyTechPlayer["info"];
-    stats: HockeyTechPlayer["stats"];
+  goalieLog: {
+    info: HockeyTechPlayer['info'];
+    stats: HockeyTechPlayer['stats'];
     periodStart: { id: string; shortName: string; longName: string };
     timeStart: string;
     periodEnd: { id: string; shortName: string; longName: string };
     timeEnd: string;
     result: string;
-  }>;
+  }[];
   seasonStats: {
     seasonId: string | null;
     teamRecord: {
@@ -92,12 +92,12 @@ export interface HockeyTechTeam {
 
 export interface HockeyTechGoal {
   game_goal_id: string;
-  team: HockeyTechTeam["info"];
+  team: HockeyTechTeam['info'];
   period: { id: string; shortName: string; longName: string };
   time: string;
   scorerGoalNumber: string;
-  scoredBy: HockeyTechPlayer["info"];
-  assists: HockeyTechPlayer["info"][];
+  scoredBy: HockeyTechPlayer['info'];
+  assists: HockeyTechPlayer['info'][];
   assistNumbers: string[];
   properties: {
     isPowerPlay: string;
@@ -107,20 +107,20 @@ export interface HockeyTechGoal {
     isInsuranceGoal: string;
     isGameWinningGoal: string;
   };
-  plus_players: HockeyTechPlayer["info"][];
-  minus_players: HockeyTechPlayer["info"][];
+  plus_players: HockeyTechPlayer['info'][];
+  minus_players: HockeyTechPlayer['info'][];
 }
 
 export interface HockeyTechPenalty {
   game_penalty_id: number;
   period: { id: string; shortName: string; longName: string };
   time: string;
-  againstTeam: HockeyTechTeam["info"];
+  againstTeam: HockeyTechTeam['info'];
   minutes: number;
   description: string;
   ruleNumber: string;
-  takenBy?: HockeyTechPlayer["info"];
-  servedBy: HockeyTechPlayer["info"];
+  takenBy?: HockeyTechPlayer['info'];
+  servedBy: HockeyTechPlayer['info'];
   isPowerPlay: boolean;
   isBench: boolean;
 }
@@ -160,26 +160,26 @@ export interface HockeyTechGameDetails {
     mvpType: number;
     htvGameId: number;
   };
-  referees: Array<{
+  referees: {
     firstName: string;
     lastName: string;
     jerseyNumber: number;
     role: string;
-  }>;
-  linesmen: Array<{
+  }[];
+  linesmen: {
     firstName: string;
     lastName: string;
     jerseyNumber: number;
     role: string;
-  }>;
+  }[];
   scorekeepers: any[];
-  mostValuablePlayers: Array<{
-    team: HockeyTechTeam["info"];
+  mostValuablePlayers: {
+    team: HockeyTechTeam['info'];
     player: HockeyTechPlayer;
     isGoalie: boolean;
     playerImage: string;
     homeTeam: number;
-  }>;
+  }[];
   hasShootout: boolean;
   homeTeam: HockeyTechTeam;
   visitingTeam: HockeyTechTeam;
@@ -189,7 +189,7 @@ export interface HockeyTechGameDetails {
     visitingTeam: any[];
   };
   featuredPlayer: {
-    team: HockeyTechTeam["info"];
+    team: HockeyTechTeam['info'];
     player: HockeyTechPlayer;
     isGoalie: boolean;
     playerImage: string | null;
@@ -203,7 +203,7 @@ export interface HockeyTechGameDetails {
 
 export function convertHockeyTechGameDetails(
   data: HockeyTechGameDetails,
-  league: string
+  league: string,
 ): Partial<Game> {
   const periodGoals = data.periods.map((period) => ({
     periodDescriptor: {
@@ -212,9 +212,9 @@ export function convertHockeyTechGameDetails(
       maxRegulationPeriods: 3,
     },
     goals: period.goals.map((goal) => ({
-      situationCode: goal.properties.isPowerPlay === "1" ? "PP" : "EV",
+      situationCode: goal.properties.isPowerPlay === '1' ? 'PP' : 'EV',
       eventId: parseInt(goal.game_goal_id),
-      strength: goal.properties.isPowerPlay === "1" ? "PP" : "EV",
+      strength: goal.properties.isPowerPlay === '1' ? 'PP' : 'EV',
       playerId: goal.scoredBy.id,
       firstName: { default: goal.scoredBy.firstName },
       lastName: { default: goal.scoredBy.lastName },
@@ -225,16 +225,16 @@ export function convertHockeyTechGameDetails(
       awayScore: parseInt(period.stats.visitingGoals),
       homeScore: parseInt(period.stats.homeGoals),
       timeInPeriod: goal.time,
-      shotType: "",
-      goalModifier: "",
+      shotType: '',
+      goalModifier: '',
       assists: goal.assists.map((assist) => ({
         playerId: assist.id,
         firstName: { default: assist.firstName },
         lastName: { default: assist.lastName },
         name: { default: `${assist.firstName} ${assist.lastName}` },
       })),
-      pptReplayUrl: "",
-      homeTeamDefendingSide: "",
+      pptReplayUrl: '',
+      homeTeamDefendingSide: '',
       isHome: goal.team.id === data.homeTeam.info.id,
     })),
   }));
@@ -257,7 +257,7 @@ export function convertHockeyTechGameDetails(
       score: data.homeTeam.stats.goals,
       abbrev: data.homeTeam.info.abbreviation,
       awaySplitSquad: false,
-      radioLink: "",
+      radioLink: '',
       odds: [],
     }),
     awayTeam: new Team({
@@ -269,7 +269,7 @@ export function convertHockeyTechGameDetails(
       score: data.visitingTeam.stats.goals,
       abbrev: data.visitingTeam.info.abbreviation,
       awaySplitSquad: false,
-      radioLink: "",
+      radioLink: '',
       odds: [],
     }),
     ticketsLink: data.details.ticketsUrl,
@@ -302,7 +302,7 @@ export function convertHockeyTechGameDetails(
             default: `${penalty.takenBy?.firstName} ${penalty.takenBy?.lastName}`,
           },
           teamAbbrev: { default: penalty.againstTeam.abbreviation },
-          drawnBy: { default: "" },
+          drawnBy: { default: '' },
           descKey: penalty.description,
         })),
       })),

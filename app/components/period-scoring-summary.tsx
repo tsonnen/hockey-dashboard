@@ -1,5 +1,6 @@
-import { Game } from "@/app/models/game";
-import { TeamScoringRow } from "./team-scoring-row";
+import type { Game } from '@/app/models/game';
+
+import { TeamScoringRow } from './team-scoring-row';
 
 interface PeriodScoringSummaryProps {
   game: Game;
@@ -25,14 +26,14 @@ export function PeriodScoringSummary({ game }: PeriodScoringSummaryProps) {
       </thead>
       <tbody>
         <TeamScoringRow
-          team={game.awayTeam}
-          periods={game.summary.scoring}
           isHome={false}
+          periods={game.summary.scoring}
+          team={game.awayTeam}
         />
         <TeamScoringRow
-          team={game.homeTeam}
-          periods={game.summary.scoring}
           isHome={true}
+          periods={game.summary.scoring}
+          team={game.homeTeam}
         />
       </tbody>
     </table>

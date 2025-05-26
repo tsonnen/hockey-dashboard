@@ -1,26 +1,29 @@
-import { NextResponse } from "next/server";
-import { LEAGUES } from "../../const";
-import { getBaseUrl, getKeyAndClientCode } from "../../utils";
+import { NextResponse } from 'next/server';
+
+import type {
+  HockeyTechGame } from '@/app/models/hockeytech-game';
 import {
   convertHockeyTechGame,
-  HockeyTechGame,
-} from "@/app/models/hockeytech-game";
+} from '@/app/models/hockeytech-game';
+
+import type { LEAGUES } from '../../const';
+import { getBaseUrl, getKeyAndClientCode } from '../../utils';
 
 export async function GET(
   request: Request,
-  { params }: { params: { league: LEAGUES } }
+  { params }: { params: { league: LEAGUES } },
 ) {
   const { league } = await params;
   const url = getBaseUrl(league);
-  url.searchParams.append("feed", "modulekit");
-  url.searchParams.append("view", "scorebar");
-  url.searchParams.append("fmt", "json");
+  url.searchParams.append('feed', 'modulekit');
+  url.searchParams.append('view', 'scorebar');
+  url.searchParams.append('fmt', 'json');
 
   const response = await fetch(url.toString());
   const data = await response.json();
 
   const games = data.SiteKit.Scorebar.map((game: HockeyTechGame) =>
-    convertHockeyTechGame(game, league)
+    convertHockeyTechGame(game, league),
   );
 
   return NextResponse.json(games);

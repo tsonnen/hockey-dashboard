@@ -1,18 +1,21 @@
-import { NextResponse } from "next/server";
-import { LEAGUES } from "../../../const";
-import { getBaseUrl, getKeyAndClientCode } from "../../../utils";
+import { NextResponse } from 'next/server';
+
+import type {
+  HockeyTechGame } from '@/app/models/hockeytech-game';
 import {
   convertHockeyTechGame,
-  HockeyTechGame,
-} from "@/app/models/hockeytech-game";
+} from '@/app/models/hockeytech-game';
 
-const EST_IANA_ZONE_ID = "America/New_York";
-export const DATE_LINK_FORMAT = "yyyy-MM-dd";
-export const DATE_DISPLAY_FORMAT = "dd MMMM yyyy";
+import type { LEAGUES } from '../../../const';
+import { getBaseUrl, getKeyAndClientCode } from '../../../utils';
+
+const EST_IANA_ZONE_ID = 'America/New_York';
+export const DATE_LINK_FORMAT = 'yyyy-MM-dd';
+export const DATE_DISPLAY_FORMAT = 'dd MMMM yyyy';
 
 function calculateDaysByDate(date: Date) {
   const differenceInDays = Math.ceil(
-    (Date.now().valueOf() - date.valueOf()) / 86400000
+    (Date.now().valueOf() - date.valueOf()) / 86400000,
   );
 
   if (differenceInDays < 0) {
@@ -24,25 +27,25 @@ function calculateDaysByDate(date: Date) {
 
 export async function GET(
   request: Request,
-  { params }: { params: { league: LEAGUES; date: string } }
+  { params }: { params: { league: LEAGUES; date: string } },
 ) {
   const { league, date } = await params;
   const url = getBaseUrl(league);
   const { daysAhead, daysBack } = calculateDaysByDate(
-    new Date(Date.parse(date))
+    new Date(Date.parse(date)),
   );
 
-  url.searchParams.append("numberofdaysahead", `${daysAhead}`);
-  url.searchParams.append("numberofdaysback", `${daysBack}`);
-  url.searchParams.append("feed", "modulekit");
-  url.searchParams.append("view", "scorebar");
-  url.searchParams.append("fmt", "json");
+  url.searchParams.append('numberofdaysahead', `${daysAhead}`);
+  url.searchParams.append('numberofdaysback', `${daysBack}`);
+  url.searchParams.append('feed', 'modulekit');
+  url.searchParams.append('view', 'scorebar');
+  url.searchParams.append('fmt', 'json');
 
   const response = await fetch(url.toString());
   const data = await response.json();
 
   const games = data.SiteKit.Scorebar.map((game: HockeyTechGame) =>
-    convertHockeyTechGame(game, league)
+    convertHockeyTechGame(game, league),
   );
 
   return NextResponse.json(games);

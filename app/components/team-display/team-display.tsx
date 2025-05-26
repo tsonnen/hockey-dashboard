@@ -1,5 +1,6 @@
-import { Team } from "@/app/models/team";
-import styles from "./team-display.module.css";
+import type { Team } from '@/app/models/team';
+
+import styles from './team-display.module.css';
 
 interface TeamDisplayProps {
   team: Team;
@@ -10,7 +11,7 @@ export function TeamDisplay({ team, gameStarted }: TeamDisplayProps) {
   return (
     <div className={styles.team}>
       <div className={styles.logo}>
-        <img src={team.logo} alt={`${team.placeName.default} logo`} />
+        <img alt={`${team.placeName.default} logo`} src={team.logo} />
       </div>
       <div className={styles.teamInfo}>
         {gameStarted && (

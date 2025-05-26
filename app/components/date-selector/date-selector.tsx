@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import styles from './date-selector.module.css';
 
 interface DateSelectorProps {
@@ -26,26 +27,26 @@ export function DateSelector({ selectedDate, onDateChange }: DateSelectorProps) 
 
   return (
     <div className={styles.dateSelector}>
-      <button 
-        onClick={handlePreviousDay}
-        className={styles.navButton}
+      <button
         aria-label="Previous day"
+        className={styles.navButton}
+        onClick={handlePreviousDay}
       >
         ←
       </button>
       <input
+        className={styles.dateInput}
         type="date"
         value={selectedDate.toISOString().split('T')[0]}
         onChange={handleDateChange}
-        className={styles.dateInput}
       />
-      <button 
-        onClick={handleNextDay}
-        className={styles.navButton}
+      <button
         aria-label="Next day"
+        className={styles.navButton}
+        onClick={handleNextDay}
       >
         →
       </button>
     </div>
   );
-} 
+}

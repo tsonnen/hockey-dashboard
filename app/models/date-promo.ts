@@ -15,4 +15,4 @@ interface PromoLocalization {
 export interface DatePromo {
     default: PromoContent;
     country: string;
-} 
+}

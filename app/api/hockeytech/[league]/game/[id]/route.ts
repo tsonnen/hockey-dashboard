@@ -1,21 +1,23 @@
-import { NextResponse } from "next/server";
-import { LEAGUES } from "../../../const";
-import { getBaseUrl, getKeyAndClientCode } from "../../../utils";
+import { NextResponse } from 'next/server';
+
 import {
   convertHockeyTechGame,
   HockeyTechGame,
-} from "@/app/models/hockeytech-game";
+} from '@/app/models/hockeytech-game';
+
+import type { LEAGUES } from '../../../const';
+import { getBaseUrl, getKeyAndClientCode } from '../../../utils';
 
 export async function GET(
   request: Request,
-  { params }: { params: { league: LEAGUES; id: string } }
+  { params }: { params: { league: LEAGUES; id: string } },
 ) {
   const { league, id } = await params;
   const url = getBaseUrl(league);
-  url.searchParams.append("feed", "statviewfeed");
-  url.searchParams.append("view", "gameSummary");
-  url.searchParams.append("game_id", id);
-  url.searchParams.append("fmt", "json");
+  url.searchParams.append('feed', 'statviewfeed');
+  url.searchParams.append('view', 'gameSummary');
+  url.searchParams.append('game_id', id);
+  url.searchParams.append('fmt', 'json');
 
   const response = await fetch(url.toString());
   const responseText = await response.text();

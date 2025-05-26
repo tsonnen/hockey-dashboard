@@ -1,6 +1,7 @@
-import { PeriodGoals } from "@/app/models/game-summary";
-import { Game } from "@/app/models/game";
-import { GoalDisplay } from "./goal-display";
+import type { Game } from '@/app/models/game';
+import type { PeriodGoals } from '@/app/models/game-summary';
+
+import { GoalDisplay } from './goal-display';
 
 interface PeriodGoalsDisplayProps {
   period: PeriodGoals;
@@ -14,7 +15,7 @@ export function PeriodGoalsDisplay({ period, game }: PeriodGoalsDisplayProps) {
       <div className="space-y-2">
         {period.goals.length > 0 ? (
           period.goals.map((goal, j) => (
-            <GoalDisplay key={j} goal={goal} game={game} />
+            <GoalDisplay key={j} game={game} goal={goal} />
           ))
         ) : (
           <div className="text-gray-500 italic">
@@ -24,4 +25,4 @@ export function PeriodGoalsDisplay({ period, game }: PeriodGoalsDisplayProps) {
       </div>
     </div>
   );
-} 
+}

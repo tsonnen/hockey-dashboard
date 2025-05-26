@@ -12,13 +12,13 @@ export function TeamCell({ logo, teamName, abbrev }: TeamCellProps) {
       </td>
     );
   }
-  
+
   return (
     <td className="border border-gray-300 p-2">
       <div className="flex items-center space-x-4">
-        <img src={logo} alt={`${teamName} logo`} className="h-10" />
+        <img alt={`${teamName} logo`} className="h-10" src={logo} />
         {abbrev}
       </div>
     </td>
   );
-} 
+}

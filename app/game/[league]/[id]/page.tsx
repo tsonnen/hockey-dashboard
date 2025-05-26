@@ -1,19 +1,21 @@
-"use client";
+'use client';
 
-import { GameSummary, PeriodGoals } from "@/app/models/game-summary";
-import { GameMatchup } from "@/app/models/game-matchup";
-import { useState, useEffect } from "react";
-import { PeriodScoringSummary } from "@/app/components/period-scoring-summary";
-import { PeriodGoalsDisplay } from "@/app/components/period-goals-display";
-import { GameCard } from "@/app/components/game-card";
-import { Game } from "@/app/models/game";
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+
+import { GameCard } from '@/app/components/game-card';
+import { GoalDisplay } from '@/app/components/goal-display';
+import { Loader } from '@/app/components/loader/loader';
+import { PeriodGoalsDisplay } from '@/app/components/period-goals-display';
+import { PeriodScoringSummary } from '@/app/components/period-scoring-summary';
+import { Game } from '@/app/models/game';
+import { GameMatchup } from '@/app/models/game-matchup';
+import { GameSummary, PeriodGoals } from '@/app/models/game-summary';
+import type {
+  HockeyTechGameDetails } from '@/app/models/hockeytech-game-details';
 import {
-  HockeyTechGameDetails,
   convertHockeyTechGameDetails,
-} from "@/app/models/hockeytech-game-details";
-import { Loader } from "@/app/components/loader/loader";
-import { useRouter } from "next/navigation";
-import { GoalDisplay } from "@/app/components/goal-display";
+} from '@/app/models/hockeytech-game-details';
 
 interface GamePageProps {
   params: {
@@ -33,19 +35,19 @@ export default function GamePage({ params }: GamePageProps) {
         const { league, id } = await params;
 
         switch (league) {
-          case "nhl":
+          case 'nhl':
             setGame(
-              new Game(await (await fetch(`/api/nhl/game/${id}`)).json())
+              new Game(await (await fetch(`/api/nhl/game/${id}`)).json()),
             );
             break;
-          case "ohl":
-          case "whl":
-          case "qmjhl":
-          case "ahl":
-          case "echl":
-          case "pwhl":
+          case 'ohl':
+          case 'whl':
+          case 'qmjhl':
+          case 'ahl':
+          case 'echl':
+          case 'pwhl':
             const response = await fetch(
-              `/api/hockeytech/${league}/game/${id}`
+              `/api/hockeytech/${league}/game/${id}`,
             );
             const data: HockeyTechGameDetails = await response.json();
             setGame(new Game(convertHockeyTechGameDetails(data, league)));
@@ -54,7 +56,7 @@ export default function GamePage({ params }: GamePageProps) {
             break;
         }
       } catch (error) {
-        console.error("Error fetching game data:", error);
+        console.error('Error fetching game data:', error);
       } finally {
         setLoading(false);
       }
@@ -81,21 +83,23 @@ export default function GamePage({ params }: GamePageProps) {
   return (
     <div className="p-4">
       <button
-        onClick={() => router.back()}
         className="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+        onClick={() => {
+          router.back();
+        }}
       >
         <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
           className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.5}
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
           <path
+            d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
           />
         </svg>
         Back
@@ -111,7 +115,7 @@ export default function GamePage({ params }: GamePageProps) {
             <h2 className="text-xl font-semibold mb-2">Game Summary</h2>
             <div className="space-y-4">
               {game.summary.scoring.map((period, i) => (
-                <PeriodGoalsDisplay key={i} period={period} game={game} />
+                <PeriodGoalsDisplay key={i} game={game} period={period} />
               ))}
             </div>
           </div>

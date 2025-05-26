@@ -4,4 +4,4 @@ export interface TvBroadcast {
     countryCode: string;
     network: string;
     sequenceNumber: number;
-} 
+}

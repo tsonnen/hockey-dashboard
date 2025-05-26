@@ -1,4 +1,4 @@
-import { PeriodDescriptor } from "./period-descriptor";
+import type { PeriodDescriptor } from './period-descriptor';
 
 export class Play {
   eventId: number;
@@ -6,7 +6,7 @@ export class Play {
   timeInPeriod: string;
   timeRemaining: string;
   situationCode: string;
-  homeTeamDefendingSide: "left" | "right";
+  homeTeamDefendingSide: 'left' | 'right';
   typeCode: number;
   typeDescKey: string;
   sortOrder: number;
@@ -15,15 +15,15 @@ export class Play {
     this.eventId = data.eventId ?? 0;
     this.periodDescriptor = data.periodDescriptor ?? {
       number: 0,
-      periodType: "",
+      periodType: '',
       maxRegulationPeriods: 0,
     };
-    this.timeInPeriod = data.timeInPeriod ?? "";
-    this.timeRemaining = data.timeRemaining ?? "";
-    this.situationCode = data.situationCode ?? "";
-    this.homeTeamDefendingSide = data.homeTeamDefendingSide ?? "left";
+    this.timeInPeriod = data.timeInPeriod ?? '';
+    this.timeRemaining = data.timeRemaining ?? '';
+    this.situationCode = data.situationCode ?? '';
+    this.homeTeamDefendingSide = data.homeTeamDefendingSide ?? 'left';
     this.typeCode = data.typeCode ?? 0;
-    this.typeDescKey = data.typeDescKey ?? "";
+    this.typeDescKey = data.typeDescKey ?? '';
     this.sortOrder = data.sortOrder ?? 0;
   }
 }

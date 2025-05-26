@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
 async function getPlayByPlay(gameId: string) {
   const response = await fetch(
-    `https://api-web.nhle.com/v1/gamecenter/${gameId}/play-by-play`
+    `https://api-web.nhle.com/v1/gamecenter/${gameId}/play-by-play`,
   );
   const game = await response.json();
   return game;
@@ -10,7 +10,7 @@ async function getPlayByPlay(gameId: string) {
 
 async function getSummary(gameId: string) {
   const response = await fetch(
-    `https://api-web.nhle.com/v1/gamecenter/${gameId}/landing`
+    `https://api-web.nhle.com/v1/gamecenter/${gameId}/landing`,
   );
   const { summary, matchup } = await response.json();
   return { summary, matchup };
@@ -18,7 +18,7 @@ async function getSummary(gameId: string) {
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const { id } = await params;
   const [gameSummary, gamePlayByPlay] = await Promise.all([

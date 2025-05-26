@@ -1,13 +1,14 @@
-import { Team } from "@/app/models/team";
-import { Goal } from "@/app/models/game-summary";
-import { TeamCell } from "./team-cell";
+import type { Goal } from '@/app/models/game-summary';
+import type { Team } from '@/app/models/team';
+
+import { TeamCell } from './team-cell';
 
 interface TeamScoringRowProps {
   team: Team;
-  periods: Array<{
+  periods: {
     homeGoals: Goal[];
     awayGoals: Goal[];
-  }>;
+  }[];
   isHome: boolean;
 }
 
@@ -15,9 +16,9 @@ export function TeamScoringRow({ team, periods, isHome }: TeamScoringRowProps) {
   return (
     <tr>
       <TeamCell
+        abbrev={team.abbrev}
         logo={team.logo}
         teamName={team.placeName.default}
-        abbrev={team.abbrev}
       />
       {periods.map((period, i) => (
         <td key={i} className="border border-gray-300 p-2 text-center">
@@ -29,4 +30,4 @@ export function TeamScoringRow({ team, periods, isHome }: TeamScoringRowProps) {
       </td>
     </tr>
   );
-} 
+}
