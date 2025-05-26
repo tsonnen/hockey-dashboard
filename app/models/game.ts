@@ -1,6 +1,7 @@
 import startTime from '@/app/utils/start-time';
 
 import type { GameMatchup } from './game-matchup';
+import { GameState } from './game-state';
 import { GameSummary } from './game-summary';
 import type { LocalizedName } from './localized-name';
 import type { PeriodDescriptor } from './period-descriptor';
@@ -32,14 +33,6 @@ interface VenueLocation {
   default: string;
 }
 
-export enum GameState {
-  FUTURE = 'FUT',
-  CRITICAL = 'CRIT',
-  LIVE = 'LIVE',
-  FINAL = 'FINAL',
-  OFFICIAL = 'OFF',
-}
-
 export class Game {
   id: number;
   season: number;
@@ -51,7 +44,7 @@ export class Game {
   easternUTCOffset: string;
   venueUTCOffset: string;
   venueTimezone: string;
-  gameState: string;
+  gameState: GameState;
   gameScheduleState: string;
   tvBroadcasts: TvBroadcast[];
   awayTeam: Team;
@@ -97,7 +90,7 @@ export class Game {
     this.easternUTCOffset = data.easternUTCOffset ?? '';
     this.venueUTCOffset = data.venueUTCOffset ?? '';
     this.venueTimezone = data.venueTimezone ?? '';
-    this.gameState = data.gameState ?? '';
+    this.gameState = data.gameState ?? GameState.FUTURE;
     this.gameScheduleState = data.gameScheduleState ?? '';
     this.tvBroadcasts = data.tvBroadcasts ?? [];
     this.awayTeam = data.awayTeam ? new Team(data.awayTeam) : new Team({});

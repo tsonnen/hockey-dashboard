@@ -29,15 +29,15 @@ async function fetchGamesForDate(endpoint: LeagueEndpoint, dateStr: string): Pro
     if (!response.ok) {
       throw new Error(`Failed to fetch ${endpoint.name} games: ${response.statusText}`);
     }
-    const games = await response.json();
-    return games.filter((game: Game) => game.gameDate === dateStr);
+    const games = (await response.json()) as Partial<Game>[];
+    return games.filter((game): game is Game => game.gameDate === dateStr);
   } catch (error) {
     console.error(`Error fetching ${endpoint.name} games:`, error);
     return [];
   }
 }
 
-export default function Home() {
+export default function Home(): React.JSX.Element {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [games, setGames] = useState<Game[]>([]);
@@ -56,14 +56,14 @@ export default function Home() {
   });
 
   // Update URL when date changes
-  const handleDateChange = (newDate: Date) => {
+  const handleDateChange = (newDate: Date): void => {
     const dateStr = newDate.toISOString().slice(0, 10);
     setSelectedDate(dateStr);
     router.push(`/?date=${dateStr}`, { scroll: false });
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       setIsLoading(true);
       setError(null);
       setGames([]); // Clear existing games when date changes
@@ -86,7 +86,7 @@ export default function Home() {
       }
     };
 
-    fetchData();
+    void fetchData();
   }, [selectedDateString]);
 
   return (
@@ -110,7 +110,7 @@ export default function Home() {
           </>
         ) : games.length > 0 ? (
           games.map((game) => (
-            <GameCard key={`${game.id}-${game.startTimeUTC}`} game={new Game(game)} />
+            <GameCard key={`${game.id.toString()}-${game.startTimeUTC}`} game={new Game(game)} />
           ))
         ) : (
           <div className="no-games">No games scheduled for this date</div>

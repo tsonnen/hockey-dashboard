@@ -1,4 +1,6 @@
-import { Game, GameState } from './game';
+import { Game } from './game';
+import { GameState } from './game-state';
+import { Team } from './team';
 
 export interface HockeyTechGame {
   ID: string;
@@ -40,10 +42,10 @@ function mapGameStatusToGameState(gameStatus: string): GameState {
   }
 }
 
-export function convertHockeyTechGame(data: HockeyTechGame, league: string) {
+export function convertHockeyTechGame(data: HockeyTechGame, league: string): Game {
   const gameState = mapGameStatusToGameState(data.GameStatus);
 
-  return {
+  return new Game({
     id: parseInt(data.ID),
     season: parseInt(data.SeasonID),
     gameType: 2, // Regular season
@@ -52,22 +54,30 @@ export function convertHockeyTechGame(data: HockeyTechGame, league: string) {
     neutralSite: false,
     startTimeUTC: data.GameDateISO8601,
     gameState,
-    homeTeam: {
+    homeTeam: new Team({
       id: parseInt(data.HomeID),
       placeName: { default: data.HomeCity },
       commonName: { default: data.HomeNickname },
       name: { default: data.HomeLongName },
       logo: data.HomeLogo,
       score: parseInt(data.HomeGoals) || 0,
-    },
-    awayTeam: {
+      abbrev: data.HomeNickname.substring(0, 3).toUpperCase(),
+      awaySplitSquad: false,
+      radioLink: '',
+      odds: [],
+    }),
+    awayTeam: new Team({
       id: parseInt(data.VisitorID),
       placeName: { default: data.VisitorCity },
       commonName: { default: data.VisitorNickname },
       name: { default: data.VisitorLongName },
       logo: data.VisitorLogo,
       score: parseInt(data.VisitorGoals) || 0,
-    },
+      abbrev: data.VisitorNickname.substring(0, 3).toUpperCase(),
+      awaySplitSquad: false,
+      radioLink: '',
+      odds: [],
+    }),
     period: parseInt(data.Period) || undefined,
     ticketsLink: data.TicketUrl,
     clock: data.GameClock
@@ -79,5 +89,5 @@ export function convertHockeyTechGame(data: HockeyTechGame, league: string) {
       }
       : undefined,
     league,
-  };
+  });
 }

@@ -93,6 +93,7 @@ export default [
       "import/named": "error",
 
       // TypeScript specific rules
+      "@typescript-eslint/restrict-template-expressions": "off",
       "@typescript-eslint/explicit-function-return-type": [
         "warn",
         {

@@ -1,6 +1,4 @@
 import type { LocalizedName } from './localized-name';
-import { Team } from './team';
-import { TvBroadcast } from './tv-broadcast';
 
 interface PlayerStats {
   playerId: number;
