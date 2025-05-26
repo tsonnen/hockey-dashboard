@@ -1,5 +1,5 @@
-import { Game } from "../models/game";
-import ordinal_suffix_of from "../utils/ordinal-suffix-of";
+import { Game } from "@/app/models/game";
+import ordinal_suffix_of from "@/app/utils/ordinal-suffix-of";
 
 interface PeriodScoringSummaryProps {
   game: Game;

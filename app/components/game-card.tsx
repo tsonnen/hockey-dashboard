@@ -1,5 +1,5 @@
-import { Game } from "../models/game";
-import { TeamDisplay } from "./team-display/team-display";
+import { Game } from "@/app/models/game";
+import { TeamDisplay } from "@/app/components/team-display/team-display";
 import styles from "./game-card.module.css";
 
 interface GameCardProps {

@@ -2,7 +2,7 @@ import { Team } from "./team";
 import { LocalizedName } from "./localized-name";
 import { TvBroadcast } from "./tv-broadcast";
 import { PeriodDescriptor } from "./period-descriptor";
-import startTime from "../utils/start-time";
+import startTime from "@/app/utils/start-time";
 import { GameSummary } from "./game-summary";
 import { Play } from "./play";
 import { GameMatchup } from "./game-matchup";
