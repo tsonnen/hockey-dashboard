@@ -1,0 +1,54 @@
+.gameCard {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  min-width: 200px;
+  background-color: white;
+  margin-bottom: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .gameCard {
+    background-color: #1a1a1a;
+    border-color: #333;
+  }
+}
+
+.team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.teamInfo {
+  text-align: center;
+}
+
+.teamStats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gameStatus {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 80px;
+  text-align: center;
+} 
