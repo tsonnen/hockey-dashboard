@@ -4,67 +4,136 @@ import { useState, useEffect } from "react";
 import { Game } from "@/app/models/game";
 import { Loader } from "@/app/components/loader/loader";
 import { GameCard } from "@/app/components/game-card/game-card";
+import { DateSelector } from "@/app/components/date-selector/date-selector";
+import { GameSkeleton } from "@/app/components/game-skeleton/game-skeleton";
+import { useSearchParams, useRouter } from "next/navigation";
+
+type LeagueEndpoint = {
+  url: string;
+  name: string;
+};
+
+const LEAGUE_ENDPOINTS: LeagueEndpoint[] = [
+  { url: "/api/nhl/week", name: "NHL" },
+  { url: "/api/hockeytech/ohl/schedule", name: "OHL" },
+  { url: "/api/hockeytech/whl/schedule", name: "WHL" },
+  { url: "/api/hockeytech/qmjhl/schedule", name: "QMJHL" },
+  { url: "/api/hockeytech/pwhl/schedule", name: "PWHL" },
+  { url: "/api/hockeytech/ahl/schedule", name: "AHL" },
+  { url: "/api/hockeytech/echl/schedule", name: "ECHL" },
+];
+
+async function fetchGamesForDate(
+  endpoint: LeagueEndpoint,
+  dateStr: string
+): Promise<Game[]> {
+  try {
+    const response = await fetch(`${endpoint.url}/${dateStr}`);
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch ${endpoint.name} games: ${response.statusText}`
+      );
+    }
+    const games = await response.json();
+    return games.filter((game: Game) => game.gameDate === dateStr);
+  } catch (error) {
+    console.error(`Error fetching ${endpoint.name} games:`, error);
+    return [];
+  }
+}
 
 export default function Home() {
-  const [games, setData] = useState<Array<Game>>([]);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [games, setGames] = useState<Game[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedDateString, setSelectedDate] = useState<string>(() => {
+    // Initialize from URL if present, otherwise use current date
+    const dateParam = searchParams.get("date");
+    if (dateParam) {
+      return dateParam;
+    }
 
-  async function fetchGames(url: string) {
-    const curGames = games;
-    const tzoffset = new Date().getTimezoneOffset() * 60000;
-    const today = new Date(Date.now() - tzoffset).toISOString().slice(0, 10);
-    const response = await fetch(url);
-    const todayGames = (await response.json()).filter(
-      (game: Game) => game.gameDate == today
-    );
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    return date.toISOString().slice(0, 10);
+  });
 
-    curGames.push(...todayGames);
-    curGames.sort(
-      (a, b) =>
-        new Date(a.startTimeUTC).getTime() - new Date(b.startTimeUTC).getTime()
-    );
-
-    return todayGames;
-  }
+  // Update URL when date changes
+  const handleDateChange = (newDate: Date) => {
+    const dateStr = newDate.toISOString().slice(0, 10);
+    setSelectedDate(dateStr);
+    router.push(`/?date=${dateStr}`, { scroll: false });
+  };
 
   useEffect(() => {
     const fetchData = async () => {
-      const allLeagueGames = await Promise.all([
-        fetchGames("/api/nhl/week"),
-        fetchGames("/api/hockeytech/ohl/schedule"),
-        fetchGames("/api/hockeytech/whl/schedule"),
-        fetchGames("/api/hockeytech/qmjhl/schedule"),
-        fetchGames("/api/hockeytech/pwhl/schedule"),
-        fetchGames("/api/hockeytech/ahl/schedule"),
-        fetchGames("/api/hockeytech/echl/schedule"),
-      ]);
+      setIsLoading(true);
+      setError(null);
+      setGames([]); // Clear existing games when date changes
 
-      const allGames: Array<Game> = [];
+      try {
+        const dateStr = selectedDateString;
+        const allLeagueGames = await Promise.all(
+          LEAGUE_ENDPOINTS.map((endpoint) =>
+            fetchGamesForDate(endpoint, dateStr)
+          )
+        );
 
-      allLeagueGames.forEach((league) => allGames.push(...league));
+        const allGames = allLeagueGames
+          .flat()
+          .sort(
+            (a, b) =>
+              new Date(a.startTimeUTC).getTime() -
+              new Date(b.startTimeUTC).getTime()
+          );
 
-      allGames.sort(
-        (a, b) =>
-          new Date(a.startTimeUTC).getTime() -
-          new Date(b.startTimeUTC).getTime()
-      );
-
-      setData(allGames);
+        setGames(allGames);
+      } catch (error) {
+        setError(
+          error instanceof Error
+            ? error.message
+            : "An error occurred while fetching games"
+        );
+      } finally {
+        setIsLoading(false);
+      }
     };
+
     fetchData();
-  }, []);
+  }, [selectedDateString]);
 
   return (
-    <div className="games-container">
-      {games.length > 0 ? (
-        games.map((game: Game) => (
-          <GameCard
-            key={`${game.id} - ${game.startTimeUTC}`}
-            game={new Game(game)}
-          />
-        ))
-      ) : (
-        <Loader />
+    <div>
+      <DateSelector
+        selectedDate={new Date(Date.parse(selectedDateString))}
+        onDateChange={handleDateChange}
+      />
+      {error && (
+        <div className="error-message" role="alert">
+          {error}
+        </div>
       )}
+      <div className="games-container">
+        {isLoading ? (
+          <>
+            <GameSkeleton />
+            <GameSkeleton />
+            <GameSkeleton />
+            <GameSkeleton />
+          </>
+        ) : games.length > 0 ? (
+          games.map((game) => (
+            <GameCard
+              key={`${game.id}-${game.startTimeUTC}`}
+              game={new Game(game)}
+            />
+          ))
+        ) : (
+          <div className="no-games">No games scheduled for this date</div>
+        )}
+      </div>
     </div>
   );
 }
