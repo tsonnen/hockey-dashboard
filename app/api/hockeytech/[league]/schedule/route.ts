@@ -1,28 +1,35 @@
 import { NextResponse } from 'next/server';
 
-import type {
-  HockeyTechGame } from '@/app/models/hockeytech-game';
-import {
-  convertHockeyTechGame,
-} from '@/app/models/hockeytech-game';
+import { convertHockeyTechGame, type HockeyTechGame } from '@/app/models/hockeytech-game';
 
 import type { LEAGUES } from '../../const';
-import { getBaseUrl, getKeyAndClientCode } from '../../utils';
+import { getBaseUrl } from '../../utils';
+
+interface HockeyTechResponse {
+  SiteKit: {
+    Scorebar: HockeyTechGame[];
+  };
+}
 
 export async function GET(
   request: Request,
   { params }: { params: { league: LEAGUES } },
 ) {
-  const { league } = await params;
+  const { league } = params;
   const url = getBaseUrl(league);
   url.searchParams.append('feed', 'modulekit');
   url.searchParams.append('view', 'scorebar');
   url.searchParams.append('fmt', 'json');
 
   const response = await fetch(url.toString());
-  const data = await response.json();
+  const data = (await response.json()) as HockeyTechResponse;
 
-  const games = data.SiteKit.Scorebar.map((game: HockeyTechGame) =>
+  // Log the first game's logo URLs to see the pattern
+  const firstGame = data.SiteKit.Scorebar[0];
+  console.log('Home Logo URL:', firstGame.HomeLogo);
+  console.log('Visitor Logo URL:', firstGame.VisitorLogo);
+
+  const games = data.SiteKit.Scorebar.map((game) =>
     convertHockeyTechGame(game, league),
   );
 

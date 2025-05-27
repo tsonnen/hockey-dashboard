@@ -1,57 +1,50 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type JSX } from 'react';
 
 import { GameCard } from '@/app/components/game-card';
-import { GoalDisplay } from '@/app/components/goal-display';
 import { Loader } from '@/app/components/loader/loader';
 import { PeriodGoalsDisplay } from '@/app/components/period-goals-display';
 import { PeriodScoringSummary } from '@/app/components/period-scoring-summary';
 import { Game } from '@/app/models/game';
-import { GameMatchup } from '@/app/models/game-matchup';
-import { GameSummary, PeriodGoals } from '@/app/models/game-summary';
-import type {
-  HockeyTechGameDetails } from '@/app/models/hockeytech-game-details';
-import {
-  convertHockeyTechGameDetails,
-} from '@/app/models/hockeytech-game-details';
+import { convertHockeyTechGameDetails, type HockeyTechGameDetails } from '@/app/models/hockeytech-game-details';
 
 interface GamePageProps {
-  params: {
+  params: Promise<{
     id: string;
     league: string;
-  };
+  }>;
 }
 
-export default function GamePage({ params }: GamePageProps) {
+export default function GamePage({ params }: GamePageProps): JSX.Element {
   const [game, setGame] = useState<Game>();
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       try {
         const { league, id } = await params;
 
         switch (league) {
-          case 'nhl':
-            setGame(
-              new Game(await (await fetch(`/api/nhl/game/${id}`)).json()),
-            );
+          case 'nhl': {
+            const response = await fetch(`/api/nhl/game/${id}`);
+            const data = await response.json() as Partial<Game>;
+            setGame(new Game(data));
             break;
+          }
           case 'ohl':
           case 'whl':
           case 'qmjhl':
           case 'ahl':
           case 'echl':
-          case 'pwhl':
-            const response = await fetch(
-              `/api/hockeytech/${league}/game/${id}`,
-            );
-            const data: HockeyTechGameDetails = await response.json();
+          case 'pwhl': {
+            const response = await fetch(`/api/hockeytech/${league}/game/${id}`);
+            const data = await response.json() as HockeyTechGameDetails;
             setGame(new Game(convertHockeyTechGameDetails(data, league)));
             break;
+          }
           default:
             break;
         }
@@ -61,8 +54,9 @@ export default function GamePage({ params }: GamePageProps) {
         setLoading(false);
       }
     };
-    fetchData();
-  }, []);
+
+    void fetchData();
+  }, [params]);
 
   if (loading) {
     return (
