@@ -3,12 +3,14 @@
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, type JSX } from 'react';
 
-import { GameCard } from '@/app/components/game-card';
 import { Loader } from '@/app/components/loader/loader';
 import { PeriodGoalsDisplay } from '@/app/components/period-goals-display';
 import { PeriodScoringSummary } from '@/app/components/period-scoring-summary';
 import { Game } from '@/app/models/game';
-import { convertHockeyTechGameDetails, type HockeyTechGameDetails } from '@/app/models/hockeytech-game-details';
+import {
+  convertHockeyTechGameDetails,
+  type HockeyTechGameDetails,
+} from '@/app/models/hockeytech-game-details';
 
 interface GamePageProps {
   params: Promise<{
@@ -30,7 +32,7 @@ export default function GamePage({ params }: GamePageProps): JSX.Element {
         switch (league) {
           case 'nhl': {
             const response = await fetch(`/api/nhl/game/${id}`);
-            const data = await response.json() as Partial<Game>;
+            const data = (await response.json()) as Partial<Game>;
             setGame(new Game(data));
             break;
           }
@@ -41,7 +43,7 @@ export default function GamePage({ params }: GamePageProps): JSX.Element {
           case 'echl':
           case 'pwhl': {
             const response = await fetch(`/api/hockeytech/${league}/game/${id}`);
-            const data = await response.json() as HockeyTechGameDetails;
+            const data = (await response.json()) as HockeyTechGameDetails;
             setGame(new Game(convertHockeyTechGameDetails(data, league)));
             break;
           }
@@ -101,7 +103,7 @@ export default function GamePage({ params }: GamePageProps): JSX.Element {
 
       {game.summary && (
         <div className="mb-4">
-          <GameCard game={game} />
+          {/* todo: Show game score and SOG here */}
           <div className="flex items-center justify-center">
             <PeriodScoringSummary game={game} />
           </div>

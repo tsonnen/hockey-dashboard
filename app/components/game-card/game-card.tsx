@@ -1,4 +1,5 @@
 import { useRouter } from 'next/navigation';
+import type { JSX } from 'react';
 
 import { TeamDisplay } from '@/app/components/team-display/team-display';
 import type { Game } from '@/app/models/game';
@@ -9,10 +10,10 @@ interface GameCardProps {
   game: Game;
 }
 
-export function GameCard({ game }: GameCardProps) {
+export function GameCard({ game }: GameCardProps): JSX.Element {
   const router = useRouter();
 
-  const handleClick = () => {
+  const handleClick = (): void => {
     router.push(`/game/${game.league}/${game.id}`);
   };
 

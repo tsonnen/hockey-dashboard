@@ -1,3 +1,5 @@
+import type { JSX } from 'react';
+
 import type { Game } from '@/app/models/game';
 
 import { TeamScoringRow } from './team-scoring-row';
@@ -6,7 +8,7 @@ interface PeriodScoringSummaryProps {
   game: Game;
 }
 
-export function PeriodScoringSummary({ game }: PeriodScoringSummaryProps) {
+export function PeriodScoringSummary({ game }: PeriodScoringSummaryProps): JSX.Element | null {
   if (!game.summary?.scoring) {
     return null;
   }

@@ -1,3 +1,5 @@
+import type { JSX } from 'react';
+
 import type { Game } from '@/app/models/game';
 import type { PeriodGoals } from '@/app/models/game-summary';
 
@@ -8,7 +10,7 @@ interface PeriodGoalsDisplayProps {
   game: Game;
 }
 
-export function PeriodGoalsDisplay({ period, game }: PeriodGoalsDisplayProps) {
+export function PeriodGoalsDisplay({ period, game }: PeriodGoalsDisplayProps): JSX.Element {
   return (
     <div className="border rounded p-4">
       <h3 className="font-medium mb-2">{period.periodCommonName}</h3>

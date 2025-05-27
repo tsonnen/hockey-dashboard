@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { JSX } from 'react';
 
 import type { Team } from '@/app/models/team';
@@ -13,7 +14,13 @@ export function TeamDisplay({ team, gameStarted }: TeamDisplayProps): JSX.Elemen
   return (
     <div className={styles.team}>
       <div className={styles.logo}>
-        <img alt={`${team.placeName.default} logo`} src={team.logo} />
+        <Image
+          alt={`${team.placeName.default} logo`}
+          height={60}
+          quality={100}
+          src={team.logo ?? ''}
+          width={60}
+        />
       </div>
       <div className={styles.teamInfo}>
         {gameStarted && (
