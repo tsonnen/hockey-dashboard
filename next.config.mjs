@@ -4,6 +4,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'assets.nhle.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'lscluster.hockeytech.com',
         pathname: '/feed/**',
       },

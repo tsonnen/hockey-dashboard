@@ -1,44 +1,67 @@
 import { NextResponse } from 'next/server';
 
-import type { Game } from '@/app/models/game';
-import type { GameDay } from '@/app/models/game-day';
+import type { DatePromo } from '@/app/models/date-promo';
+import { Game } from '@/app/models/game';
+import { GameDay } from '@/app/models/game-day';
 
-async function getSchedule(date: string) {
-  const response = await fetch(`https://api-web.nhle.com/v1/schedule/${date}`);
-  const { gameWeek } = await response.json();
-  return gameWeek;
+interface NHLScheduleResponse {
+  gameWeek: {
+    date: string;
+    dayAbbrev: string;
+    numberOfGames: number;
+    datePromo: DatePromo[];
+    games: Game[];
+  }[];
 }
 
-async function getScores(date: string) {
+interface NHLScoreResponse {
+  games: Game[];
+}
+
+async function getSchedule(date: string): Promise<GameDay[]> {
+  const response = await fetch(`https://api-web.nhle.com/v1/schedule/${date}`);
+  const data = (await response.json()) as NHLScheduleResponse;
+  return data.gameWeek.map(
+    (day) =>
+      new GameDay({
+        date: day.date,
+        dayAbbrev: day.dayAbbrev,
+        numberOfGames: day.numberOfGames,
+        datePromo: day.datePromo,
+        games: day.games.map((game) => new Game(game)),
+      }),
+  );
+}
+
+async function getScores(date: string): Promise<Game[]> {
   const response = await fetch(`https://api-web.nhle.com/v1/score/${date}`);
-  const { games } = await response.json();
-  return games;
+  const data = (await response.json()) as NHLScoreResponse;
+  return data.games.map((game) => new Game(game));
 }
 
 export async function GET(
   request: Request,
   { params }: { params: { date: string } },
-) {
-  const { date } = await params;
-  const [gameWeek, gameScores] = await Promise.all([
-    getSchedule(date),
-    getScores(date),
-  ]);
+): Promise<NextResponse<Partial<Game>[]>> {
+  const { date } = params;
+  const [gameWeek, gameScores] = await Promise.all([getSchedule(date), getScores(date)]);
 
-  const allGames: Game[] = [];
+  const allGames: Partial<Game>[] = [];
 
   gameWeek.forEach((gameDay: GameDay) => {
-    const games = gameDay.games.map((game: Game) => {
-      const gameScore = gameScores.find(
-        (gameScore: Game) => gameScore.id === game.id,
-      );
+    const games = gameDay.games.map((game: Partial<Game>) => {
+      const gameScore = gameScores.find((gameScore: Partial<Game>) => gameScore.id === game.id);
 
       if (gameScore) {
         game = {
+          // eslint-disable-next-line @typescript-eslint/no-misused-spread
           ...game,
+          // eslint-disable-next-line @typescript-eslint/no-misused-spread
           ...gameScore,
         };
+        // eslint-disable-next-line @typescript-eslint/no-misused-spread
         game.homeTeam = { ...game.homeTeam, ...gameScore.homeTeam };
+        // eslint-disable-next-line @typescript-eslint/no-misused-spread
         game.awayTeam = { ...game.awayTeam, ...gameScore.awayTeam };
       }
 
