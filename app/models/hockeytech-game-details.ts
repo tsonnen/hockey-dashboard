@@ -219,7 +219,7 @@ export function convertHockeyTechGameDetails(
   data: HockeyTechGameDetails,
   league: string,
 ): Partial<Game> {
-  const periodGoals = data.periods.map((period) => ({
+  const periodStats = data.periods.map((period) => ({
     periodDescriptor: {
       number: parseInt(period.info.id),
       periodType: period.info.longName,
@@ -251,7 +251,19 @@ export function convertHockeyTechGameDetails(
       homeTeamDefendingSide: '',
       isHome: goal.team.id === data.homeTeam.info.id,
     })),
+    homeShots: parseInt(period.stats.homeShots),
+    awayShots: parseInt(period.stats.visitingShots),
   }));
+
+  const { awaySOG, homeSOG } = periodStats.reduce(
+    (sog, period) => {
+      sog.awaySOG += period.awayShots;
+      sog.homeSOG += period.homeShots;
+
+      return sog;
+    },
+    { awaySOG: 0, homeSOG: 0 },
+  );
 
   return {
     id: data.details.id,
@@ -273,6 +285,7 @@ export function convertHockeyTechGameDetails(
       awaySplitSquad: false,
       radioLink: '',
       odds: [],
+      sog: homeSOG,
     }),
     awayTeam: new Team({
       id: data.visitingTeam.info.id,
@@ -285,11 +298,12 @@ export function convertHockeyTechGameDetails(
       awaySplitSquad: false,
       radioLink: '',
       odds: [],
+      sog: awaySOG,
     }),
     ticketsLink: data.details.ticketsUrl,
     league,
     summary: new GameSummary({
-      scoring: periodGoals,
+      scoring: periodStats,
       shootout: [],
       threeStars: data.mostValuablePlayers.map((mvp, index) => ({
         playerId: mvp.player.info.id,

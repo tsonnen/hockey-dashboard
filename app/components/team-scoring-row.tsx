@@ -19,11 +19,11 @@ export function TeamScoringRow({ team, periods, isHome }: TeamScoringRowProps): 
     <tr>
       <TeamCell abbrev={team.abbrev} logo={team.logo} teamName={team.placeName.default} />
       {periods.map((period, i) => (
-        <td key={i} className="border border-gray-300 p-2 text-center">
+        <td key={i} className="border border-gray-300 p-2 text-center w-12">
           {isHome ? period.homeGoals.length : period.awayGoals.length}
         </td>
       ))}
-      <td className="border border-gray-300 p-2 text-center font-bold">{team.score}</td>
+      <td className="border border-gray-300 p-2 text-center font-bold w-12">{team.score}</td>
     </tr>
   );
 }

@@ -53,27 +53,34 @@ interface Penalty {
   descKey: string;
 }
 
-export class PeriodGoals {
+export class PeriodStats {
   periodDescriptor: PeriodDescriptor;
   goals: Goal[];
+  homeShots?: number;
+  awayShots?: number;
 
-  constructor(data: { periodDescriptor: PeriodDescriptor; goals: Goal[] }) {
+  constructor(data: {
+    periodDescriptor: PeriodDescriptor;
+    goals: Goal[];
+    homeShots?: number;
+    awayShots?: number;
+  }) {
     this.goals = data.goals;
     this.periodDescriptor = data.periodDescriptor;
+    this.homeShots = data.homeShots ?? 0;
+    this.awayShots = data.awayShots ?? 0;
   }
 
-  get awayGoals():Goal[] {
+  get awayGoals(): Goal[] {
     return this.goals.filter((goal) => !goal.isHome);
   }
 
-  get homeGoals():Goal[] {
+  get homeGoals(): Goal[] {
     return this.goals.filter((goal) => goal.isHome);
   }
 
-  get periodCommonName():string {
-    if (
-      this.periodDescriptor.number <= this.periodDescriptor.maxRegulationPeriods
-    ) {
+  get periodCommonName(): string {
+    if (this.periodDescriptor.number <= this.periodDescriptor.maxRegulationPeriods) {
       return ordinal_suffix_of(this.periodDescriptor.number);
     }
 
@@ -106,7 +113,7 @@ interface ShootoutAttempt {
 }
 
 export class GameSummary {
-  scoring: PeriodGoals[];
+  scoring: PeriodStats[];
   shootout: ShootoutAttempt[];
   threeStars: StarPlayer[];
   penalties: PeriodPenalties[];
@@ -117,9 +124,7 @@ export class GameSummary {
     threeStars: StarPlayer[];
     penalties: PeriodPenalties[];
   }) {
-    this.scoring = data.scoring.map(
-      (periodScoring) => new PeriodGoals(periodScoring),
-    );
+    this.scoring = data.scoring.map((periodScoring) => new PeriodStats(periodScoring));
     this.shootout = data.shootout;
     this.threeStars = data.threeStars;
     this.penalties = data.penalties;

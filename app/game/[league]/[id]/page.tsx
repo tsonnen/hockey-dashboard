@@ -1,8 +1,9 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useState, useEffect, type JSX } from 'react';
 
+import { BackButton } from '@/app/components/back-button';
+import { GameScoreDisplay } from '@/app/components/game-score-display/game-score-display';
 import { Loader } from '@/app/components/loader/loader';
 import { PeriodGoalsDisplay } from '@/app/components/period-goals-display';
 import { PeriodScoringSummary } from '@/app/components/period-scoring-summary';
@@ -22,7 +23,6 @@ interface GamePageProps {
 export default function GamePage({ params }: GamePageProps): JSX.Element {
   const [game, setGame] = useState<Game>();
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -78,32 +78,12 @@ export default function GamePage({ params }: GamePageProps): JSX.Element {
 
   return (
     <div className="p-4">
-      <button
-        className="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-        onClick={() => {
-          router.back();
-        }}
-      >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={1.5}
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        Back
-      </button>
+      <BackButton className="mb-4" />
+
+      <GameScoreDisplay game={game} />
 
       {game.summary && (
         <div className="mb-4">
-          {/* todo: Show game score and SOG here */}
           <div className="flex items-center justify-center">
             <PeriodScoringSummary game={game} />
           </div>
