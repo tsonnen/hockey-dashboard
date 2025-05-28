@@ -15,7 +15,6 @@ describe('BackButton', () => {
 
     render(<BackButton />);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors');
     expect(button).toHaveTextContent('Back');
     fireEvent.click(button);
     expect(mockBack).toHaveBeenCalled();

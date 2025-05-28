@@ -12,6 +12,9 @@ describe('DateSelector', () => {
     fireEvent.click(screen.getByLabelText('Next day'));
     expect(mockOnChange).toHaveBeenCalledWith(new Date('2024-03-16'));
 
+    fireEvent.click(screen.getByLabelText('Previous day'));
+    expect(mockOnChange).toHaveBeenCalledWith(new Date('2024-03-14'));
+
     fireEvent.change(screen.getByDisplayValue('2024-03-15'), { target: { value: '2024-03-20' } });
     expect(mockOnChange).toHaveBeenCalledWith(new Date('2024-03-20'));
   });

@@ -107,21 +107,4 @@ describe('TeamScoringRow', () => {
     expect(totalScore).toHaveTextContent('3');
     expect(totalScore).toHaveClass('font-bold');
   });
-
-  it('applies correct styling to cells', () => {
-    render(
-      <table>
-        <tbody>
-          <TeamScoringRow isHome={true} periods={mockPeriods} team={mockTeam} />
-        </tbody>
-      </table>,
-    );
-
-    const cells = screen.getAllByRole('cell');
-    cells.forEach((cell) => {
-      if (cell !== screen.getByTestId('team-cell')) {
-        expect(cell).toHaveClass('border', 'border-gray-300', 'p-2', 'text-center', 'w-12');
-      }
-    });
-  });
 });

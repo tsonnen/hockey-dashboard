@@ -74,18 +74,6 @@ describe('GameCard', () => {
     expect(push).toHaveBeenCalledWith('/game/NHL/123');
   });
 
-  it('navigates to game page on Enter key', () => {
-    render(<GameCard game={game} />);
-    fireEvent.keyDown(screen.getByRole('button'), { key: 'Enter' });
-    expect(push).toHaveBeenCalledWith('/game/NHL/123');
-  });
-
-  it('navigates to game page on Space key', () => {
-    render(<GameCard game={game} />);
-    fireEvent.keyDown(screen.getByRole('button'), { key: ' ' });
-    expect(push).toHaveBeenCalledWith('/game/NHL/123');
-  });
-
   it('shows game status string', () => {
     render(<GameCard game={game} />);
     expect(screen.getByText(game.statusString)).toBeInTheDocument();

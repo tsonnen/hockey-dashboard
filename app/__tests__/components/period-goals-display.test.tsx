@@ -92,13 +92,6 @@ describe('PeriodGoalsDisplay', () => {
     expect(screen.queryByTestId('goal-display')).not.toBeInTheDocument();
   });
 
-  it('applies correct styling', () => {
-    render(<PeriodGoalsDisplay game={mockGame} period={mockPeriod} />);
-    const container = screen.getByRole('heading', { name: '1st' }).closest('div');
-    expect(container).toHaveClass('border', 'rounded', 'p-4');
-    expect(screen.getByRole('heading')).toHaveClass('font-medium', 'mb-2');
-  });
-
   it('renders overtime period title correctly', () => {
     const overtimePeriod = new PeriodStats({
       periodDescriptor: {

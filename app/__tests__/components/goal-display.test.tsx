@@ -116,4 +116,18 @@ describe('GoalDisplay', () => {
     expect(screen.getByAltText('Home Team')).toHaveAttribute('src', '/home-logo.png');
     expect(screen.getByText('(0-1)')).toBeInTheDocument();
   });
-}); 
+
+  it('renders an away team goal', () => {
+    const homeGoal = {
+      ...mockGoal,
+      awayScore: 1,
+      homeScore: 0,
+      isHome: false,
+    };
+
+    render(<GoalDisplay game={mockGame} goal={homeGoal} />);
+
+    expect(screen.getByAltText('Away Team')).toHaveAttribute('src', '/away-logo.png');
+    expect(screen.getByText('(1-0)')).toBeInTheDocument();
+  });
+});
