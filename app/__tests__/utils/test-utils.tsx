@@ -10,4 +10,4 @@ interface GameProviderWrapperProps {
 
 export function GameProviderWrapper({ children, initialGame }: GameProviderWrapperProps): ReactElement {
   return <GameProvider initialGame={initialGame}>{children}</GameProvider>;
-} 
+}

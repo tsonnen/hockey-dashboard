@@ -42,7 +42,7 @@ describe('GameScoreDisplay', () => {
     odds: [],
   });
 
-  const renderWithGame = (game: Game) => {
+  const renderWithGame = (game: Game): ReturnType<typeof render> => {
     return render(
       <GameProviderWrapper initialGame={game}>
         <GameScoreDisplay />

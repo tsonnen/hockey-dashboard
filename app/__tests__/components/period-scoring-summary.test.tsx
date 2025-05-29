@@ -3,8 +3,9 @@ import { render, screen } from '@testing-library/react';
 import { PeriodScoringSummary } from '@/app/components/period-scoring-summary';
 import { Game } from '@/app/models/game';
 import { PeriodStats } from '@/app/models/game-summary';
-import { GameProviderWrapper } from '../utils/test-utils';
 import ordinal_suffix_of from '@/app/utils/ordinal-suffix-of';
+
+import { GameProviderWrapper } from '../utils/test-utils';
 
 describe('PeriodScoringSummary', () => {
   const mockGame = {
@@ -51,7 +52,7 @@ describe('PeriodScoringSummary', () => {
     },
   } as unknown as Game;
 
-  const renderWithGame = (game: Game) => {
+  const renderWithGame = (game: Game): ReturnType<typeof render> => {
     return render(
       <GameProviderWrapper initialGame={game}>
         <PeriodScoringSummary />

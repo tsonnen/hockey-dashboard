@@ -69,7 +69,7 @@ describe('PeriodGoalsDisplay', () => {
     awayShots: 8,
   });
 
-  const renderWithGame = (game: Game, period: PeriodStats) => {
+  const renderWithGame = (game: Game, period: PeriodStats): ReturnType<typeof render> => {
     return render(
       <GameProviderWrapper initialGame={game}>
         <PeriodGoalsDisplay period={period} />

@@ -30,4 +30,4 @@ export function useGame(): GameContextType {
     throw new Error('useGame must be used within a GameProvider');
   }
   return context;
-} 
+}
