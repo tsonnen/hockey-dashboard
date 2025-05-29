@@ -4,6 +4,7 @@ import { PeriodScoringSummary } from '@/app/components/period-scoring-summary';
 import { Game } from '@/app/models/game';
 import { PeriodStats } from '@/app/models/game-summary';
 import { GameProviderWrapper } from '../utils/test-utils';
+import ordinal_suffix_of from '@/app/utils/ordinal-suffix-of';
 
 describe('PeriodScoringSummary', () => {
   const mockGame = {
@@ -72,10 +73,9 @@ describe('PeriodScoringSummary', () => {
 
     // Check if all period headers are present
     expect(screen.getByText('Team')).toBeInTheDocument();
-    expect(screen.getByText('1')).toBeInTheDocument();
-    expect(screen.getByText('2')).toBeInTheDocument();
-    expect(screen.getByText('3')).toBeInTheDocument();
-    expect(screen.getByText('Total')).toBeInTheDocument();
+    for (let i = 1; i <= 3; i++) {
+      expect(screen.getByText(ordinal_suffix_of(i))).toBeInTheDocument();
+    }
 
     // Check if team abbreviations are present
     expect(screen.getByText('HOM')).toBeInTheDocument();
@@ -84,6 +84,7 @@ describe('PeriodScoringSummary', () => {
 
   it('renders empty periods correctly', () => {
     const gameWithOnePeriod = new Game({
+      // eslint-disable-next-line @typescript-eslint/no-misused-spread
       ...mockGame,
       summary: {
         scoring: [
@@ -105,7 +106,9 @@ describe('PeriodScoringSummary', () => {
     renderWithGame(gameWithOnePeriod);
 
     // Should still show all period headers
-    expect(screen.getByText('1')).toBeInTheDocument();
+    for (let i = 1; i <= 3; i++) {
+      expect(screen.getByText(ordinal_suffix_of(i))).toBeInTheDocument();
+    }
     expect(screen.getByText('Total')).toBeInTheDocument();
   });
 });
