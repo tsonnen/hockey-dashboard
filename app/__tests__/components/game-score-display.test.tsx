@@ -4,6 +4,7 @@ import { GameScoreDisplay } from '../../components/game-score-display/game-score
 import { Game } from '../../models/game';
 import { GameState } from '../../models/game-state';
 import { Team } from '../../models/team';
+import { GameProviderWrapper } from '../utils/test-utils';
 
 // Mock next/image
 jest.mock('next/image', () => ({
@@ -41,9 +42,27 @@ describe('GameScoreDisplay', () => {
     odds: [],
   });
 
-  it('it renders', () => {
+  const renderWithGame = (game: Game) => {
+    return render(
+      <GameProviderWrapper initialGame={game}>
+        <GameScoreDisplay />
+      </GameProviderWrapper>,
+    );
+  };
+
+  it('renders loading state when game is not available', () => {
+    render(
+      <GameProviderWrapper>
+        <GameScoreDisplay />
+      </GameProviderWrapper>,
+    );
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+  });
+
+  it('renders game information correctly', () => {
     const game = new Game({ homeTeam, awayTeam });
-    render(<GameScoreDisplay game={game} />);
+    renderWithGame(game);
+
     expect(screen.getByText('Toronto Maple Leafs')).toBeInTheDocument();
     expect(screen.getByText('Montreal Canadiens')).toBeInTheDocument();
     expect(screen.getByAltText('Toronto Maple Leafs logo')).toHaveAttribute(
@@ -56,14 +75,13 @@ describe('GameScoreDisplay', () => {
     );
     expect(screen.getByText('2')).toBeInTheDocument();
     expect(screen.getByText('3')).toBeInTheDocument();
-
     expect(screen.getByText('SOG: 25')).toBeInTheDocument();
     expect(screen.getByText('SOG: 30')).toBeInTheDocument();
   });
 
   it('shows game status string', () => {
     const game = new Game({ homeTeam, awayTeam });
-    render(<GameScoreDisplay game={game} />);
+    renderWithGame(game);
     expect(screen.getByText(game.statusString)).toBeInTheDocument();
   });
 
@@ -80,7 +98,7 @@ describe('GameScoreDisplay', () => {
       gameState: GameState.LIVE,
       period: 2,
     });
-    render(<GameScoreDisplay game={game} />);
+    renderWithGame(game);
     expect(screen.getByText('12:34')).toBeInTheDocument();
     expect(screen.getByText('Period 2')).toBeInTheDocument();
   });

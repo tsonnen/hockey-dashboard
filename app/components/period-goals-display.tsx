@@ -1,16 +1,21 @@
 import type { JSX } from 'react';
 
-import type { Game } from '@/app/models/game';
+import { useGame } from '@/app/contexts/game-context';
 import type { PeriodStats } from '@/app/models/game-summary';
 
 import { GoalDisplay } from './goal-display';
 
 interface PeriodGoalsDisplayProps {
   period: PeriodStats;
-  game: Game;
 }
 
-export function PeriodGoalsDisplay({ period, game }: PeriodGoalsDisplayProps): JSX.Element {
+export function PeriodGoalsDisplay({ period }: PeriodGoalsDisplayProps): JSX.Element {
+  const { game } = useGame();
+
+  if (!game) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="border rounded p-4">
       <h3 className="font-medium mb-2">{period.periodCommonName}</h3>

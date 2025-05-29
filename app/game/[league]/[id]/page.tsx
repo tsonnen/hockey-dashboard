@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect, type JSX } from 'react';
+import { useEffect, type JSX } from 'react';
 
 import { BackButton } from '@/app/components/back-button';
 import { GameScoreDisplay } from '@/app/components/game-score-display/game-score-display';
 import { Loader } from '@/app/components/loader/loader';
 import { PeriodGoalsDisplay } from '@/app/components/period-goals-display';
 import { PeriodScoringSummary } from '@/app/components/period-scoring-summary';
+import { GameProvider, useGame } from '@/app/contexts/game-context';
 import { Game } from '@/app/models/game';
 import {
   convertHockeyTechGameDetails,
@@ -20,18 +21,20 @@ interface GamePageProps {
   }>;
 }
 
-export default function GamePage({ params }: GamePageProps): JSX.Element {
-  const [game, setGame] = useState<Game>();
-  const [loading, setLoading] = useState(true);
+function GamePageContent({ params }: GamePageProps): JSX.Element {
+  const { game, setGame } = useGame();
 
   useEffect(() => {
-    const fetchData = async (): Promise<void> => {
+    async function fetchGame(): Promise<void> {
       try {
         const { league, id } = await params;
 
         switch (league) {
           case 'nhl': {
             const response = await fetch(`/api/nhl/game/${id}`);
+            if (!response.ok) {
+              throw new Error('Failed to fetch game');
+            }
             const data = (await response.json()) as Partial<Game>;
             setGame(new Game(data));
             break;
@@ -43,6 +46,9 @@ export default function GamePage({ params }: GamePageProps): JSX.Element {
           case 'echl':
           case 'pwhl': {
             const response = await fetch(`/api/hockeytech/${league}/game/${id}`);
+            if (!response.ok) {
+              throw new Error('Failed to fetch game');
+            }
             const data = (await response.json()) as HockeyTechGameDetails;
             setGame(new Game(convertHockeyTechGameDetails(data, league)));
             break;
@@ -51,47 +57,33 @@ export default function GamePage({ params }: GamePageProps): JSX.Element {
             break;
         }
       } catch (error) {
-        console.error('Error fetching game data:', error);
-      } finally {
-        setLoading(false);
+        console.error('Error fetching game:', error);
       }
-    };
+    }
 
-    void fetchData();
-  }, [params]);
-
-  if (loading) {
-    return (
-      <div className="p-4">
-        <Loader />
-      </div>
-    );
-  }
+    void fetchGame();
+  }, [params, setGame]);
 
   if (!game) {
-    return (
-      <div className="p-4">
-        <div className="text-center text-gray-600">Game not found</div>
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
     <div className="p-4">
       <BackButton className="mb-4" />
 
-      <GameScoreDisplay game={game} />
+      <GameScoreDisplay />
 
       {game.summary && (
         <div className="mb-4">
           <div className="flex items-center justify-center">
-            <PeriodScoringSummary game={game} />
+            <PeriodScoringSummary />
           </div>
           <div>
             <h2 className="text-xl font-semibold mb-2">Game Summary</h2>
             <div className="space-y-4">
               {game.summary.scoring.map((period, i) => (
-                <PeriodGoalsDisplay key={i} game={game} period={period} />
+                <PeriodGoalsDisplay key={i} period={period} />
               ))}
             </div>
           </div>
@@ -105,5 +97,13 @@ export default function GamePage({ params }: GamePageProps): JSX.Element {
         </div>
       )}
     </div>
+  );
+}
+
+export default function GamePage(props: GamePageProps): JSX.Element {
+  return (
+    <GameProvider>
+      <GamePageContent {...props} />
+    </GameProvider>
   );
 }

@@ -1,15 +1,17 @@
 import Image from 'next/image';
 import { type ReactElement } from 'react';
 
-import { type Game } from '@/app/models/game';
+import { useGame } from '@/app/contexts/game-context';
 
 import styles from './game-score-display.module.css';
 
-interface GameScoreDisplayProps {
-  game: Game;
-}
+export function GameScoreDisplay(): ReactElement {
+  const { game } = useGame();
 
-export function GameScoreDisplay({ game }: GameScoreDisplayProps): ReactElement {
+  if (!game) {
+    return <div>Loading...</div>;
+  }
+
   const { homeTeam, awayTeam } = game;
   const homeScore =
     game.summary?.scoring.reduce(

@@ -41,9 +41,9 @@ async function getScores(date: string): Promise<Game[]> {
 
 export async function GET(
   request: Request,
-  { params }: { params: { date: string } },
+  { params }: { params: Promise<{ date: string }> },
 ): Promise<NextResponse<Partial<Game>[]>> {
-  const { date } = params;
+  const { date } = await params;
   const [gameWeek, gameScores] = await Promise.all([getSchedule(date), getScores(date)]);
 
   const allGames: Partial<Game>[] = [];

@@ -5,6 +5,7 @@ import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 import importPlugin from "eslint-plugin-import";
 import prettierPlugin from "eslint-plugin-prettier";
+import jestPlugin from "eslint-plugin-jest";
 
 export default [
   // Base JavaScript configuration
@@ -14,6 +15,19 @@ export default [
   ...tseslint.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
+
+  // Jest configuration
+  {
+    files: ["**/*.test.{js,jsx,ts,tsx}", "**/jest.setup.js"],
+    plugins: {
+      jest: jestPlugin,
+    },
+    languageOptions: {
+      globals: {
+        jest: "readonly",
+      },
+    },
+  },
 
   // Next.js configuration
   {

@@ -4,6 +4,7 @@ import { PeriodGoalsDisplay } from '../../components/period-goals-display';
 import { Game } from '../../models/game';
 import { type Goal, PeriodStats } from '../../models/game-summary';
 import { Team } from '../../models/team';
+import { GameProviderWrapper } from '../utils/test-utils';
 
 // Mock GoalDisplay since we're testing PeriodGoalsDisplay in isolation
 jest.mock('../../components/goal-display', () => ({
@@ -68,13 +69,30 @@ describe('PeriodGoalsDisplay', () => {
     awayShots: 8,
   });
 
+  const renderWithGame = (game: Game, period: PeriodStats) => {
+    return render(
+      <GameProviderWrapper initialGame={game}>
+        <PeriodGoalsDisplay period={period} />
+      </GameProviderWrapper>,
+    );
+  };
+
+  it('renders loading state when game is not available', () => {
+    render(
+      <GameProviderWrapper>
+        <PeriodGoalsDisplay period={mockPeriod} />
+      </GameProviderWrapper>,
+    );
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+  });
+
   it('renders period title correctly', () => {
-    render(<PeriodGoalsDisplay game={mockGame} period={mockPeriod} />);
+    renderWithGame(mockGame, mockPeriod);
     expect(screen.getByText('1st')).toBeInTheDocument();
   });
 
   it('renders goals when they exist', () => {
-    render(<PeriodGoalsDisplay game={mockGame} period={mockPeriod} />);
+    renderWithGame(mockGame, mockPeriod);
     const goalDisplay = screen.getByTestId('goal-display');
     expect(goalDisplay).toBeInTheDocument();
     expect(goalDisplay).toHaveTextContent('10:00');
@@ -87,7 +105,7 @@ describe('PeriodGoalsDisplay', () => {
       homeShots: mockPeriod.homeShots,
       awayShots: mockPeriod.awayShots,
     });
-    render(<PeriodGoalsDisplay game={mockGame} period={periodWithoutGoals} />);
+    renderWithGame(mockGame, periodWithoutGoals);
     expect(screen.getByText('No goals scored in this period')).toBeInTheDocument();
     expect(screen.queryByTestId('goal-display')).not.toBeInTheDocument();
   });
@@ -102,7 +120,7 @@ describe('PeriodGoalsDisplay', () => {
       homeShots: mockPeriod.homeShots,
       awayShots: mockPeriod.awayShots,
     });
-    render(<PeriodGoalsDisplay game={mockGame} period={overtimePeriod} />);
+    renderWithGame(mockGame, overtimePeriod);
     expect(screen.getByText('1st OT')).toBeInTheDocument();
   });
 });

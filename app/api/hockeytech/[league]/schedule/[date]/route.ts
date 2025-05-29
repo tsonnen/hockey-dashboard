@@ -20,9 +20,9 @@ function calculateDaysByDate(date: Date): { daysBack: number; daysAhead: number 
 
 export async function GET(
   request: Request,
-  { params }: { params: { league: LEAGUES; date: string } },
+  { params }: { params: Promise<{ league: LEAGUES; date: string }> },
 ): Promise<NextResponse<Game[]>> {
-  const { league, date } = params;
+  const { league, date } = await params;
   const baseUrl = getBaseUrl(league);
   const { daysAhead, daysBack } = calculateDaysByDate(new Date(Date.parse(date)));
 

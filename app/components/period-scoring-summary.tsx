@@ -1,21 +1,19 @@
 import type { JSX } from 'react';
 
-import type { Game } from '@/app/models/game';
+import { useGame } from '@/app/contexts/game-context';
 
 import { PeriodStats } from '../models/game-summary';
 
 import { TeamScoringRow } from './team-scoring-row';
 
-interface PeriodScoringSummaryProps {
-  game: Game;
-}
+export function PeriodScoringSummary(): JSX.Element {
+  const { game } = useGame();
 
-export function PeriodScoringSummary({ game }: PeriodScoringSummaryProps): JSX.Element | null {
-  if (!game.summary?.scoring) {
-    return null;
+  if (!game) {
+    return <div>Loading...</div>;
   }
 
-  const periodScoringSummary = game.summary.scoring;
+  const periodScoringSummary = game.summary?.scoring ?? [];
 
   // Ensure the 3 regulation periods always show
   while (periodScoringSummary.length < 3) {
@@ -32,16 +30,16 @@ export function PeriodScoringSummary({ game }: PeriodScoringSummaryProps): JSX.E
   }
 
   return (
-    <table className="border-collapse">
+    <table className="border-collapse rounded-lg">
       <thead>
         <tr>
-          <th className="border border-gray-300 p-2"></th>
-          {periodScoringSummary.map((period, i) => (
-            <th key={i} className="border border-gray-300 p-2">
+          <th className="px-4 py-2 text-left">Team</th>
+          {periodScoringSummary.map((period) => (
+            <th key={period.periodDescriptor.number} className="px-4 py-2 text-center">
               {period.periodCommonName}
             </th>
           ))}
-          <th className="border border-gray-300 p-2">T</th>
+          <th className="px-4 py-2 text-center">Total</th>
         </tr>
       </thead>
       <tbody>

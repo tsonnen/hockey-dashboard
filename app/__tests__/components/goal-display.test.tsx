@@ -7,6 +7,7 @@ import type { Goal, Player } from '@/app/models/game-summary';
 // Mock next/image since it's not available in test environment
 jest.mock('next/image', () => ({
   __esModule: true,
+  // eslint-disable-next-line @next/next/no-img-element, @typescript-eslint/no-explicit-any
   default: (props: any) => <img {...props} />,
 }));
 
