@@ -1,63 +1,50 @@
-import { Game } from "@/app/models/game";
-import ordinal_suffix_of from "@/app/utils/ordinal-suffix-of";
+import type { JSX } from 'react';
 
-interface PeriodScoringSummaryProps {
-  game: Game;
-}
+import { useGame } from '@/app/contexts/game-context';
 
-export function PeriodScoringSummary({ game }: PeriodScoringSummaryProps) {
-  if (!game.summary?.scoring) {
-    return null;
+import { PeriodStats } from '../models/game-summary';
+
+import { TeamScoringRow } from './team-scoring-row';
+
+export function PeriodScoringSummary(): JSX.Element {
+  const { game } = useGame();
+
+  if (!game) {
+    return <div>Loading...</div>;
+  }
+
+  const periodScoringSummary = game.summary?.scoring ?? [];
+
+  // Ensure the 3 regulation periods always show
+  while (periodScoringSummary.length < 3) {
+    periodScoringSummary.push(
+      new PeriodStats({
+        periodDescriptor: {
+          number: periodScoringSummary.length + 1,
+          periodType: 'REG',
+          maxRegulationPeriods: 3,
+        },
+        goals: [],
+      }),
+    );
   }
 
   return (
-    <table className="border-collapse">
+    <table className="border-collapse rounded-lg">
       <thead>
         <tr>
-          <th className="border border-gray-300 p-2"></th>
-          {game.summary.scoring.map((period, i) => (
-            <th key={i} className="border border-gray-300 p-2">
-              {ordinal_suffix_of(period.periodDescriptor.number)}
+          <th className="px-4 py-2 text-left">Team</th>
+          {periodScoringSummary.map((period) => (
+            <th key={period.periodDescriptor.number} className="px-4 py-2 text-center">
+              {period.periodCommonName}
             </th>
           ))}
-          <th className="border border-gray-300 p-2">T</th>
+          <th className="px-4 py-2 text-center">Total</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td className="border border-gray-300 p-2">
-            <img
-              src={game.homeTeam.logo}
-              alt={`${game.homeTeam.placeName.default} logo`}
-              className="h-8"
-            />
-          </td>
-          {game.summary.scoring.map((period, i) => (
-            <td key={i} className="border border-gray-300 p-2 text-center">
-              {period.homeGoals.length}
-            </td>
-          ))}
-          <td className="border border-gray-300 p-2 text-center font-bold">
-            {game.homeTeam.score}
-          </td>
-        </tr>
-        <tr>
-          <td className="border border-gray-300 p-2">
-            <img
-              src={game.awayTeam.logo}
-              alt={`${game.awayTeam.placeName.default} logo`}
-              className="h-8"
-            />
-          </td>
-          {game.summary.scoring.map((period, i) => (
-            <td key={i} className="border border-gray-300 p-2 text-center">
-              {period.awayGoals.length}
-            </td>
-          ))}
-          <td className="border border-gray-300 p-2 text-center font-bold">
-            {game.awayTeam.score}
-          </td>
-        </tr>
+        <TeamScoringRow isHome={false} periods={periodScoringSummary} team={game.awayTeam} />
+        <TeamScoringRow isHome={true} periods={periodScoringSummary} team={game.homeTeam} />
       </tbody>
     </table>
   );

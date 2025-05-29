@@ -7,12 +7,7 @@ interface PromoContent {
     darkLogoUrl: string;
 }
 
-interface PromoLocalization {
-    default: PromoContent;
-    country: string;
-}
-
 export interface DatePromo {
     default: PromoContent;
     country: string;
-} 
+}

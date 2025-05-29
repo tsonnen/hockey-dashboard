@@ -1,7 +1,9 @@
-import { LocalizedName } from "./localized-name";
-import { PeriodDescriptor } from "./period-descriptor";
+import ordinal_suffix_of from '../utils/ordinal-suffix-of';
 
-interface Player {
+import type { LocalizedName } from './localized-name';
+import type { PeriodDescriptor } from './period-descriptor';
+
+export interface Player {
   playerId: number;
   firstName: LocalizedName;
   lastName: LocalizedName;
@@ -16,7 +18,7 @@ interface Player {
   savePctg?: number;
 }
 
-interface Goal {
+export interface Goal {
   situationCode: string;
   eventId: number;
   strength: string;
@@ -51,21 +53,40 @@ interface Penalty {
   descKey: string;
 }
 
-export class PeriodGoals {
+export class PeriodStats {
   periodDescriptor: PeriodDescriptor;
   goals: Goal[];
+  homeShots?: number;
+  awayShots?: number;
 
-  constructor(data: { periodDescriptor: PeriodDescriptor; goals: Goal[] }) {
+  constructor(data: {
+    periodDescriptor: PeriodDescriptor;
+    goals: Goal[];
+    homeShots?: number;
+    awayShots?: number;
+  }) {
     this.goals = data.goals;
     this.periodDescriptor = data.periodDescriptor;
+    this.homeShots = data.homeShots ?? 0;
+    this.awayShots = data.awayShots ?? 0;
   }
 
-  get awayGoals() {
+  get awayGoals(): Goal[] {
     return this.goals.filter((goal) => !goal.isHome);
   }
 
-  get homeGoals() {
+  get homeGoals(): Goal[] {
     return this.goals.filter((goal) => goal.isHome);
+  }
+
+  get periodCommonName(): string {
+    if (this.periodDescriptor.number <= this.periodDescriptor.maxRegulationPeriods) {
+      return ordinal_suffix_of(this.periodDescriptor.number);
+    }
+
+    return `${ordinal_suffix_of(
+      this.periodDescriptor.number - this.periodDescriptor.maxRegulationPeriods,
+    )} OT`;
   }
 }
 
@@ -80,21 +101,30 @@ interface StarPlayer extends Player {
   headshot: string;
 }
 
+interface ShootoutAttempt {
+  playerId: number;
+  firstName: LocalizedName;
+  lastName: LocalizedName;
+  name: LocalizedName;
+  teamAbbrev: LocalizedName;
+  headshot: string;
+  scored: boolean;
+  isHome: boolean;
+}
+
 export class GameSummary {
-  scoring: PeriodGoals[];
-  shootout: any[];
+  scoring: PeriodStats[];
+  shootout: ShootoutAttempt[];
   threeStars: StarPlayer[];
   penalties: PeriodPenalties[];
 
   constructor(data: {
     scoring: { periodDescriptor: PeriodDescriptor; goals: Goal[] }[];
-    shootout: any[];
+    shootout: ShootoutAttempt[];
     threeStars: StarPlayer[];
     penalties: PeriodPenalties[];
   }) {
-    this.scoring = data.scoring.map(
-      (periodScoring) => new PeriodGoals(periodScoring)
-    );
+    this.scoring = data.scoring.map((periodScoring) => new PeriodStats(periodScoring));
     this.shootout = data.shootout;
     this.threeStars = data.threeStars;
     this.penalties = data.penalties;

@@ -1,16 +1,26 @@
-import { Team } from "@/app/models/team";
-import styles from "./team-display.module.css";
+import Image from 'next/image';
+import type { JSX } from 'react';
+
+import type { Team } from '@/app/models/team';
+
+import styles from './team-display.module.css';
 
 interface TeamDisplayProps {
   team: Team;
   gameStarted: boolean;
 }
 
-export function TeamDisplay({ team, gameStarted }: TeamDisplayProps) {
+export function TeamDisplay({ team, gameStarted }: TeamDisplayProps): JSX.Element {
   return (
     <div className={styles.team}>
       <div className={styles.logo}>
-        <img src={team.logo} alt={`${team.placeName.default} logo`} />
+        <Image
+          alt={`${team.placeName.default} logo`}
+          height={60}
+          quality={100}
+          src={team.logo ?? ''}
+          width={60}
+        />
       </div>
       <div className={styles.teamInfo}>
         {gameStarted && (
