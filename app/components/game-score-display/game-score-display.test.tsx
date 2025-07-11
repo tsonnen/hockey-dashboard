@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
 
-import { GameScoreDisplay } from '../../components/game-score-display/game-score-display';
-import { Game } from '../../models/game';
-import { GameState } from '../../models/game-state';
-import { Team } from '../../models/team';
-import { GameProviderWrapper } from '../utils/test-utils';
+import { GameProviderWrapper } from '@/app/__tests__/utils/test-utils';
+import { GameScoreDisplay } from '@/app/components/game-score-display/game-score-display';
+import { Game } from '@/app/models/game';
+import { GameState } from '@/app/models/game-state';
+import { Team } from '@/app/models/team';
 
 // Mock next/image
 jest.mock('next/image', () => ({
