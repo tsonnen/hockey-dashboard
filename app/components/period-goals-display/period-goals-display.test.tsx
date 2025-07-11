@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
 
-import { PeriodGoalsDisplay } from '../../components/period-goals-display';
-import { Game } from '../../models/game';
-import { type Goal, PeriodStats } from '../../models/game-summary';
-import { Team } from '../../models/team';
-import { GameProviderWrapper } from '../utils/test-utils';
+import { GameProviderWrapper } from '@/app/__tests__/utils/test-utils';
+import { PeriodGoalsDisplay } from '@/app/components/period-goals-display';
+import { Game } from '@/app/models/game';
+import { type Goal, PeriodStats } from '@/app/models/game-summary';
+import { Team } from '@/app/models/team';
 
 // Mock GoalDisplay since we're testing PeriodGoalsDisplay in isolation
 jest.mock('../../components/goal-display', () => ({

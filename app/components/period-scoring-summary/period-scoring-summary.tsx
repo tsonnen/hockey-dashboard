@@ -1,10 +1,8 @@
 import type { JSX } from 'react';
 
+import { TeamScoringRow } from '@/app/components/team-scoring-row';
 import { useGame } from '@/app/contexts/game-context';
-
-import { PeriodStats } from '../models/game-summary';
-
-import { TeamScoringRow } from './team-scoring-row';
+import { PeriodStats } from '@/app/models/game-summary';
 
 export function PeriodScoringSummary(): JSX.Element {
   const { game } = useGame();

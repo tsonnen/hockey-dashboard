@@ -1,9 +1,8 @@
 import type { JSX } from 'react';
 
+import { GoalDisplay } from '@/app/components/goal-display';
 import { useGame } from '@/app/contexts/game-context';
 import type { PeriodStats } from '@/app/models/game-summary';
-
-import { GoalDisplay } from './goal-display';
 
 interface PeriodGoalsDisplayProps {
   period: PeriodStats;
