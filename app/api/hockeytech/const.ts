@@ -7,8 +7,9 @@ export enum LEAGUES {
   'ECHL' = 'echl',
 }
 
-// Going back and forth on the right way to handle this. If these were my own API keys, then hiding them
-// would be an easy choice, but since these are publicly available, I'm not sure...
+// These are publicly available API keys for HockeyTech's public endpoints.
+// They are safe to commit to version control as they are not sensitive credentials.
+// These keys are used to identify which league's data to fetch from the public API.
 export const LEAGUE_KEY_MAPPINGS: Record<LEAGUES, { key: string; client_code: string }> =
   Object.freeze({
     ohl: { key: '2976319eb44abe94', client_code: 'ohl' },
