@@ -3,9 +3,9 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
-import { DateSelector } from '@/app/components/date-selector/date-selector';
-import { GameCard } from '@/app/components/game-card/game-card';
-import { GameSkeleton } from '@/app/components/game-skeleton/game-skeleton';
+import { DateSelector } from '@/app/components/date-selector';
+import { GameCard } from '@/app/components/game-card';
+import { GameSkeleton } from '@/app/components/game-skeleton';
 import { Game } from '@/app/models/game';
 
 interface LeagueEndpoint {

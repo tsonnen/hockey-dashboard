@@ -3,7 +3,7 @@
 import { useEffect, type JSX } from 'react';
 
 import { BackButton } from '@/app/components/back-button';
-import { GameScoreDisplay } from '@/app/components/game-score-display/game-score-display';
+import { GameScoreDisplay } from '@/app/components/game-score-display';
 import { Loader } from '@/app/components/loader/loader';
 import { PeriodGoalsDisplay } from '@/app/components/period-goals-display';
 import { PeriodScoringSummary } from '@/app/components/period-scoring-summary';
