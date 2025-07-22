@@ -11,7 +11,7 @@ export function PeriodScoringSummary(): JSX.Element {
     return <div>Loading...</div>;
   }
 
-  const periodScoringSummary = game.summary?.scoring ?? [];
+  const periodScoringSummary = [...(game.summary?.scoring ?? [])];
 
   // Ensure the 3 regulation periods always show
   while (periodScoringSummary.length < 3) {

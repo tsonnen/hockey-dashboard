@@ -47,7 +47,15 @@ export default function Home(): React.JSX.Element {
     // Initialize from URL if present, otherwise use current date
     const dateParam = searchParams.get('date');
     if (dateParam) {
-      return dateParam;
+      try {
+        const parsedDate = Date.parse(dateParam);
+        if (isNaN(parsedDate)) {
+          throw Error(`Invalid Date format ${dateParam}`);
+        }
+        return new Date(parsedDate).toISOString().slice(0, 10);
+      } catch (error) {
+        setError(error instanceof Error ? error.message : 'An error parsing date');
+      }
     }
 
     const date = new Date();
@@ -92,6 +100,7 @@ export default function Home(): React.JSX.Element {
   return (
     <div>
       <DateSelector
+        disabled={isLoading}
         selectedDate={new Date(Date.parse(selectedDateString))}
         onDateChange={handleDateChange}
       />
