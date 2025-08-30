@@ -1,4 +1,5 @@
-import type { JSX } from 'react';
+import { useState, type JSX } from 'react';
+import Datepicker, { type DateValueType } from 'react-tailwindcss-datepicker';
 
 import styles from './date-selector.module.css';
 
@@ -13,21 +14,30 @@ export function DateSelector({
   onDateChange,
   disabled = false,
 }: DateSelectorProps): JSX.Element {
+  const [value, setValue] = useState<DateValueType>({
+    startDate: selectedDate,
+    endDate: selectedDate,
+  });
+
   const handlePreviousDay = (): void => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() - 1);
     onDateChange(newDate);
+    setValue({ startDate: newDate, endDate: newDate });
   };
 
   const handleNextDay = (): void => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + 1);
     onDateChange(newDate);
+    setValue({ startDate: newDate, endDate: newDate });
   };
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const newDate = new Date(e.target.value);
-    onDateChange(newDate);
+  const handleDateChange = (newValue: DateValueType): void => {
+    setValue(newValue);
+    if (newValue?.startDate) {
+      onDateChange(newValue.startDate);
+    }
   };
 
   return (
@@ -40,11 +50,13 @@ export function DateSelector({
       >
         ←
       </button>
-      <input
-        className={styles.dateInput}
+      <Datepicker
+        asSingle={true}
         disabled={disabled}
-        type="date"
-        value={selectedDate.toISOString().split('T')[0]}
+        inputClassName={styles.dateInput}
+        required={true}
+        useRange={false}
+        value={value}
         onChange={handleDateChange}
       />
       <button
