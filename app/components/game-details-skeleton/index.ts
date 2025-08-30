@@ -1,1 +1,1 @@
-export * from './game-details-skeleton'; 
+export * from './game-details-skeleton';

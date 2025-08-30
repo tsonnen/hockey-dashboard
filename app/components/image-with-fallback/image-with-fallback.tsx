@@ -27,7 +27,6 @@ export function ImageWithFallback({
         alt={alt}
         className={className}
         height={height}
-        objectFit="cover"
         quality={quality}
         src={imageError ? fallBackSrc : src}
         width={width}
