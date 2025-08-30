@@ -54,7 +54,9 @@ export default function Home(): React.JSX.Element {
         }
         return new Date(parsedDate).toISOString().slice(0, 10);
       } catch (error) {
-        setError(error instanceof Error ? error.message : 'An error parsing date');
+        setError(
+          error instanceof Error ? error.message : 'An error occurred while parsing the date',
+        );
       }
     }
 
