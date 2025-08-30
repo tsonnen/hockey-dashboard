@@ -1,7 +1,7 @@
 import { useRouter } from 'next/navigation';
 import type { JSX } from 'react';
 
-import { TeamDisplay } from '@/app/components/team-display/team-display';
+import { TeamDisplay } from '@/app/components/team-display';
 import type { Game } from '@/app/models/game';
 
 import styles from './game-card.module.css';

@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import type { JSX } from 'react';
 
+import fallbackHeadshot from '@/app/assets/headshot-fallback.png';
+import { ImageWithFallback } from '@/app/components/image-with-fallback';
 import type { Game } from '@/app/models/game';
 import type { Goal, Player } from '@/app/models/game-summary';
 
@@ -15,9 +17,10 @@ export function GoalDisplay({ goal, game }: GoalDisplayProps): JSX.Element {
       <span className="font-medium">{goal.timeInPeriod}</span>
       <div className="flex flex-col">
         <div className="flex items-center gap-2">
-          <Image
+          <ImageWithFallback
             alt={goal.name.default}
             className="w-8 h-8 rounded-full"
+            fallBackSrc={fallbackHeadshot.src}
             height={32}
             quality={100}
             src={goal.headshot}

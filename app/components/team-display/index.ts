@@ -1,1 +1,1 @@
-export { TeamDisplay } from './team-display';
+export * from './team-display';
