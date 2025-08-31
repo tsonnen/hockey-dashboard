@@ -8,6 +8,8 @@ import { GameCard } from '@/app/components/game-card';
 import { GameSkeleton } from '@/app/components/game-skeleton';
 import { Game } from '@/app/models/game';
 
+import styles from './page.module.css';
+
 interface LeagueEndpoint {
   url: string;
   name: string;
@@ -112,7 +114,7 @@ function HomePage(): React.JSX.Element {
           {error}
         </div>
       )}
-      <div className="games-container">
+      <div className={styles.gamesContainer}>
         {isLoading ? (
           <>
             <GameSkeleton />
