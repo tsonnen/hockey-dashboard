@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 
 import { DateSelector } from '@/app/components/date-selector';
 import { GameCard } from '@/app/components/game-card';
@@ -37,7 +37,7 @@ async function fetchGamesForDate(endpoint: LeagueEndpoint, dateStr: string): Pro
   }
 }
 
-export default function Home(): React.JSX.Element {
+function HomePage(): React.JSX.Element {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [games, setGames] = useState<Game[]>([]);
@@ -128,5 +128,22 @@ export default function Home(): React.JSX.Element {
         )}
       </div>
     </div>
+  );
+}
+
+export default function Home(): React.JSX.Element {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-[200px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading page...</p>
+          </div>
+        </div>
+      }
+    >
+      <HomePage />
+    </Suspense>
   );
 }
