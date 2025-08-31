@@ -5,9 +5,6 @@ import { getBaseUrl } from '@/app/api/hockeytech/utils';
 import type { Game } from '@/app/models/game';
 import { type HockeyTechGame, convertHockeyTechGame } from '@/app/models/hockeytech-game';
 
-export const DATE_LINK_FORMAT = 'yyyy-MM-dd';
-export const DATE_DISPLAY_FORMAT = 'dd MMMM yyyy';
-
 function calculateDaysByDate(date: Date): { daysBack: number; daysAhead: number } {
   const differenceInDays = Math.ceil((Date.now().valueOf() - date.valueOf()) / 86400000);
 
