@@ -1,5 +1,4 @@
 .gameCard {
-  display: inline-flex;
   align-items: center;
   gap: 1rem;
   padding: 1rem;
@@ -41,12 +40,16 @@
 
 .clickable {
   cursor: pointer;
-  transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+  transition:
+    transform 0.1s ease-in-out,
+    box-shadow 0.1s ease-in-out;
 }
 
 .clickable:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .clickable:focus {
@@ -56,4 +59,13 @@
 
 .clickable:active {
   transform: translateY(0);
+}
+
+.scoreDisplay {
+  display: inline-flex;
+  align-items: center;
+}
+
+.leagueDisplay {
+  text-align: center;
 }

@@ -19,7 +19,7 @@ export function GameCard({ game }: GameCardProps): JSX.Element {
 
   return (
     <span
-      className={`${styles.gameCard} ${styles.clickable}`}
+      className={`${styles.gameCard} ${styles.clickable} grid grid-cols-1`}
       role="button"
       tabIndex={0}
       onClick={handleClick}
@@ -29,18 +29,21 @@ export function GameCard({ game }: GameCardProps): JSX.Element {
         }
       }}
     >
-      <TeamDisplay gameStarted={game.gameStarted} team={game.awayTeam} />
-      <div className={styles.gameStatus}>
-        {game.gameInProgress && game.clock && (
-          <>
-            <div className={styles.clock}>{game.clock.timeRemaining}</div>
-            <div className={styles.period}>Period {game.period}</div>
-          </>
-        )}
+      <div className={styles.scoreDisplay}>
+        <TeamDisplay gameStarted={game.gameStarted} team={game.awayTeam} />
+        <div className={styles.gameStatus}>
+          {game.gameInProgress && game.clock && (
+            <>
+              <div className={styles.clock}>{game.clock.timeRemaining}</div>
+              <div className={styles.period}>Period {game.period}</div>
+            </>
+          )}
 
-        <div className={styles.startTime}>{game.statusString}</div>
+          <div className={styles.startTime}>{game.statusString}</div>
+        </div>
+        <TeamDisplay gameStarted={game.gameStarted} team={game.homeTeam} />
       </div>
-      <TeamDisplay gameStarted={game.gameStarted} team={game.homeTeam} />
+      <div className={styles.leagueDisplay}>{game.league.toUpperCase()}</div>
     </span>
   );
 }

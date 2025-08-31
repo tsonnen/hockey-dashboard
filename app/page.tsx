@@ -30,7 +30,8 @@ async function fetchGamesForDate(endpoint: LeagueEndpoint, dateStr: string): Pro
       throw new Error(`Failed to fetch ${endpoint.name} games: ${response.statusText}`);
     }
     const games = (await response.json()) as Partial<Game>[];
-    return games.filter((game): game is Game => game.gameDate === dateStr);
+    const filteredGames = games.filter((game): game is Game => game.gameDate === dateStr);
+    return filteredGames;
   } catch (error) {
     console.error(`Error fetching ${endpoint.name} games:`, error);
     return [];
