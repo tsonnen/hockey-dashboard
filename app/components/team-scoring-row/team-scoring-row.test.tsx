@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
 
-import { TeamScoringRow } from '../../components/team-scoring-row';
-import type { Goal } from '../../models/game-summary';
-import { Team } from '../../models/team';
+import { TeamScoringRow } from '@/app/components/team-scoring-row';
+import type { Goal } from '@/app/models/game-summary';
+import { Team } from '@/app/models/team';
 
 // Mock TeamCell since we're testing TeamScoringRow in isolation
-jest.mock('../../components/team-cell', () => ({
+jest.mock('@/app/components/team-cell', () => ({
   TeamCell: ({ abbrev }: { abbrev: string }) => <td data-testid="team-cell">{abbrev}</td>,
 }));
 

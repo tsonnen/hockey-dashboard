@@ -18,10 +18,11 @@
     "next": "15.0.3",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
-    "react-router-dom": "^7.4.1"
+    "react-router-dom": "^7.4.1",
+    "react-tailwindcss-datepicker": "^2.0.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.27.0",
+    "@eslint/js": "^9.34.0",
     "@next/eslint-plugin-next": "^15.3.2",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -32,7 +33,7 @@
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
-    "eslint": "^8",
+    "eslint": "^9",
     "eslint-config-next": "15.0.3",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-absolute-imports": "^0.0.3",

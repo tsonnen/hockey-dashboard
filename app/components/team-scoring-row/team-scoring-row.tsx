@@ -1,9 +1,8 @@
 import type { JSX } from 'react';
 
+import { TeamCell } from '@/app/components/team-cell';
 import type { Goal } from '@/app/models/game-summary';
 import type { Team } from '@/app/models/team';
-
-import { TeamCell } from './team-cell';
 
 interface TeamScoringRowProps {
   team: Team;

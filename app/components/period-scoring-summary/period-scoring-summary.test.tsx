@@ -1,11 +1,10 @@
 import { render, screen } from '@testing-library/react';
 
+import { GameProviderWrapper } from '@/app/__tests__/utils/test-utils';
 import { PeriodScoringSummary } from '@/app/components/period-scoring-summary';
 import { Game } from '@/app/models/game';
 import { PeriodStats } from '@/app/models/game-summary';
 import ordinal_suffix_of from '@/app/utils/ordinal-suffix-of';
-
-import { GameProviderWrapper } from '../utils/test-utils';
 
 describe('PeriodScoringSummary', () => {
   const mockGame = {

@@ -3,8 +3,8 @@
 import { useEffect, type JSX } from 'react';
 
 import { BackButton } from '@/app/components/back-button';
-import { GameScoreDisplay } from '@/app/components/game-score-display/game-score-display';
-import { Loader } from '@/app/components/loader/loader';
+import { GameDetailsSkeleton } from '@/app/components/game-details-skeleton';
+import { GameScoreDisplay } from '@/app/components/game-score-display';
 import { PeriodGoalsDisplay } from '@/app/components/period-goals-display';
 import { PeriodScoringSummary } from '@/app/components/period-scoring-summary';
 import { GameProvider, useGame } from '@/app/contexts/game-context';
@@ -65,7 +65,7 @@ function GamePageContent({ params }: GamePageProps): JSX.Element {
   }, [params, setGame]);
 
   if (!game) {
-    return <Loader />;
+    return <GameDetailsSkeleton />;
   }
 
   return (

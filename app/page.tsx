@@ -3,9 +3,9 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
-import { DateSelector } from '@/app/components/date-selector/date-selector';
-import { GameCard } from '@/app/components/game-card/game-card';
-import { GameSkeleton } from '@/app/components/game-skeleton/game-skeleton';
+import { DateSelector } from '@/app/components/date-selector';
+import { GameCard } from '@/app/components/game-card';
+import { GameSkeleton } from '@/app/components/game-skeleton';
 import { Game } from '@/app/models/game';
 
 interface LeagueEndpoint {
@@ -47,7 +47,17 @@ export default function Home(): React.JSX.Element {
     // Initialize from URL if present, otherwise use current date
     const dateParam = searchParams.get('date');
     if (dateParam) {
-      return dateParam;
+      try {
+        const parsedDate = Date.parse(dateParam);
+        if (isNaN(parsedDate)) {
+          throw Error(`Invalid Date format ${dateParam}`);
+        }
+        return new Date(parsedDate).toISOString().slice(0, 10);
+      } catch (error) {
+        setError(
+          error instanceof Error ? error.message : 'An error occurred while parsing the date',
+        );
+      }
     }
 
     const date = new Date();
@@ -92,6 +102,7 @@ export default function Home(): React.JSX.Element {
   return (
     <div>
       <DateSelector
+        disabled={isLoading}
         selectedDate={new Date(Date.parse(selectedDateString))}
         onDateChange={handleDateChange}
       />

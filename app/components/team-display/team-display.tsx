@@ -26,7 +26,7 @@ export function TeamDisplay({ team, gameStarted }: TeamDisplayProps): JSX.Elemen
         {gameStarted && (
           <div className={styles.teamStats}>
             <div className={styles.score}>{team.score ?? 0}</div>
-            <div className={styles.shots}>SOG: {team.sog ?? 0}</div>
+            {team.sog !== undefined && <div className={styles.shots}>SOG: {team.sog ?? 0}</div>}
           </div>
         )}
       </div>

@@ -17,12 +17,8 @@
   transition: all 0.2s;
 }
 
-.navButton:hover {
-  background-color: #e5e7eb;
-}
-
-.navButton:active {
-  background-color: #d1d5db;
+.navButton:disabled {
+  pointer-events: none;
 }
 
 .dateInput {
@@ -54,4 +50,4 @@
     border-color: #4b5563;
     color: #e5e7eb;
   }
-} 
+}
