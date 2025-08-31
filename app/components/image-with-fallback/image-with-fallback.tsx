@@ -10,7 +10,7 @@ export function ImageWithFallback({
   width,
   quality,
   className,
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access @typescript-eslint/no-unsafe-assignment
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
   fallBackSrc = fallback.src,
 }: {
   src: string;

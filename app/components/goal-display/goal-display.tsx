@@ -20,7 +20,7 @@ export function GoalDisplay({ goal, game }: GoalDisplayProps): JSX.Element {
           <ImageWithFallback
             alt={goal.name.default}
             className="w-8 h-8 rounded-full"
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access @typescript-eslint/no-unsafe-assignment
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
             fallBackSrc={fallbackHeadshot.src}
             height={32}
             quality={100}
