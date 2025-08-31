@@ -14,7 +14,7 @@ export const LEAGUE_KEY_MAPPINGS: Record<LEAGUES, { key: string; client_code: st
   Object.freeze({
     ohl: { key: '2976319eb44abe94', client_code: 'ohl' },
     pwhl: { key: '694cfeed58c932ee', client_code: 'pwhl' },
-    whl: { key: 'f1aa699db3d81487', client_code: 'whl' },
+    whl: { key: '41b145a848f4bd67', client_code: 'whl' },
     qmjhl: { key: 'f1aa699db3d81487', client_code: 'lhjmq' },
     ahl: { key: 'ccb91f29d6744675', client_code: 'ahl' },
     echl: { key: '2c2b89ea7345cae8', client_code: 'echl' },

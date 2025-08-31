@@ -48,7 +48,6 @@ export function convertHockeyTechGame(data: HockeyTechGame, league: string): Gam
   return new Game({
     id: parseInt(data.ID),
     season: parseInt(data.SeasonID),
-    gameType: 2, // Regular season
     gameDate: data.Date,
     venue: { default: data.venue_name },
     neutralSite: false,
@@ -82,11 +81,11 @@ export function convertHockeyTechGame(data: HockeyTechGame, league: string): Gam
     ticketsLink: data.TicketUrl,
     clock: data.GameClock
       ? {
-        timeRemaining: data.GameClock,
-        secondsRemaining: 0, // Would need conversion logic
-        running: gameState === GameState.LIVE,
-        inIntermission: false, // Would need additional data
-      }
+          timeRemaining: data.GameClock,
+          secondsRemaining: 0, // Would need conversion logic
+          running: gameState === GameState.LIVE,
+          inIntermission: false, // Would need additional data
+        }
       : undefined,
     league,
   });
