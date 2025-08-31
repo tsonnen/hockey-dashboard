@@ -54,7 +54,7 @@ export async function GET(
 
       if (gameScore) {
         game = {
-          // eslint-disable-next-line @typescript-eslint/no-misused-spread
+
           ...game,
           // eslint-disable-next-line @typescript-eslint/no-misused-spread
           ...gameScore,

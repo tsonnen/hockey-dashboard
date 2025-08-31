@@ -5,7 +5,7 @@ import { ImageWithFallback } from '@/app/components/image-with-fallback/image-wi
 // Mock next/image since it's not available in test environment
 jest.mock('next/image', () => ({
   __esModule: true,
-  // eslint-disable-next-line @next/next/no-img-element
+
   default: (props: Record<string, unknown>) => {
     const {
       priority: _priority,
