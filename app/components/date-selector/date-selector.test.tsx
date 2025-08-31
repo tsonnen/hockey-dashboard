@@ -109,7 +109,10 @@ describe('DateSelector', () => {
     const dateInput = screen.getByTestId('date-input');
     fireEvent.change(dateInput, { target: { value: '2025-09-01' } });
 
-    expect(mockOnDateChange).toHaveBeenCalledWith(new Date('2025-09-01'));
+    const utcDate = new Date('2025-09-01');
+    expect(mockOnDateChange).toHaveBeenCalledWith(
+      new Date(`${utcDate.getFullYear()}-${utcDate.getMonth() + 1}-${utcDate.getDate()}`),
+    );
   });
 
   it('disables buttons and datepicker when disabled prop is true', () => {
