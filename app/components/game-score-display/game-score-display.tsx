@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import { type ReactElement } from 'react';
 
+import { ImageWithFallback } from '@/app/components/image-with-fallback';
 import { useGame } from '@/app/contexts/game-context';
 
 import styles from './game-score-display.module.css';
@@ -35,10 +35,10 @@ export function GameScoreDisplay(): ReactElement {
         <div className="flex flex-col items-center flex-1">
           <div className="relative w-16 h-16 mb-2">
             {awayTeam.logo && (
-              <Image
-                fill
+              <ImageWithFallback
                 alt={`${awayTeam.placeName.default} logo`}
                 className="object-contain"
+                fill={true}
                 src={awayTeam.logo}
               />
             )}
@@ -65,10 +65,10 @@ export function GameScoreDisplay(): ReactElement {
         <div className="flex flex-col items-center flex-1">
           <div className="relative w-16 h-16 mb-2">
             {homeTeam.logo && (
-              <Image
-                fill
+              <ImageWithFallback
                 alt={`${homeTeam.placeName.default} logo`}
                 className="object-contain"
+                fill={true}
                 src={homeTeam.logo}
               />
             )}

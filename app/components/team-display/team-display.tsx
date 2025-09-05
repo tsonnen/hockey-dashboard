@@ -1,7 +1,8 @@
-import Image from 'next/image';
 import type { JSX } from 'react';
 
 import type { Team } from '@/app/models/team';
+
+import { ImageWithFallback } from '../image-with-fallback';
 
 import styles from './team-display.module.css';
 
@@ -14,7 +15,7 @@ export function TeamDisplay({ team, gameStarted }: TeamDisplayProps): JSX.Elemen
   return (
     <div className={styles.team}>
       <div className={styles.logo}>
-        <Image
+        <ImageWithFallback
           alt={`${team.placeName.default} logo`}
           height={60}
           quality={100}
