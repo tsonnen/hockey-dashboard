@@ -48,20 +48,17 @@ export async function GET(
 
   const allGames: Partial<Game>[] = [];
 
-  gameWeek.forEach((gameDay: GameDay) => {
+  for (const gameDay of gameWeek) {
     const games = gameDay.games.map((game: Partial<Game>) => {
       const gameScore = gameScores.find((gameScore: Partial<Game>) => gameScore.id === game.id);
 
       if (gameScore) {
         game = {
-
           ...game,
-          // eslint-disable-next-line @typescript-eslint/no-misused-spread
           ...gameScore,
         };
-        // eslint-disable-next-line @typescript-eslint/no-misused-spread
+
         game.homeTeam = { ...game.homeTeam, ...gameScore.homeTeam };
-        // eslint-disable-next-line @typescript-eslint/no-misused-spread
         game.awayTeam = { ...game.awayTeam, ...gameScore.awayTeam };
       }
 
@@ -71,7 +68,7 @@ export async function GET(
     });
 
     allGames.push(...games);
-  });
+  }
 
   return NextResponse.json(allGames);
 }

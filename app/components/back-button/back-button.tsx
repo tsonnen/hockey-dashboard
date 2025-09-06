@@ -10,13 +10,13 @@ export function BackButton({ className = '' }: BackButtonProps): ReactElement {
 
   return (
     <button
-      className={`flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors ${className}`}
+      className={`flex items-center gap-2 text-gray-600 transition-colors hover:text-gray-900 ${className}`}
       onClick={() => {
         router.back();
       }}
     >
       <svg
-        className="w-5 h-5"
+        className="size-5"
         fill="none"
         stroke="currentColor"
         strokeWidth={1.5}

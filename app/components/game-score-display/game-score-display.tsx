@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import { type ReactElement } from 'react';
 
+import { ImageWithFallback } from '@/app/components/image-with-fallback';
 import { useGame } from '@/app/contexts/game-context';
 
 import styles from './game-score-display.module.css';
@@ -29,24 +29,24 @@ export function GameScoreDisplay(): ReactElement {
     0;
 
   return (
-    <div className="w-full bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+    <div className="mb-6 w-full rounded-lg bg-gray-800 p-6 shadow-md">
       <div className="flex items-center justify-between">
         {/* Away Team */}
-        <div className="flex flex-col items-center flex-1">
-          <div className="relative w-16 h-16 mb-2">
+        <div className="flex flex-1 flex-col items-center">
+          <div className="relative mb-2 size-16">
             {awayTeam.logo && (
-              <Image
-                fill
+              <ImageWithFallback
                 alt={`${awayTeam.placeName.default} logo`}
                 className="object-contain"
+                fill
                 src={awayTeam.logo}
               />
             )}
           </div>
-          <div className="text-lg font-semibold text-center">{awayTeam.placeName.default}</div>
-          <div className="text-3xl font-bold mt-2">{awayScore}</div>
+          <div className="text-center text-lg font-semibold">{awayTeam.placeName.default}</div>
+          <div className="mt-2 text-3xl font-bold">{awayScore}</div>
           {awayTeam.sog !== undefined && (
-            <div className="text-sm text-gray-600 mt-1">SOG: {awayTeam.sog}</div>
+            <div className="mt-1 text-sm text-gray-600">SOG: {awayTeam.sog}</div>
           )}
         </div>
 
@@ -62,21 +62,21 @@ export function GameScoreDisplay(): ReactElement {
         </div>
 
         {/* Home Team */}
-        <div className="flex flex-col items-center flex-1">
-          <div className="relative w-16 h-16 mb-2">
+        <div className="flex flex-1 flex-col items-center">
+          <div className="relative mb-2 size-16">
             {homeTeam.logo && (
-              <Image
-                fill
+              <ImageWithFallback
                 alt={`${homeTeam.placeName.default} logo`}
                 className="object-contain"
+                fill
                 src={homeTeam.logo}
               />
             )}
           </div>
-          <div className="text-lg font-semibold text-center">{homeTeam.placeName.default}</div>
-          <div className="text-3xl font-bold mt-2">{homeScore}</div>
+          <div className="text-center text-lg font-semibold">{homeTeam.placeName.default}</div>
+          <div className="mt-2 text-3xl font-bold">{homeScore}</div>
           {homeTeam.sog !== undefined && (
-            <div className="text-sm text-gray-600 mt-1">SOG: {homeTeam.sog}</div>
+            <div className="mt-1 text-sm text-gray-600">SOG: {homeTeam.sog}</div>
           )}
         </div>
       </div>

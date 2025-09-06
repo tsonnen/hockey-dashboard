@@ -3,13 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { GoalDisplay } from '@/app/components/goal-display';
 import type { Game } from '@/app/models/game';
 import type { Goal, Player } from '@/app/models/game-summary';
-
-// Mock next/image since it's not available in test environment
-jest.mock('next/image', () => ({
-  __esModule: true,
-  // eslint-disable-next-line @next/next/no-img-element, @typescript-eslint/no-explicit-any
-  default: (props: any) => <img {...props} />,
-}));
+import { describe, it, expect } from '@jest/globals';
 
 describe('GoalDisplay', () => {
   const mockGame = {

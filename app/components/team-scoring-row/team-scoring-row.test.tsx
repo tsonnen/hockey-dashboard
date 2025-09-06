@@ -1,13 +1,9 @@
 import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from '@jest/globals';
 
 import { TeamScoringRow } from '@/app/components/team-scoring-row';
 import type { Goal } from '@/app/models/game-summary';
 import { Team } from '@/app/models/team';
-
-// Mock TeamCell since we're testing TeamScoringRow in isolation
-jest.mock('@/app/components/team-cell', () => ({
-  TeamCell: ({ abbrev }: { abbrev: string }) => <td data-testid="team-cell">{abbrev}</td>,
-}));
 
 describe('TeamScoringRow', () => {
   const mockTeam = new Team({
@@ -58,53 +54,30 @@ describe('TeamScoringRow', () => {
     },
   ];
 
-  it('renders home team scoring row correctly', () => {
-    render(
-      <table>
-        <tbody>
-          <TeamScoringRow isHome={true} periods={mockPeriods} team={mockTeam} />
-        </tbody>
-      </table>,
-    );
+  for (const isHome of [true, false]) {
+    it(`it renders with isHome=${isHome}`, () => {
+      render(
+        <table>
+          <tbody>
+            <TeamScoringRow isHome={isHome} periods={mockPeriods} team={mockTeam} />
+          </tbody>
+        </table>,
+      );
 
-    // Check team cell
-    const teamCell = screen.getByTestId('team-cell');
-    expect(teamCell).toHaveTextContent('TOR');
+      // Check team cell
+      const teamCell = screen.getByText('TOR');
+      expect(teamCell).toBeInTheDocument();
 
-    // Check period scores
-    const periodScores = screen.getAllByRole('cell').slice(1, -1); // Exclude team cell and total
-    expect(periodScores).toHaveLength(2);
-    expect(periodScores[0]).toHaveTextContent('1'); // First period home goals
-    expect(periodScores[1]).toHaveTextContent('1'); // Second period home goals
+      // Check period scores
+      const periodScores = screen.getAllByTestId('period-score');
+      expect(periodScores).toHaveLength(2);
+      expect(periodScores[0]).toHaveTextContent(isHome ? '1' : '2'); // First period goals
+      expect(periodScores[1]).toHaveTextContent(isHome ? '1' : '0'); // Second period goals
 
-    // Check total score
-    const totalScore = screen.getAllByRole('cell').pop();
-    expect(totalScore).toHaveTextContent('3');
-    expect(totalScore).toHaveClass('font-bold');
-  });
-
-  it('renders away team scoring row correctly', () => {
-    render(
-      <table>
-        <tbody>
-          <TeamScoringRow isHome={false} periods={mockPeriods} team={mockTeam} />
-        </tbody>
-      </table>,
-    );
-
-    // Check team cell
-    const teamCell = screen.getByTestId('team-cell');
-    expect(teamCell).toHaveTextContent('TOR');
-
-    // Check period scores
-    const periodScores = screen.getAllByRole('cell').slice(1, -1); // Exclude team cell and total
-    expect(periodScores).toHaveLength(2);
-    expect(periodScores[0]).toHaveTextContent('2'); // First period away goals
-    expect(periodScores[1]).toHaveTextContent('0'); // Second period away goals
-
-    // Check total score
-    const totalScore = screen.getAllByRole('cell').pop();
-    expect(totalScore).toHaveTextContent('3');
-    expect(totalScore).toHaveClass('font-bold');
-  });
+      // Check total score
+      const totalScore = screen.getByTestId('total-score');
+      expect(totalScore).toHaveTextContent('3');
+      expect(totalScore).toHaveClass('font-bold');
+    });
+  }
 });

@@ -1,13 +1,7 @@
 import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from '@jest/globals';
 
 import { TeamCell } from '@/app/components/team-cell';
-
-// Mock next/image
-jest.mock('next/image', () => ({
-  __esModule: true,
-  // eslint-disable-next-line @next/next/no-img-element, @typescript-eslint/no-explicit-any
-  default: (props: any) => <img {...props} />,
-}));
 
 describe('TeamCell', () => {
   it('renders with logo', () => {

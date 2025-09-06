@@ -1,32 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import { ImageWithFallback } from '@/app/components/image-with-fallback/image-with-fallback';
-
-// Mock next/image since it's not available in test environment
-jest.mock('next/image', () => ({
-  __esModule: true,
-
-  default: (props: Record<string, unknown>) => {
-    const {
-      priority: _priority,
-      placeholder: _placeholder,
-      blurDataURL: _blurDataURL,
-      ...imgProps
-    } = props;
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img {...imgProps} />;
-  },
-}));
-
-// Mock the fallback image import
-jest.mock('@/app/assets/image-not-found.png', () => ({
-  __esModule: true,
-  default: {
-    src: '/mocked-fallback.png',
-    height: 100,
-    width: 100,
-  },
-}));
+import { describe, it, expect } from '@jest/globals';
 
 describe('ImageWithFallback', () => {
   const defaultProps = {

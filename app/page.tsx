@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
 
@@ -45,15 +46,15 @@ function HomePage(): React.JSX.Element {
   const router = useRouter();
   const [games, setGames] = useState<Game[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>();
   const [selectedDateString, setSelectedDate] = useState<string>(() => {
     // Initialize from URL if present, otherwise use current date
     const dateParam = searchParams.get('date');
     if (dateParam) {
       try {
         const parsedDate = Date.parse(dateParam);
-        if (isNaN(parsedDate)) {
-          throw Error(`Invalid Date format ${dateParam}`);
+        if (Number.isNaN(parsedDate)) {
+          throw new TypeError(`Invalid Date format ${dateParam}`);
         }
         return new Date(parsedDate).toISOString().slice(0, 10);
       } catch (error) {
@@ -75,10 +76,20 @@ function HomePage(): React.JSX.Element {
     router.push(`/?date=${dateStr}`, { scroll: false });
   };
 
+  const getGameCards = () => {
+    return games.length > 0 ? (
+      games.map((game) => (
+        <GameCard key={`${game.id.toString()}-${game.startTimeUTC}`} game={new Game(game)} />
+      ))
+    ) : (
+      <div className="no-games">No games scheduled for this date</div>
+    );
+  };
+
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       setIsLoading(true);
-      setError(null);
+      setError(undefined);
       setGames([]); // Clear existing games when date changes
 
       try {
@@ -89,7 +100,9 @@ function HomePage(): React.JSX.Element {
 
         const allGames = allLeagueGames
           .flat()
-          .sort((a, b) => new Date(a.startTimeUTC).getTime() - new Date(b.startTimeUTC).getTime());
+          .toSorted(
+            (a, b) => new Date(a.startTimeUTC).getTime() - new Date(b.startTimeUTC).getTime(),
+          );
 
         setGames(allGames);
       } catch (error) {
@@ -122,12 +135,8 @@ function HomePage(): React.JSX.Element {
             <GameSkeleton />
             <GameSkeleton />
           </>
-        ) : games.length > 0 ? (
-          games.map((game) => (
-            <GameCard key={`${game.id.toString()}-${game.startTimeUTC}`} game={new Game(game)} />
-          ))
         ) : (
-          <div className="no-games">No games scheduled for this date</div>
+          getGameCards()
         )}
       </div>
     </div>
@@ -138,9 +147,9 @@ export default function Home(): React.JSX.Element {
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center min-h-[200px]">
+        <div className="flex min-h-[200px] items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+            <div className="mx-auto mb-4 size-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
             <p className="text-gray-600">Loading page...</p>
           </div>
         </div>

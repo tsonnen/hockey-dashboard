@@ -2,6 +2,7 @@ import { useState, type JSX } from 'react';
 import Datepicker, { type DateValueType } from 'react-tailwindcss-datepicker';
 
 import styles from './date-selector.module.css';
+import { DAY_IN_MS } from '@/app/consts/date-consts';
 
 const getLocalMidnight = (utcDate: Date): Date => {
   const [year, month, day] = utcDate.toISOString().slice(0, 10).split('-');
@@ -68,6 +69,32 @@ export function DateSelector({
         useRange={false}
         value={value}
         onChange={handleDateChange}
+        showShortcuts={true}
+        configs={{
+          shortcuts: {
+            yesterday: {
+              text: 'Yesterday',
+              period: {
+                start: getLocalMidnight(new Date(Date.now() - DAY_IN_MS)),
+                end: getLocalMidnight(new Date(Date.now() - DAY_IN_MS)),
+              },
+            },
+            today: {
+              text: 'Today',
+              period: {
+                start: getLocalMidnight(new Date()),
+                end: getLocalMidnight(new Date()),
+              },
+            },
+            tomorrow: {
+              text: 'Tomorrow',
+              period: {
+                start: getLocalMidnight(new Date(Date.now() + DAY_IN_MS)),
+                end: getLocalMidnight(new Date(Date.now() + DAY_IN_MS)),
+              },
+            },
+          },
+        }}
       />
       <button
         aria-label="Next day"

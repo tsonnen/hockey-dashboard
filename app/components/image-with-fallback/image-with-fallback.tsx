@@ -10,23 +10,26 @@ export function ImageWithFallback({
   width,
   quality,
   className,
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+  fill = undefined,
   fallBackSrc = fallback.src,
 }: {
   src: string;
   alt: string;
   fallBackSrc?: string;
+  fill?: boolean;
   height?: number;
   width?: number;
   quality?: number;
   className?: string;
 }): JSX.Element {
-  const [imageError, setImageError] = useState(false);
+  const [imageError, setImageError] = useState<boolean>(!src);
+
   return (
     <div>
       <Image
         alt={alt}
         className={className}
+        fill={fill}
         height={height}
         quality={quality}
         src={imageError ? fallBackSrc : src}

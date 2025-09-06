@@ -5,16 +5,7 @@ import { GameScoreDisplay } from '@/app/components/game-score-display/game-score
 import { Game } from '@/app/models/game';
 import { GameState } from '@/app/models/game-state';
 import { Team } from '@/app/models/team';
-
-// Mock next/image
-jest.mock('next/image', () => ({
-  __esModule: true,
-  default: (props: Record<string, unknown>) => {
-    const { fill: _fill, ...rest } = props;
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img {...rest} />;
-  },
-}));
+import { describe, it, expect } from '@jest/globals';
 
 describe('GameScoreDisplay', () => {
   const homeTeam = new Team({

@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import type { JSX } from 'react';
 
 import fallbackHeadshot from '@/app/assets/headshot-fallback.png';
@@ -13,20 +12,21 @@ interface GoalDisplayProps {
 
 export function GoalDisplay({ goal, game }: GoalDisplayProps): JSX.Element {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2" data-testid="goal-display">
       <span className="font-medium">{goal.timeInPeriod}</span>
       <div className="flex flex-col">
         <div className="flex items-center gap-2">
-          <ImageWithFallback
-            alt={goal.name.default}
-            className="w-8 h-8 rounded-full"
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-            fallBackSrc={fallbackHeadshot.src}
-            height={32}
-            quality={100}
-            src={goal.headshot}
-            width={32}
-          />
+          <div className="p-1">
+            <ImageWithFallback
+              alt={goal.name.default}
+              className="size-8 rounded-full"
+              fallBackSrc={fallbackHeadshot.src}
+              height={32}
+              quality={100}
+              src={goal.headshot}
+              width={32}
+            />
+          </div>
           <span>{goal.name.default}</span>
           <span className="text-gray-600">
             ({goal.awayScore}-{goal.homeScore})
@@ -39,27 +39,29 @@ export function GoalDisplay({ goal, game }: GoalDisplayProps): JSX.Element {
           )}
         </div>
         <div className="flex items-center">
-          {goal.isHome ? (
-            <Image
-              alt={game.homeTeam.placeName.default}
-              className="w-8 h-8 rounded-full"
-              height={32}
-              quality={100}
-              src={game.homeTeam.logo ?? ''}
-              width={32}
-            />
-          ) : (
-            <Image
-              alt={game.awayTeam.placeName.default}
-              className="w-8 h-8 rounded-full"
-              height={32}
-              quality={100}
-              src={game.awayTeam.logo ?? ''}
-              width={32}
-            />
-          )}
+          <div className="p-1">
+            {goal.isHome ? (
+              <ImageWithFallback
+                alt={game.homeTeam.placeName.default}
+                className="size-8 rounded-full"
+                height={32}
+                quality={100}
+                src={game.homeTeam.logo ?? ''}
+                width={32}
+              />
+            ) : (
+              <ImageWithFallback
+                alt={game.awayTeam.placeName.default}
+                className="size-8 rounded-full"
+                height={32}
+                quality={100}
+                src={game.awayTeam.logo ?? ''}
+                width={32}
+              />
+            )}
+          </div>
           {goal.assists.length > 0 && (
-            <div className="text-sm text-gray-500 ml-5">
+            <div className="ml-5 text-sm text-gray-500">
               {goal.assists.map((assist: Player) => assist.name.default).join(', ')}
             </div>
           )}

@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import { describe, it, expect } from '@jest/globals';
 
 import { GameSkeleton } from '@/app/components/game-skeleton/game-skeleton';
 

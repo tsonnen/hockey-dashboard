@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from '@jest/globals';
 
 import { GameProviderWrapper } from '@/app/__tests__/utils/test-utils';
 import { PeriodScoringSummary } from '@/app/components/period-scoring-summary';
@@ -84,7 +85,6 @@ describe('PeriodScoringSummary', () => {
 
   it('renders empty periods correctly', () => {
     const gameWithOnePeriod = new Game({
-      // eslint-disable-next-line @typescript-eslint/no-misused-spread
       ...mockGame,
       summary: {
         scoring: [

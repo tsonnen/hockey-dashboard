@@ -27,10 +27,7 @@ export async function GET(
   const response = await fetch(url.toString());
   const responseText = await response.text();
 
-  const data = JSON.parse(responseText.substring(1, responseText.length - 1)) as Record<
-    string,
-    unknown
-  >;
+  const data = JSON.parse(responseText.slice(1, -1)) as Record<string, unknown>;
 
   return NextResponse.json(data);
 }

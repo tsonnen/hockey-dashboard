@@ -16,13 +16,13 @@ export function PeriodGoalsDisplay({ period }: PeriodGoalsDisplayProps): JSX.Ele
   }
 
   return (
-    <div className="border rounded p-4">
-      <h3 className="font-medium mb-2">{period.periodCommonName}</h3>
+    <div className="rounded border p-4">
+      <h3 className="mb-2 font-medium">{period.periodCommonName}</h3>
       <div className="space-y-2">
         {period.goals.length > 0 ? (
           period.goals.map((goal, j) => <GoalDisplay key={j} game={game} goal={goal} />)
         ) : (
-          <div className="text-gray-500 italic">No goals scored in this period</div>
+          <div className="italic text-gray-500">No goals scored in this period</div>
         )}
       </div>
     </div>
