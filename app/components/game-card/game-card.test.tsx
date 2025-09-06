@@ -1,22 +1,10 @@
+import { describe, it, expect, beforeEach } from '@jest/globals';
 import { render, screen, fireEvent } from '@testing-library/react';
 
-import { GameCard } from '../../components/game-card/game-card';
-import { Game } from '../../models/game';
-import { GameState } from '../../models/game-state';
-import { Team } from '../../models/team';
-
-// Mock TeamDisplay
-jest.mock('../../components/team-display/team-display', () => ({
-  TeamDisplay: ({ team }: { team: Team }) => (
-    <div data-testid={`team-display-${team.abbrev}`}>{team.placeName.default}</div>
-  ),
-}));
-
-// Mock next/navigation
-const push = jest.fn();
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({ push }),
-}));
+import { GameCard } from '@/app/components/game-card/game-card';
+import { Game } from '@/app/models/game';
+import { GameState } from '@/app/models/game-state';
+import { Team } from '@/app/models/team';
 
 describe('GameCard', () => {
   const homeTeam = new Team({
@@ -59,19 +47,19 @@ describe('GameCard', () => {
   });
 
   beforeEach(() => {
-    push.mockClear();
+    globalThis.resetRouterMocks();
   });
 
   it('renders both teams', () => {
     render(<GameCard game={game} />);
-    expect(screen.getByTestId('team-display-TOR')).toHaveTextContent('Toronto Maple Leafs');
-    expect(screen.getByTestId('team-display-MTL')).toHaveTextContent('Montreal Canadiens');
+    expect(screen.getByAltText('Toronto Maple Leafs logo')).toBeInTheDocument();
+    expect(screen.getByAltText('Montreal Canadiens logo')).toBeInTheDocument();
   });
 
   it('navigates to game page on click', () => {
     render(<GameCard game={game} />);
     fireEvent.click(screen.getByRole('button'));
-    expect(push).toHaveBeenCalledWith('/game/NHL/123');
+    expect(globalThis.mockRouter.push).toHaveBeenCalledWith('/game/NHL/123');
   });
 
   it('shows game status string', () => {
@@ -81,7 +69,6 @@ describe('GameCard', () => {
 
   it('shows clock and period if game is in progress', () => {
     const liveGame = new Game({
-      // eslint-disable-next-line @typescript-eslint/no-misused-spread
       ...game,
       gameState: GameState.LIVE,
       period: 2,

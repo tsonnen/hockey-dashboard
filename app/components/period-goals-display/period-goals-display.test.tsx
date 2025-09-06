@@ -1,17 +1,11 @@
 import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from '@jest/globals';
 
 import { GameProviderWrapper } from '@/app/__tests__/utils/test-utils';
 import { PeriodGoalsDisplay } from '@/app/components/period-goals-display';
 import { Game } from '@/app/models/game';
 import { type Goal, PeriodStats } from '@/app/models/game-summary';
 import { Team } from '@/app/models/team';
-
-// Mock GoalDisplay since we're testing PeriodGoalsDisplay in isolation
-jest.mock('@/app/components/goal-display', () => ({
-  GoalDisplay: ({ goal }: { goal: Goal }) => (
-    <div data-testid="goal-display">{goal.timeInPeriod}</div>
-  ),
-}));
 
 describe('PeriodGoalsDisplay', () => {
   const mockGame = new Game({

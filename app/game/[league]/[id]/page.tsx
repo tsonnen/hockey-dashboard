@@ -53,8 +53,9 @@ function GamePageContent({ params }: GamePageProps): JSX.Element {
             setGame(new Game(convertHockeyTechGameDetails(data, league)));
             break;
           }
-          default:
+          default: {
             break;
+          }
         }
       } catch (error) {
         console.error('Error fetching game:', error);
@@ -80,7 +81,7 @@ function GamePageContent({ params }: GamePageProps): JSX.Element {
             <PeriodScoringSummary />
           </div>
           <div>
-            <h2 className="text-xl font-semibold mb-2">Game Summary</h2>
+            <h2 className="mb-2 text-xl font-semibold">Game Summary</h2>
             <div className="space-y-4">
               {game.summary.scoring.map((period, i) => (
                 <PeriodGoalsDisplay key={i} period={period} />
@@ -92,7 +93,7 @@ function GamePageContent({ params }: GamePageProps): JSX.Element {
 
       {game.matchup && (
         <div>
-          <h2 className="text-xl font-semibold mb-2">Game Matchup</h2>
+          <h2 className="mb-2 text-xl font-semibold">Game Matchup</h2>
           <div className="grid grid-cols-2 gap-4"></div>
         </div>
       )}

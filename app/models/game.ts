@@ -130,14 +130,18 @@ export class Game {
   get statusString(): string {
     switch (this.gameState) {
       case GameState.FINAL:
-      case GameState.OFFICIAL:
+      case GameState.OFFICIAL: {
         return 'Final';
-      case GameState.LIVE:
+      }
+      case GameState.LIVE: {
         return 'Live';
-      case GameState.CRITICAL:
+      }
+      case GameState.CRITICAL: {
         return 'CRITICAL';
-      default:
+      }
+      default: {
         return startTime(this.startTimeUTC);
+      }
     }
   }
 }

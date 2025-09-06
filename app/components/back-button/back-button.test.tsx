@@ -1,23 +1,19 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { useRouter } from 'next/navigation';
+import { describe, it, expect, beforeEach } from '@jest/globals';
 
 import { BackButton } from '@/app/components/back-button';
 
-// Mock the next/navigation module
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
-}));
-
 describe('BackButton', () => {
-  it('renders with default class and handles click', () => {
-    const mockBack = jest.fn();
-    (useRouter as jest.Mock).mockReturnValue({ back: mockBack });
+  beforeEach(() => {
+    globalThis.resetRouterMocks();
+  });
 
+  it('renders with default class and handles click', () => {
     render(<BackButton />);
     const button = screen.getByRole('button');
     expect(button).toHaveTextContent('Back');
     fireEvent.click(button);
-    expect(mockBack).toHaveBeenCalled();
+    expect(globalThis.mockRouter.back).toHaveBeenCalled();
   });
 
   it('renders with custom class', () => {

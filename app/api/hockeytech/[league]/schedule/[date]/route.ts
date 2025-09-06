@@ -6,7 +6,7 @@ import type { Game } from '@/app/models/game';
 import { type HockeyTechGame, convertHockeyTechGame } from '@/app/models/hockeytech-game';
 
 function calculateDaysByDate(date: Date): { daysBack: number; daysAhead: number } {
-  const differenceInDays = Math.ceil((date.valueOf() - Date.now().valueOf()) / 86400000);
+  const differenceInDays = Math.ceil((date.valueOf() - Date.now().valueOf()) / 86_400_000);
 
   if (differenceInDays < 0) {
     return { daysBack: Math.abs(differenceInDays) + 1, daysAhead: 1 };

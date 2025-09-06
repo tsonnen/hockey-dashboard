@@ -12,14 +12,14 @@ interface GoalDisplayProps {
 
 export function GoalDisplay({ goal, game }: GoalDisplayProps): JSX.Element {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2" data-testid="goal-display">
       <span className="font-medium">{goal.timeInPeriod}</span>
       <div className="flex flex-col">
         <div className="flex items-center gap-2">
           <div className="p-1">
             <ImageWithFallback
               alt={goal.name.default}
-              className="w-8 h-8 rounded-full"
+              className="size-8 rounded-full"
               fallBackSrc={fallbackHeadshot.src}
               height={32}
               quality={100}
@@ -43,7 +43,7 @@ export function GoalDisplay({ goal, game }: GoalDisplayProps): JSX.Element {
             {goal.isHome ? (
               <ImageWithFallback
                 alt={game.homeTeam.placeName.default}
-                className="w-8 h-8 rounded-full"
+                className="size-8 rounded-full"
                 height={32}
                 quality={100}
                 src={game.homeTeam.logo ?? ''}
@@ -52,7 +52,7 @@ export function GoalDisplay({ goal, game }: GoalDisplayProps): JSX.Element {
             ) : (
               <ImageWithFallback
                 alt={game.awayTeam.placeName.default}
-                className="w-8 h-8 rounded-full"
+                className="size-8 rounded-full"
                 height={32}
                 quality={100}
                 src={game.awayTeam.logo ?? ''}
@@ -61,7 +61,7 @@ export function GoalDisplay({ goal, game }: GoalDisplayProps): JSX.Element {
             )}
           </div>
           {goal.assists.length > 0 && (
-            <div className="text-sm text-gray-500 ml-5">
+            <div className="ml-5 text-sm text-gray-500">
               {goal.assists.map((assist: Player) => assist.name.default).join(', ')}
             </div>
           )}

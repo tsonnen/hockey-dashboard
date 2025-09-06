@@ -10,7 +10,7 @@ export function ImageWithFallback({
   width,
   quality,
   className,
-  fill = false,
+  fill = undefined,
   fallBackSrc = fallback.src,
 }: {
   src: string;

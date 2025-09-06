@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 
 import { GameDetailsSkeleton } from './game-details-skeleton';
+import { describe, it, expect } from '@jest/globals';
 
 describe('GameDetailsSkeleton', () => {
   it('renders all main skeleton sections', () => {

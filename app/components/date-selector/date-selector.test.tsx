@@ -1,60 +1,8 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 
+import { jest, describe, it, expect, beforeEach } from '@jest/globals';
+
 import { DateSelector, type DateSelectorProps } from './date-selector';
-
-// Mock react-tailwindcss-datepicker
-jest.mock('react-tailwindcss-datepicker', () => ({
-  __esModule: true,
-  default: ({
-    onChange,
-    value,
-    disabled,
-    asSingle,
-    required,
-    inputClassName,
-  }: {
-    onChange?: (value: { startDate: Date; endDate: Date }) => void;
-    value?: { startDate: Date; endDate: Date };
-    disabled?: boolean;
-    asSingle?: boolean;
-    _useRange?: boolean;
-    required?: boolean;
-    inputClassName?: string;
-  }) => {
-    const formatDate = (date: Date): string => {
-      try {
-        if (date instanceof Date && !isNaN(date.getTime())) {
-          return date.toISOString().split('T')[0];
-        }
-        return '';
-      } catch {
-        return '';
-      }
-    };
-
-    return (
-      <div data-testid="mock-datepicker">
-        <input
-          className={inputClassName}
-          data-testid="date-input"
-          disabled={disabled}
-          required={required}
-          type="text"
-          value={value?.startDate ? formatDate(value.startDate) : ''}
-          onChange={(e) => {
-            const newDate = new Date(e.target.value);
-            if (!isNaN(newDate.getTime())) {
-              onChange?.({
-                startDate: newDate,
-                endDate: asSingle ? newDate : (value?.endDate ?? newDate),
-              });
-            }
-          }}
-        />
-      </div>
-    );
-  },
-}));
 
 describe('DateSelector', () => {
   const mockDate = new Date('2025-08-30');
@@ -74,14 +22,13 @@ describe('DateSelector', () => {
 
     expect(screen.getByRole('button', { name: 'Previous day' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Next day' })).toBeInTheDocument();
-    expect(screen.getByTestId('mock-datepicker')).toBeInTheDocument();
-    expect(screen.getByTestId('date-input')).toBeInTheDocument();
+    expect(screen.getByRole('presentation')).toBeInTheDocument();
   });
 
   it('displays the correct initial date', () => {
     render(<DateSelector {...defaultProps} />);
 
-    const dateInput = screen.getByTestId('date-input');
+    const dateInput = screen.getByRole('presentation');
     expect(dateInput).toHaveValue('2025-08-30');
   });
 
@@ -106,13 +53,10 @@ describe('DateSelector', () => {
   it('calls onDateChange when date is changed via datepicker', () => {
     render(<DateSelector {...defaultProps} />);
 
-    const dateInput = screen.getByTestId('date-input');
+    const dateInput = screen.getByRole('presentation');
     fireEvent.change(dateInput, { target: { value: '2025-09-01' } });
 
-    const utcDate = new Date('2025-09-01');
-    expect(mockOnDateChange).toHaveBeenCalledWith(
-      new Date(`${utcDate.getFullYear()}-${utcDate.getMonth() + 1}-${utcDate.getDate()}`),
-    );
+    expect(mockOnDateChange).toHaveBeenCalledWith(new Date(`2025-09-01T00:00:00`));
   });
 
   it('disables buttons and datepicker when disabled prop is true', () => {
@@ -120,7 +64,7 @@ describe('DateSelector', () => {
 
     const previousButton = screen.getByRole('button', { name: 'Previous day' });
     const nextButton = screen.getByRole('button', { name: 'Next day' });
-    const dateInput = screen.getByTestId('date-input');
+    const dateInput = screen.getByRole('presentation');
 
     expect(previousButton).toBeDisabled();
     expect(nextButton).toBeDisabled();
@@ -172,7 +116,7 @@ describe('DateSelector', () => {
   it('does not call onDateChange when datepicker receives invalid input', () => {
     render(<DateSelector {...defaultProps} />);
 
-    const dateInput = screen.getByTestId('date-input');
+    const dateInput = screen.getByRole('presentation');
     fireEvent.change(dateInput, { target: { value: 'invalid-date' } });
 
     // Should not call onDateChange with invalid date

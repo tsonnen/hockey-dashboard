@@ -1,13 +1,7 @@
 import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from '@jest/globals';
 
 import { TeamDisplay } from '@/app/components/team-display/team-display';
-
-// Mock next/image since it's not available in test environment
-jest.mock('next/image', () => ({
-  __esModule: true,
-  // eslint-disable-next-line @next/next/no-img-element
-  default: (props: object) => <img {...props} />,
-}));
 
 describe('TeamDisplay', () => {
   const mockTeam = {

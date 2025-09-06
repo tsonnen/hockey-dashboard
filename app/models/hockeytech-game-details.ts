@@ -202,16 +202,21 @@ export interface HockeyTechGameDetails {
 
 function mapGameDetailsStatusToGameState(status: string): GameState {
   switch (status) {
-    case 'Scheduled':
+    case 'Scheduled': {
       return GameState.FUTURE;
-    case 'In Progress':
+    }
+    case 'In Progress': {
       return GameState.LIVE;
-    case 'Final':
+    }
+    case 'Final': {
       return GameState.FINAL;
-    case 'Official':
+    }
+    case 'Official': {
       return GameState.OFFICIAL;
-    default:
+    }
+    default: {
       return GameState.FUTURE;
+    }
   }
 }
 
@@ -221,13 +226,13 @@ export function convertHockeyTechGameDetails(
 ): Partial<Game> {
   const periodStats = data.periods.map((period) => ({
     periodDescriptor: {
-      number: parseInt(period.info.id),
+      number: Number.parseInt(period.info.id),
       periodType: period.info.longName,
       maxRegulationPeriods: 3,
     },
     goals: period.goals.map((goal) => ({
       situationCode: goal.properties.isPowerPlay === '1' ? 'PP' : 'EV',
-      eventId: parseInt(goal.game_goal_id),
+      eventId: Number.parseInt(goal.game_goal_id),
       strength: goal.properties.isPowerPlay === '1' ? 'PP' : 'EV',
       playerId: goal.scoredBy.id,
       firstName: { default: goal.scoredBy.firstName },
@@ -235,9 +240,9 @@ export function convertHockeyTechGameDetails(
       name: { default: `${goal.scoredBy.firstName} ${goal.scoredBy.lastName}` },
       teamAbbrev: { default: goal.team.abbreviation },
       headshot: goal.scoredBy.playerImageURL,
-      goalsToDate: parseInt(goal.scorerGoalNumber),
-      awayScore: parseInt(period.stats.visitingGoals),
-      homeScore: parseInt(period.stats.homeGoals),
+      goalsToDate: Number.parseInt(goal.scorerGoalNumber),
+      awayScore: Number.parseInt(period.stats.visitingGoals),
+      homeScore: Number.parseInt(period.stats.homeGoals),
       timeInPeriod: goal.time,
       shotType: '',
       goalModifier: '',
@@ -251,23 +256,20 @@ export function convertHockeyTechGameDetails(
       homeTeamDefendingSide: '',
       isHome: goal.team.id === data.homeTeam.info.id,
     })),
-    homeShots: parseInt(period.stats.homeShots),
-    awayShots: parseInt(period.stats.visitingShots),
+    homeShots: Number.parseInt(period.stats.homeShots),
+    awayShots: Number.parseInt(period.stats.visitingShots),
   }));
 
-  const { awaySOG, homeSOG } = periodStats.reduce(
-    (sog, period) => {
-      sog.awaySOG += period.awayShots;
-      sog.homeSOG += period.homeShots;
-
-      return sog;
-    },
-    { awaySOG: 0, homeSOG: 0 },
-  );
+  let awaySOG = 0;
+  let homeSOG = 0;
+  for (const period of periodStats) {
+    awaySOG += period.awayShots;
+    homeSOG += period.homeShots;
+  }
 
   return {
     id: data.details.id,
-    season: parseInt(data.details.seasonId),
+    season: Number.parseInt(data.details.seasonId),
     gameType: 2, // Regular season
     gameDate: data.details.date,
     venue: { default: data.details.venue },
@@ -318,7 +320,7 @@ export function convertHockeyTechGameDetails(
       })),
       penalties: data.periods.map((period) => ({
         periodDescriptor: {
-          number: parseInt(period.info.id),
+          number: Number.parseInt(period.info.id),
           periodType: period.info.longName,
           maxRegulationPeriods: 3,
         },
