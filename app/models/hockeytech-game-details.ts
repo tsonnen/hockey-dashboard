@@ -224,41 +224,52 @@ export function convertHockeyTechGameDetails(
   data: HockeyTechGameDetails,
   league: string,
 ): Partial<Game> {
-  const periodStats = data.periods.map((period) => ({
-    periodDescriptor: {
-      number: Number.parseInt(period.info.id),
-      periodType: period.info.longName,
-      maxRegulationPeriods: 3,
-    },
-    goals: period.goals.map((goal) => ({
-      situationCode: goal.properties.isPowerPlay === '1' ? 'PP' : 'EV',
-      eventId: Number.parseInt(goal.game_goal_id),
-      strength: goal.properties.isPowerPlay === '1' ? 'PP' : 'EV',
-      playerId: goal.scoredBy.id,
-      firstName: { default: goal.scoredBy.firstName },
-      lastName: { default: goal.scoredBy.lastName },
-      name: { default: `${goal.scoredBy.firstName} ${goal.scoredBy.lastName}` },
-      teamAbbrev: { default: goal.team.abbreviation },
-      headshot: goal.scoredBy.playerImageURL,
-      goalsToDate: Number.parseInt(goal.scorerGoalNumber),
-      awayScore: Number.parseInt(period.stats.visitingGoals),
-      homeScore: Number.parseInt(period.stats.homeGoals),
-      timeInPeriod: goal.time,
-      shotType: '',
-      goalModifier: '',
-      assists: goal.assists.map((assist) => ({
-        playerId: assist.id,
-        firstName: { default: assist.firstName },
-        lastName: { default: assist.lastName },
-        name: { default: `${assist.firstName} ${assist.lastName}` },
-      })),
-      pptReplayUrl: '',
-      homeTeamDefendingSide: '',
-      isHome: goal.team.id === data.homeTeam.info.id,
-    })),
-    homeShots: Number.parseInt(period.stats.homeShots),
-    awayShots: Number.parseInt(period.stats.visitingShots),
-  }));
+  const currentScore = { home: 0, away: 0 };
+  const periodStats = data.periods.map((period) => {
+    return {
+      periodDescriptor: {
+        number: Number.parseInt(period.info.id),
+        periodType: period.info.longName,
+        maxRegulationPeriods: 3,
+      },
+      goals: period.goals.map((goal) => {
+        const isHome = goal.team.id === data.homeTeam.info.id;
+        if (isHome) {
+          currentScore.home++;
+        } else {
+          currentScore.away++;
+        }
+        return {
+          situationCode: goal.properties.isPowerPlay === '1' ? 'PP' : 'EV',
+          eventId: Number.parseInt(goal.game_goal_id),
+          strength: goal.properties.isPowerPlay === '1' ? 'PP' : 'EV',
+          playerId: goal.scoredBy.id,
+          firstName: { default: goal.scoredBy.firstName },
+          lastName: { default: goal.scoredBy.lastName },
+          name: { default: `${goal.scoredBy.firstName} ${goal.scoredBy.lastName}` },
+          teamAbbrev: { default: goal.team.abbreviation },
+          headshot: goal.scoredBy.playerImageURL,
+          goalsToDate: Number.parseInt(goal.scorerGoalNumber),
+          awayScore: currentScore.away,
+          homeScore: currentScore.home,
+          timeInPeriod: goal.time,
+          shotType: '',
+          goalModifier: '',
+          assists: goal.assists.map((assist) => ({
+            playerId: assist.id,
+            firstName: { default: assist.firstName },
+            lastName: { default: assist.lastName },
+            name: { default: `${assist.firstName} ${assist.lastName}` },
+          })),
+          pptReplayUrl: '',
+          homeTeamDefendingSide: '',
+          isHome,
+        };
+      }),
+      homeShots: Number.parseInt(period.stats.homeShots),
+      awayShots: Number.parseInt(period.stats.visitingShots),
+    };
+  });
 
   let awaySOG = 0;
   let homeSOG = 0;
