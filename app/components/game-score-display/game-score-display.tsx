@@ -29,10 +29,13 @@ export function GameScoreDisplay(): ReactElement {
     0;
 
   return (
-    <div className="mb-6 w-full rounded-lg bg-gray-800 p-6 shadow-md">
+    <div
+      className="mb-6 w-full rounded-lg bg-gray-800 p-6 shadow-md"
+      data-testid="game-score-display"
+    >
       <div className="flex items-center justify-between">
         {/* Away Team */}
-        <div className="flex flex-1 flex-col items-center">
+        <div className="flex flex-1 flex-col items-center" data-testid="away-team">
           <div className="relative mb-2 size-16">
             {awayTeam.logo && (
               <ImageWithFallback
@@ -40,11 +43,14 @@ export function GameScoreDisplay(): ReactElement {
                 className="object-contain"
                 fill
                 src={awayTeam.logo}
+                dataTestId="away-team-logo"
               />
             )}
           </div>
           <div className="text-center text-lg font-semibold">{awayTeam.placeName.default}</div>
-          <div className="mt-2 text-3xl font-bold">{awayScore}</div>
+          <div className="mt-2 text-3xl font-bold" data-testid="away-team-score">
+            {awayScore}
+          </div>
           {awayTeam.sog !== undefined && (
             <div className="mt-1 text-sm text-gray-600">SOG: {awayTeam.sog}</div>
           )}
@@ -70,11 +76,14 @@ export function GameScoreDisplay(): ReactElement {
                 className="object-contain"
                 fill
                 src={homeTeam.logo}
+                dataTestId="home-team-logo"
               />
             )}
           </div>
           <div className="text-center text-lg font-semibold">{homeTeam.placeName.default}</div>
-          <div className="mt-2 text-3xl font-bold">{homeScore}</div>
+          <div className="mt-2 text-3xl font-bold" data-testid="home-team-score">
+            {homeScore}
+          </div>
           {homeTeam.sog !== undefined && (
             <div className="mt-1 text-sm text-gray-600">SOG: {homeTeam.sog}</div>
           )}
