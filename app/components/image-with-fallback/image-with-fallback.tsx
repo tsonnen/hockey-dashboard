@@ -40,6 +40,7 @@ export function ImageWithFallback({
           setImageError(true);
         }}
         data-testid={dataTestId}
+        unoptimized
       />
     </div>
   );
