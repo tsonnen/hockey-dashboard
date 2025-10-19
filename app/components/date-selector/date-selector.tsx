@@ -65,6 +65,7 @@ export function DateSelector({
         asSingle={true}
         disabled={disabled}
         inputClassName={styles.dateInput}
+        inputId="datepickerInput"
         required={true}
         useRange={false}
         value={value}

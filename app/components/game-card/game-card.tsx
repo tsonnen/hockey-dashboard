@@ -28,6 +28,7 @@ export function GameCard({ game }: GameCardProps): JSX.Element {
           handleClick();
         }
       }}
+      data-testid-gamecard={game.id}
     >
       <div className={styles.scoreDisplay}>
         <TeamDisplay gameStarted={game.gameStarted} team={game.awayTeam} />

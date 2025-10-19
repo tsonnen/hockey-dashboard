@@ -12,6 +12,7 @@ export function ImageWithFallback({
   className,
   fill = undefined,
   fallBackSrc = fallback.src,
+  dataTestId = 'image-with-fallback',
 }: {
   src: string;
   alt: string;
@@ -21,6 +22,7 @@ export function ImageWithFallback({
   width?: number;
   quality?: number;
   className?: string;
+  dataTestId?: string;
 }): JSX.Element {
   const [imageError, setImageError] = useState<boolean>(!src);
 
@@ -37,6 +39,8 @@ export function ImageWithFallback({
         onError={() => {
           setImageError(true);
         }}
+        data-testid={dataTestId}
+        unoptimized
       />
     </div>
   );
