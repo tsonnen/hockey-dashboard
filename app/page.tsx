@@ -53,7 +53,7 @@ function HomePage(): React.JSX.Element {
       const currentLeagues = localStorage.getItem('leagues');
       if (!currentLeagues) {
         const defaultLeagues = LEAGUE_ENDPOINTS.map((endpoint) => {
-          return { key: endpoint.name.toLowerCase(), label: endpoint.name };
+          return endpoint.name.toLowerCase();
         });
         localStorage.setItem('leagues', JSON.stringify(defaultLeagues));
         return defaultLeagues;

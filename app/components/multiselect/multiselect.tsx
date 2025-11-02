@@ -80,10 +80,7 @@ export function Multiselect({
             </button>
           </span>
           <div className={`dropdown-menu${isOpen ? '' : ' hidden'}`}>
-            <div
-              className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y rounded-md  border bg-white shadow-lg outline-none dark:bg-gray-900"
-              id="headlessui-menu-items-117"
-            >
+            <div className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y rounded-md  border bg-white shadow-lg outline-none dark:bg-gray-900">
               <div className="mb-2 flex gap-2 border">
                 <button
                   className="flex-1 place-items-center py-1 hover:bg-blue-500 dark:hover:bg-gray-800"
