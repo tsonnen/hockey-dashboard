@@ -65,7 +65,7 @@ globalThis.setMockParams = (params) => {
 jest.mock('next/image', () => ({
   __esModule: true,
   default: (props) => {
-    const { fill: _fill, ...rest } = props;
+    const { fill: _fill, unoptimized: _unoptimized, ...rest } = props;
     // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
     return <img {...rest} />;
   },

@@ -10,6 +10,7 @@ import { GameSkeleton } from '@/app/components/game-skeleton';
 import { Game } from '@/app/models/game';
 
 import styles from './page.module.css';
+import { Multiselect } from './components/multiselect';
 
 interface LeagueEndpoint {
   url: string;
@@ -47,6 +48,21 @@ function HomePage(): React.JSX.Element {
   const [games, setGames] = useState<Game[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>();
+  const [selectedLeagues, setSelectedLeagues] = useState<string[]>(() => {
+    if (globalThis.window !== undefined) {
+      const currentLeagues = localStorage.getItem('leagues');
+      if (!currentLeagues) {
+        const defaultLeagues = LEAGUE_ENDPOINTS.map((endpoint) => {
+          return endpoint.name.toLowerCase();
+        });
+        localStorage.setItem('leagues', JSON.stringify(defaultLeagues));
+        return defaultLeagues;
+      }
+      return currentLeagues ? JSON.parse(currentLeagues) : [];
+    }
+    return [];
+  });
+
   const [selectedDateString, setSelectedDate] = useState<string>(() => {
     // Initialize from URL if present, otherwise use current date
     const dateParam = searchParams.get('date');
@@ -77,12 +93,16 @@ function HomePage(): React.JSX.Element {
   };
 
   const getGameCards = () => {
+    const formatterDisjunction = new Intl.ListFormat('en', { style: 'long', type: 'disjunction' });
+    const selectedLeaguesString = formatterDisjunction.format(
+      selectedLeagues.map((league) => league.toUpperCase()),
+    );
     return games.length > 0 ? (
       games.map((game) => (
         <GameCard key={`${game.id.toString()}-${game.startTimeUTC}`} game={new Game(game)} />
       ))
     ) : (
-      <div className="no-games">No games scheduled for this date</div>
+      <div className="no-games">No games scheduled for this date for {selectedLeaguesString}</div>
     );
   };
 
@@ -95,7 +115,9 @@ function HomePage(): React.JSX.Element {
       try {
         const dateStr = selectedDateString;
         const allLeagueGames = await Promise.all(
-          LEAGUE_ENDPOINTS.map((endpoint) => fetchGamesForDate(endpoint, dateStr)),
+          LEAGUE_ENDPOINTS.filter((endpoint) =>
+            selectedLeagues.includes(endpoint.name.toLowerCase()),
+          ).map((endpoint) => fetchGamesForDate(endpoint, dateStr)),
         );
 
         const allGames = allLeagueGames
@@ -113,32 +135,63 @@ function HomePage(): React.JSX.Element {
     };
 
     void fetchData();
-  }, [selectedDateString]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDateString, JSON.stringify(selectedLeagues)]); // selectedLeagues is an array, so we stringify it to avoid unnecessary re-renders
 
   return (
-    <div>
-      <DateSelector
-        disabled={isLoading}
-        selectedDate={new Date(Date.parse(selectedDateString))}
-        onDateChange={handleDateChange}
-      />
+    <div className="flex h-screen flex-col">
+      <div className="grid w-full">
+        <div className="grid place-items-center">
+          <DateSelector
+            disabled={isLoading}
+            selectedDate={new Date(Date.parse(selectedDateString))}
+            onDateChange={handleDateChange}
+          />
+        </div>
+        <div className="mr-8 grid place-items-end">
+          <Multiselect
+            options={[
+              { key: 'nhl', label: 'NHL' },
+              { key: 'ohl', label: 'OHL' },
+              { key: 'whl', label: 'WHL' },
+              { key: 'qmjhl', label: 'QMJHL' },
+              { key: 'pwhl', label: 'PWHL' },
+              { key: 'ahl', label: 'AHL' },
+              { key: 'echl', label: 'ECHL' },
+            ]}
+            label="Select Leagues"
+            selected={selectedLeagues}
+            onApply={(selected) => {
+              setSelectedLeagues(selected);
+              localStorage.setItem('leagues', JSON.stringify(selected));
+            }}
+          />
+        </div>
+      </div>
+
       {error && (
         <div className="error-message" role="alert">
           {error}
         </div>
       )}
-      <div className={styles.gamesContainer}>
-        {isLoading ? (
-          <>
-            <GameSkeleton />
-            <GameSkeleton />
-            <GameSkeleton />
-            <GameSkeleton />
-          </>
-        ) : (
-          getGameCards()
-        )}
-      </div>
+      {selectedLeagues.length > 0 ? (
+        <div className={styles.gamesContainer}>
+          {isLoading ? (
+            <>
+              <GameSkeleton />
+              <GameSkeleton />
+              <GameSkeleton />
+              <GameSkeleton />
+            </>
+          ) : (
+            getGameCards()
+          )}
+        </div>
+      ) : (
+        <div className={styles.gamesContainer}>
+          No leagues selected. Please select at least one league to view games.
+        </div>
+      )}
     </div>
   );
 }

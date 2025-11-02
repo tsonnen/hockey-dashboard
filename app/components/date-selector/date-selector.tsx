@@ -52,7 +52,7 @@ export function DateSelector({
   };
 
   return (
-    <div className={styles.dateSelector}>
+    <div className={`${styles.dateSelector} flex place-items-center`}>
       <button
         aria-label="Previous day"
         className={styles.navButton}
