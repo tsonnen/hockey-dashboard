@@ -57,6 +57,14 @@ export function Multiselect({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, JSON.stringify(selected)]); // selected is an array, so we stringify it to avoid unnecessary re-renders
 
+  const buttonTwClasses = [
+    'place-items-center',
+    'rounded',
+    'hover:bg-blue-500',
+    'hover:text-white',
+    'dark:hover:bg-gray-800',
+  ];
+
   return (
     <div>
       <div>
@@ -81,16 +89,13 @@ export function Multiselect({
           </span>
           <div className={`dropdown-menu${isOpen ? '' : ' hidden'}`}>
             <div className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y rounded-md  border bg-white shadow-lg outline-none dark:bg-gray-900">
-              <div className="mb-2 flex gap-2 border">
-                <button
-                  className="flex-1 place-items-center py-1 hover:bg-blue-500 dark:hover:bg-gray-800"
-                  onClick={selectAll}
-                >
+              <div className="mb-2 flex rounded border">
+                <button className={`flex-1 py-1 ${buttonTwClasses.join(' ')}`} onClick={selectAll}>
                   Select All
                 </button>
                 <span className="border-l border-gray-300 dark:border-gray-700"></span>
                 <button
-                  className="flex-1 place-items-center py-1 hover:bg-blue-500 dark:hover:bg-gray-800"
+                  className={`flex-1 py-1 ${buttonTwClasses.join(' ')}`}
                   onClick={deselectAll}
                 >
                   Deselect All
@@ -99,7 +104,7 @@ export function Multiselect({
               {options.map((option) => (
                 <div
                   key={option.key}
-                  className="border-none ps-4 hover:bg-blue-500 dark:hover:bg-gray-800"
+                  className="border-none ps-4 hover:bg-blue-500 hover:text-white dark:hover:bg-gray-800"
                 >
                   <label className="w-full">
                     <input
@@ -112,10 +117,7 @@ export function Multiselect({
                   </label>
                 </div>
               ))}
-              <button
-                className="w-full place-items-center ps-2 hover:bg-blue-500 dark:hover:bg-gray-800"
-                onClick={handleApply}
-              >
+              <button className={`w-full ps-2 ${buttonTwClasses.join(' ')}`} onClick={handleApply}>
                 Apply
               </button>
             </div>
