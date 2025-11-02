@@ -30,7 +30,7 @@ export function GameScoreDisplay(): ReactElement {
 
   return (
     <div
-      className="mb-6 w-full rounded-lg bg-gray-800 p-6 shadow-md"
+      className="mb-6 w-full rounded-lg bg-gray-200 p-6 shadow-md dark:bg-gray-800"
       data-testid="game-score-display"
     >
       <div className="flex items-center justify-between">
