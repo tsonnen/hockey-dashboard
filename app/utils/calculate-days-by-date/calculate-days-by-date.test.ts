@@ -1,5 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
-import { calculateDaysByDate } from './utils';
+import { calculateDaysByDate } from './calculate-days-by-date';
+import { jest } from '@jest/globals';
 
 describe('Utils', () => {
   describe('calculateDaysByDate', () => {
@@ -25,6 +26,22 @@ describe('Utils', () => {
 
       expect(daysBack).toBe(expectedDaysBack);
       expect(daysAhead).toBe(expectedDaysAhead);
+    });
+
+    it('handles past daylight savings time change correctly', () => {
+      jest.useFakeTimers().setSystemTime(new Date('2019-11-04'));
+      const targetDate = new Date('2019-11-02');
+      const { daysBack, daysAhead } = calculateDaysByDate(targetDate);
+      expect(daysBack).toBe(2);
+      expect(daysAhead).toBe(0);
+    });
+
+    it('handles future daylight savings time change correctly', () => {
+      jest.useFakeTimers().setSystemTime(new Date('2026-03-07'));
+      const targetDate = new Date('2026-03-09');
+      const { daysBack, daysAhead } = calculateDaysByDate(targetDate);
+      expect(daysBack).toBe(0);
+      expect(daysAhead).toBe(2);
     });
   });
 });

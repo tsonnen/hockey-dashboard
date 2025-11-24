@@ -4,7 +4,7 @@ import type { LEAGUES } from '@/app/api/hockeytech/const';
 import { getBaseUrl } from '@/app/api/hockeytech/utils';
 import type { Game } from '@/app/models/game';
 import { type HockeyTechGame, convertHockeyTechGame } from '@/app/models/hockeytech-game';
-import { calculateDaysByDate } from '@/app/api/utils';
+import { calculateDaysByDate } from '@/app/utils/calculate-days-by-date';
 
 export async function GET(
   request: Request,

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, type JSX } from 'react';
-
 import { BackButton } from '@/app/components/back-button';
 import { GameDetailsSkeleton } from '@/app/components/game-details-skeleton';
 import { GameScoreDisplay } from '@/app/components/game-score-display';
@@ -13,6 +12,28 @@ import {
   convertHockeyTechGameDetails,
   type HockeyTechGameDetails,
 } from '@/app/models/hockeytech-game-details';
+import { SkaterComparison } from '@/app/components/skater-comparison/skater-comparison';
+import { GoalieComparison } from '@/app/components/goalie-comparison/goalie-comparison';
+import { GameMatchup } from '@/app/models/game-matchup';
+
+function GameMatchupSection(matchup: GameMatchup): JSX.Element {
+  return (
+    <section className="mb-6">
+      <h2 className="mb-2 text-center text-xl font-semibold">Game Matchup</h2>
+      <div className="grid grid-cols-2">
+        {matchup.skaterComparison && (
+          <SkaterComparison leaders={matchup.skaterComparison.leaders} />
+        )}
+        {matchup.goalieComparison && (
+          <GoalieComparison
+            homeTeam={matchup.goalieComparison.homeTeam}
+            awayTeam={matchup.goalieComparison.awayTeam}
+          />
+        )}
+      </div>
+    </section>
+  );
+}
 
 interface GamePageProps {
   params: Promise<{
@@ -91,12 +112,7 @@ function GamePageContent({ params }: GamePageProps): JSX.Element {
         </div>
       )}
 
-      {game.matchup && (
-        <div>
-          <h2 className="mb-2 text-xl font-semibold">Game Matchup</h2>
-          <div className="grid grid-cols-2 gap-4"></div>
-        </div>
-      )}
+      {game.matchup && <GameMatchupSection {...game.matchup} />}
     </div>
   );
 }
