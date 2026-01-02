@@ -29,7 +29,7 @@ interface TeamTotals {
 }
 
 interface TeamGoalieStats {
-  teamTotals: TeamTotals;
+  teamTotals?: TeamTotals | undefined;
   leaders: GoalieProps[];
 }
 

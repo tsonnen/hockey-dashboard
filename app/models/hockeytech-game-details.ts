@@ -194,8 +194,8 @@ export interface HockeyTechGameDetails {
     playerImage: string | null;
     homeTeam: number;
     sponsor: {
-      name: string | null;
-      image: string | null;
+      name: string | null | undefined;
+      image: string | null | undefined;
     };
   };
 }
@@ -280,7 +280,9 @@ export function convertHockeyTechGameDetails(
   }
 
   // Parse clock and period from details.status
-  let clock: { timeRemaining: string; secondsRemaining: number; running: boolean; inIntermission: boolean } | undefined;
+  let clock:
+    | { timeRemaining: string; secondsRemaining: number; running: boolean; inIntermission: boolean }
+    | undefined;
   let period: number | undefined;
   if (data.details.status) {
     // Pattern: "In Progress (MM:SS remaining in {period})"
