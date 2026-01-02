@@ -282,7 +282,7 @@ export function convertHockeyTechGameDetails(
   return {
     id: data.details.id,
     season: Number.parseInt(data.details.seasonId),
-    gameType: 2, // Regular season
+    gameType: undefined,
     gameDate: data.details.date,
     venue: { default: data.details.venue },
     neutralSite: false,

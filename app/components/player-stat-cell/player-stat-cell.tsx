@@ -1,4 +1,3 @@
-import React from 'react';
 import { ImageWithFallback } from '../image-with-fallback';
 import fallbackHeadshot from '@/app/assets/headshot-fallback.png';
 
@@ -18,12 +17,15 @@ export function PlayerStatCell({
   stats,
 }: PlayerStatCellProps) {
   const getStatStrings = () => {
-    return stats.map((stat, idx) => (
-      <span
-        key={`${stat.statLabel ?? ''}-${stat.value}-${idx}`}
-        className="text-lg font-semibold text-gray-600"
-      >{`${stat.value} ${stat.statLabel ?? ''}`}</span>
-    ));
+    return stats.map((stat, idx) => {
+      const label = stat.statLabel ? ` ${stat.statLabel}` : '';
+      return (
+        <span key={idx} className="text-lg font-semibold text-gray-600">
+          {stat.value}
+          {label}
+        </span>
+      );
+    });
   };
 
   return (

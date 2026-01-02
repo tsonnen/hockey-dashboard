@@ -43,8 +43,8 @@ function convertLeadingScorer(
 ): StatLeaderProps {
   return {
     playerId: Number(scorer.player_id),
-    headshot: `https://assets.leaguestat.com/${league}/120x160/${scorer.player_id}.jpg`, // HockeyTech preview doesn't provide headshot URLs
-    positionCode: '', // Position not provided in preview
+    headshot: `https://assets.leaguestat.com/${league}/120x160/${scorer.player_id}.jpg`,
+    positionCode: '',
     sweaterNumber: Number(scorer.jersey_number),
     name: {
       default: `${scorer.first_name} ${scorer.last_name}`,
@@ -71,9 +71,8 @@ export function convertHockeyTechGamePreview(
   ];
 
   const leaders = categories.map(({ category, key }) => {
-    // Sort to find top scorer for each team
-    const homeLeader = [...homeScorers].sort((a, b) => b[key] - a[key])[0];
-    const awayLeader = [...awayScorers].sort((a, b) => b[key] - a[key])[0];
+    const homeLeader = homeScorers.toSorted((a, b) => b[key] - a[key])[0];
+    const awayLeader = awayScorers.toSorted((a, b) => b[key] - a[key])[0];
 
     return {
       category,
@@ -84,13 +83,12 @@ export function convertHockeyTechGamePreview(
 
   return {
     season: Number(preview.current_season.id),
-    gameType: undefined, // HockeyTech doesn't provide game types. We need to find a way to leverage the season ID to determine this later.
+    gameType: undefined,
     skaterComparison: {
       contextLabel: preview.current_season.season_name,
       contextSeason: Number(preview.current_season.id),
       leaders,
     },
-    // Goalie comparison not available in preview data
     goalieComparison: undefined,
   };
 }

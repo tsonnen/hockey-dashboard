@@ -1,6 +1,5 @@
-import React from 'react';
 import { PlayerStatCell } from '../player-stat-cell/player-stat-cell';
-import { GoalieComparisonProps, GoalieProps } from '@/app/models/game-matchup';
+import type { GoalieComparisonProps, GoalieProps } from '@/app/models/game-matchup';
 
 const filterGoaliesWhoPlayed = (goalies: GoalieProps[]) => {
   return goalies.filter((goalie) => goalie.gamesPlayed > 0);
@@ -13,8 +12,8 @@ export function GoalieComparison({
   homeTeam: GoalieComparisonProps['homeTeam'];
   awayTeam: GoalieComparisonProps['awayTeam'];
 }) {
-  homeTeam.leaders = filterGoaliesWhoPlayed(homeTeam.leaders);
-  awayTeam.leaders = filterGoaliesWhoPlayed(awayTeam.leaders);
+  const homeGoalies = filterGoaliesWhoPlayed(homeTeam.leaders);
+  const awayGoalies = filterGoaliesWhoPlayed(awayTeam.leaders);
   return (
     <div className="mb-4">
       <h3 className="mb-2 text-lg font-semibold">Goalies</h3>
@@ -22,7 +21,7 @@ export function GoalieComparison({
         <div>
           <h4 className="mb-1 font-medium">Away Team</h4>
           <div className="space-y-2">
-            {awayTeam.leaders.map((goalie) => (
+            {awayGoalies.map((goalie) => (
               <PlayerStatCell
                 key={goalie.playerId}
                 headshot={goalie.headshot}
@@ -40,7 +39,7 @@ export function GoalieComparison({
         <div>
           <h4 className="mb-1 font-medium">Home Team</h4>
           <div className="space-y-2">
-            {homeTeam.leaders.map((goalie) => (
+            {homeGoalies.map((goalie) => (
               <PlayerStatCell
                 key={goalie.playerId}
                 headshot={goalie.headshot}
