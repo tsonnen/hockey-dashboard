@@ -25,7 +25,7 @@ function GameMatchupSection(matchup: GameMatchup): JSX.Element {
   return (
     <section className="mb-6">
       <h2 className="mb-2 text-center text-xl font-semibold">Game Matchup</h2>
-      <div className="grid grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {matchup.skaterComparison && (
           <SkaterComparison leaders={matchup.skaterComparison.leaders} />
         )}
