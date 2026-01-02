@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, type JSX } from 'react';
-
 import { BackButton } from '@/app/components/back-button';
 import { GameDetailsSkeleton } from '@/app/components/game-details-skeleton';
 import { GameScoreDisplay } from '@/app/components/game-score-display';
@@ -13,6 +12,33 @@ import {
   convertHockeyTechGameDetails,
   type HockeyTechGameDetails,
 } from '@/app/models/hockeytech-game-details';
+import {
+  convertHockeyTechGamePreview,
+  type HockeyTechGamePreview,
+} from '@/app/models/hockeytech-game-preview';
+import { SkaterComparison } from '@/app/components/skater-comparison/skater-comparison';
+import { GoalieComparison } from '@/app/components/goalie-comparison/goalie-comparison';
+import { GameMatchup } from '@/app/models/game-matchup';
+import { GameState } from '@/app/models/game-state';
+
+function GameMatchupSection(matchup: GameMatchup): JSX.Element {
+  return (
+    <section className="mb-6">
+      <h2 className="mb-2 text-center text-xl font-semibold">Game Matchup</h2>
+      <div className="grid grid-cols-2">
+        {matchup.skaterComparison && (
+          <SkaterComparison leaders={matchup.skaterComparison.leaders} />
+        )}
+        {matchup.goalieComparison && (
+          <GoalieComparison
+            homeTeam={matchup.goalieComparison.homeTeam}
+            awayTeam={matchup.goalieComparison.awayTeam}
+          />
+        )}
+      </div>
+    </section>
+  );
+}
 
 interface GamePageProps {
   params: Promise<{
@@ -50,7 +76,25 @@ function GamePageContent({ params }: GamePageProps): JSX.Element {
               throw new Error('Failed to fetch game');
             }
             const data = (await response.json()) as HockeyTechGameDetails;
-            setGame(new Game(convertHockeyTechGameDetails(data, league)));
+            const gameData = convertHockeyTechGameDetails(data, league);
+            const newGame = new Game(gameData);
+
+            // Fetch preview data if game hasn't started yet
+            if (newGame.gameState === GameState.FUTURE) {
+              try {
+                const previewResponse = await fetch(`/api/hockeytech/${league}/game/${id}/preview`);
+                if (previewResponse.ok) {
+                  const previewData = (await previewResponse.json()) as HockeyTechGamePreview;
+                  const matchupData = convertHockeyTechGamePreview(previewData, league);
+                  newGame.matchup = matchupData as GameMatchup;
+                }
+              } catch (error) {
+                console.error('Error fetching preview data:', error);
+                // Continue without preview data
+              }
+            }
+
+            setGame(newGame);
             break;
           }
           default: {
@@ -75,28 +119,23 @@ function GamePageContent({ params }: GamePageProps): JSX.Element {
 
       <GameScoreDisplay />
 
-      {game.summary && (
-        <div className="mb-4">
-          <div className="flex items-center justify-center">
-            <PeriodScoringSummary />
-          </div>
-          <div>
-            <h2 className="mb-2 text-xl font-semibold">Game Summary</h2>
-            <div className="space-y-4">
-              {game.summary.scoring.map((period, i) => (
-                <PeriodGoalsDisplay key={i} period={period} />
-              ))}
+      {game.gameState === GameState.FUTURE
+        ? game.matchup && <GameMatchupSection {...game.matchup} />
+        : game.summary && (
+            <div className="mb-4">
+              <div className="flex items-center justify-center">
+                <PeriodScoringSummary />
+              </div>
+              <div>
+                <h2 className="mb-2 text-xl font-semibold">Game Summary</h2>
+                <div className="space-y-4">
+                  {game.summary.scoring.map((period, i) => (
+                    <PeriodGoalsDisplay key={i} period={period} />
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
-
-      {game.matchup && (
-        <div>
-          <h2 className="mb-2 text-xl font-semibold">Game Matchup</h2>
-          <div className="grid grid-cols-2 gap-4"></div>
-        </div>
-      )}
+          )}
     </div>
   );
 }
