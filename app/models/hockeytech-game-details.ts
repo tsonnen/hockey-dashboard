@@ -279,6 +279,43 @@ export function convertHockeyTechGameDetails(
     homeSOG += period.homeShots;
   }
 
+  // Parse clock and period from details.status
+  let clock: { timeRemaining: string; secondsRemaining: number; running: boolean; inIntermission: boolean } | undefined;
+  let period: number | undefined;
+  if (data.details.status) {
+    // Pattern: "In Progress (MM:SS remaining in {period})"
+    const timeMatch = data.details.status.match(/\((\d+:\d+) remaining/);
+    const periodMatch = data.details.status.match(/remaining in (\w+)\)/);
+
+    if (timeMatch) {
+      const timeRemaining = timeMatch[1];
+      const [minutes, seconds] = timeRemaining.split(':').map(Number);
+      clock = {
+        timeRemaining,
+        secondsRemaining: minutes * 60 + seconds,
+        running: true,
+        inIntermission: false,
+      };
+    }
+
+    if (periodMatch) {
+      const periodStr = periodMatch[1];
+      // Convert period string to number: 1st→1, 2nd→2, 3rd→3, OT→4, 2OT→5, etc.
+      if (periodStr === 'OT') {
+        period = 4;
+      } else if (/^\d+OT$/.test(periodStr)) {
+        const overtimeNumber = Number.parseInt(periodStr);
+        period = 3 + overtimeNumber;
+      } else {
+        // Extract number from "1st", "2nd", "3rd"
+        const periodNum = Number.parseInt(periodStr);
+        if (!Number.isNaN(periodNum)) {
+          period = periodNum;
+        }
+      }
+    }
+  }
+
   return {
     id: data.details.id,
     season: Number.parseInt(data.details.seasonId),
@@ -288,6 +325,8 @@ export function convertHockeyTechGameDetails(
     neutralSite: false,
     startTimeUTC: data.details.GameDateISO8601,
     gameState: mapGameDetailsStatusToGameState(data.details.status),
+    clock,
+    period,
     homeTeam: new Team({
       id: data.homeTeam.info.id,
       placeName: { default: data.homeTeam.info.city },
