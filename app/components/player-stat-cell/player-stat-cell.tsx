@@ -1,5 +1,6 @@
 import React from 'react';
 import { ImageWithFallback } from '../image-with-fallback';
+import fallbackHeadshot from '@/app/assets/headshot-fallback.png';
 
 interface PlayerStatCellProps {
   headshot: string;
@@ -32,7 +33,7 @@ export function PlayerStatCell({
           src={headshot}
           alt={name}
           className="size-8 rounded-full border border-gray-300 object-cover"
-          fallBackSrc="/assets/headshot-fallback.png"
+          fallBackSrc={fallbackHeadshot.src}
           width={40}
           height={40}
         />

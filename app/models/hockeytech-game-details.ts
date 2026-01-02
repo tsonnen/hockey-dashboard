@@ -205,16 +205,17 @@ function mapGameDetailsStatusToGameState(status: string): GameState {
     case 'Scheduled': {
       return GameState.FUTURE;
     }
-    case 'In Progress': {
-      return GameState.LIVE;
-    }
-    case 'Final': {
+    case 'Final':
+    case 'Final OT': {
       return GameState.FINAL;
     }
     case 'Official': {
       return GameState.OFFICIAL;
     }
     default: {
+      if (status.startsWith('In Progress')) {
+        return GameState.LIVE;
+      }
       return GameState.FUTURE;
     }
   }
