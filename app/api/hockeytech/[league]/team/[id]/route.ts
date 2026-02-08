@@ -22,8 +22,8 @@ async function fetchHockeyTech(league: LEAGUES, params: Record<string, string>) 
          jsonString = jsonString.slice(1, -1);
      }
      parsedData = JSON.parse(jsonString);
-  } catch (e) {
-     console.error('HockeyTech fetch error', e);
+  } catch (error) {
+     console.error('HockeyTech fetch error', error);
      return null;
   }
   return parsedData;
@@ -48,8 +48,8 @@ async function fetchModuleKit(league: LEAGUES, params: Record<string, string>) {
          jsonString = jsonString.slice(1, -1);
      }
      parsedData = JSON.parse(jsonString);
-  } catch (e) {
-     console.error('ModuleKit fetch error', e);
+  } catch (error) {
+     console.error('ModuleKit fetch error', error);
      return null;
   }
   return parsedData;
@@ -192,7 +192,7 @@ export async function GET(
           pointsPerGame: stats?.games_played && Number(stats.games_played) > 0 
             ? Number((Number(stats.points || 0) / Number(stats.games_played)).toFixed(2)) 
             : undefined,
-          avgIceTime: stats?.ice_time_per_game_avg !== '0:00' ? stats?.ice_time_per_game_avg : undefined,
+          avgIceTime: stats?.ice_time_per_game_avg === '0:00' ? undefined : stats?.ice_time_per_game_avg,
           shots: stats?.shots ? Number(stats.shots) : undefined,
           shootingPct: stats?.shooting_percentage ? Number(stats.shooting_percentage) / 100 : undefined,
           faceoffPct: stats?.faceoff_pct ? Number(stats.faceoff_pct) / 100 : undefined,
@@ -303,11 +303,11 @@ export async function GET(
               }
           }
 
-          if (!record) {
-              record = { wins, losses, ot, points, streakCode, streakCount };
-          } else {
+          if (record) {
               record.streakCode = record.streakCode || streakCode;
               record.streakCount = record.streakCount || streakCount;
+          } else {
+              record = { wins, losses, ot, points, streakCode, streakCount };
           }
       }
   }

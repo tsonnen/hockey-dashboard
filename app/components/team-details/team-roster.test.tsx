@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { TeamRoster } from './team-roster';
 import { Player } from '@/app/models/team-details';
+import { describe, it, expect } from '@jest/globals';
 
 const mockSkaters: Player[] = [
   {
@@ -28,7 +29,7 @@ const mockSkaters: Player[] = [
     points: 70,
     hits: 0, // Should be treated as undefined if all are 0
     blocks: 0,
-  }
+  },
 ];
 
 const mockGoalies: Player[] = [
@@ -42,13 +43,17 @@ const mockGoalies: Player[] = [
     wins: 12,
     losses: 5,
     savePct: 0.915,
-    gaa: 2.50,
-  }
+    gaa: 2.5,
+  },
 ];
 
 describe('TeamRoster', () => {
   it('renders skaters and goalies tables', () => {
-    render(<TeamRoster roster={{ forwards: [mockSkaters[0]], defensemen: [mockSkaters[1]], goalies: mockGoalies }} />);
+    render(
+      <TeamRoster
+        roster={{ forwards: [mockSkaters[0]], defensemen: [mockSkaters[1]], goalies: mockGoalies }}
+      />,
+    );
     expect(screen.getByText('Skaters')).toBeInTheDocument();
     expect(screen.getByText('Goalies')).toBeInTheDocument();
     expect(screen.getByText('Auston Matthews')).toBeInTheDocument();
@@ -57,7 +62,9 @@ describe('TeamRoster', () => {
 
   it('hides columns when all values are undefined or null', () => {
     // In this case, hits and blocks are provided for at least one player in mockSkaters[0]
-    const { rerender } = render(<TeamRoster roster={{ forwards: [mockSkaters[0]], defensemen: [], goalies: [] }} />);
+    const { rerender } = render(
+      <TeamRoster roster={{ forwards: [mockSkaters[0]], defensemen: [], goalies: [] }} />,
+    );
     expect(screen.getByText('HIT')).toBeInTheDocument();
     expect(screen.getByText('BLK')).toBeInTheDocument();
 
