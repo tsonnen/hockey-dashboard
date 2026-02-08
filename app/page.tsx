@@ -48,20 +48,22 @@ function HomePage(): React.JSX.Element {
   const [games, setGames] = useState<Game[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>();
-  const [selectedLeagues, setSelectedLeagues] = useState<string[]>(() => {
-    if (globalThis.window !== undefined) {
-      const currentLeagues = localStorage.getItem('leagues');
-      if (!currentLeagues) {
-        const defaultLeagues = LEAGUE_ENDPOINTS.map((endpoint) => {
-          return endpoint.name.toLowerCase();
-        });
-        localStorage.setItem('leagues', JSON.stringify(defaultLeagues));
-        return defaultLeagues;
-      }
-      return currentLeagues ? JSON.parse(currentLeagues) : [];
+  const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    const currentLeagues = localStorage.getItem('leagues');
+    if (!currentLeagues) {
+      const defaultLeagues = LEAGUE_ENDPOINTS.map((endpoint) => {
+        return endpoint.name.toLowerCase();
+      });
+      localStorage.setItem('leagues', JSON.stringify(defaultLeagues));
+      setSelectedLeagues(defaultLeagues);
+    } else {
+      setSelectedLeagues(JSON.parse(currentLeagues));
     }
-    return [];
-  });
+  }, []);
 
   const [selectedDateString, setSelectedDate] = useState<string>(() => {
     // Initialize from URL if present, otherwise use current date

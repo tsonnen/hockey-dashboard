@@ -62,7 +62,7 @@ function GamePageContent({ params }: GamePageProps): JSX.Element {
               throw new Error('Failed to fetch game');
             }
             const data = (await response.json()) as Partial<Game>;
-            setGame(new Game(data));
+            setGame(new Game({ ...data, league: 'nhl' }));
             break;
           }
           case 'ohl':
