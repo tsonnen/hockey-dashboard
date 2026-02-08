@@ -67,7 +67,7 @@ export function TeamSchedule({ upcoming, last10, league }: TeamScheduleProps) {
              // Usually reverse chronological (most recent top).
              // Assuming data passed is in correct order or we sort?
              // The API sorted them.
-             [...last10].toReversed().map((g) => <GameRow key={g.id} game={g} league={league} />)
+             last10.slice().reverse().map((g) => <GameRow key={g.id} game={g} league={league} />)
           )}
         </div>
       </section>

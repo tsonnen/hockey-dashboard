@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from '@jest/globals';
 import { TeamRoster } from './team-roster';
 import { Player } from '@/app/models/team-details';
 
@@ -43,7 +42,7 @@ const mockGoalies: Player[] = [
     wins: 12,
     losses: 5,
     savePct: 0.915,
-    gaa: 2.5,
+    gaa: 2.50,
   }
 ];
 

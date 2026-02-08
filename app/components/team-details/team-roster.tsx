@@ -11,7 +11,7 @@ interface TeamRosterProps {
 
 function RosterTable({ players, columns, title }: { 
   players: Player[]; 
-  columns: { key: keyof Player; label: string; format?: (val: unknown) => string }[]; 
+  columns: { key: keyof Player; label: string; format?: (val: any) => string }[]; 
   title: string 
 }) {
   // Filter columns to only show those that have at least one non-null/non-undefined value in the dataset
@@ -41,7 +41,7 @@ function RosterTable({ players, columns, title }: {
               <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{p.sweaterNumber ?? '-'}</td>
               <td className="whitespace-nowrap px-3 py-2">
                 <div className="flex items-center space-x-2">
-                  <div className="relative size-6 shrink-0 overflow-hidden rounded-full bg-gray-100">
+                  <div className="relative size-6 overflow-hidden rounded-full bg-gray-100 shrink-0">
                     {p.headshot ? (
                       <ImageWithFallback
                         src={p.headshot}
@@ -73,7 +73,7 @@ function RosterTable({ players, columns, title }: {
 export function TeamRoster({ roster }: TeamRosterProps) {
   const skaters = [...roster.forwards, ...roster.defensemen];
   
-  const skaterColumns: { key: keyof Player; label: string; format?: (val: unknown) => string }[] = [
+  const skaterColumns: { key: keyof Player; label: string; format?: (val: any) => string }[] = [
     { key: 'gamesPlayed', label: 'GP' },
     { key: 'goals', label: 'G' },
     { key: 'assists', label: 'A' },
@@ -89,7 +89,7 @@ export function TeamRoster({ roster }: TeamRosterProps) {
     { key: 'hits', label: 'HIT' },
   ];
 
-  const goalieColumns: { key: keyof Player; label: string; format?: (val: unknown) => string }[] = [
+  const goalieColumns: { key: keyof Player; label: string; format?: (val: any) => string }[] = [
     { key: 'gamesPlayed', label: 'GP' },
     { key: 'wins', label: 'W' },
     { key: 'losses', label: 'L' },
