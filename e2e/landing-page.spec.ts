@@ -10,14 +10,14 @@ test.describe('Landing Page', () => {
   });
 
   test('can view determined date', async ({ page }) => {
-    const testDate = '2024-10-15';
+    const testDate = '2024-10-11';
     await page.goto(`/?date=${testDate}`);
     await test.step('date input reflects date in query param', async () => {
       await expect(page.locator('#datepickerInput')).toHaveValue(testDate);
     });
 
     await test.step('correct games are displayed', async () => {
-      await expect(page.locator('[data-testid-gamecard]')).toHaveCount(12);
+      await expect(page.locator('[data-testid-gamecard]')).toHaveCount(13);
     });
   });
 });
