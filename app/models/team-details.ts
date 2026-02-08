@@ -14,6 +14,22 @@ export interface Player {
   points?: number;
   plusMinus?: number;
   pim?: number;
+  // New Stats
+  pointsPerGame?: number;
+  avgIceTime?: string;
+  shots?: number;
+  shootingPct?: number;
+  faceoffPct?: number;
+  blocks?: number;
+  hits?: number;
+  // Goalie Stats
+  savePct?: number;
+  shutouts?: number;
+  wins?: number;
+  losses?: number;
+  shotsAgainst?: number;
+  saves?: number;
+  gaa?: number;
 }
 
 export interface TeamRecord {

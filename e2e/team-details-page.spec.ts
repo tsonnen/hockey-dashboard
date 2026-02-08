@@ -32,8 +32,7 @@ test.describe('Team Details Page', () => {
     // Verify Sections
     await expect(page.getByText('Schedule')).toBeVisible();
     await expect(page.getByText('Roster')).toBeVisible();
-    await expect(page.getByText('Forwards')).toBeVisible();
-    await expect(page.getByText('Defensemen')).toBeVisible();
+    await expect(page.getByText('Skaters')).toBeVisible();
     await expect(page.getByText('Goalies')).toBeVisible();
   });
 

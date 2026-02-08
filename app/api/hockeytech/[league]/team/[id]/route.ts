@@ -187,11 +187,37 @@ export async function GET(
           assists: Number(stats?.assists || 0),
           points: Number(stats?.points || 0),
           pim: Number(stats?.penalty_minutes || stats?.pim || 0),
-          plusMinus: Number(stats?.plus_minus || 0)
+          plusMinus: Number(stats?.plus_minus || 0),
+          // Added stats
+          pointsPerGame: stats?.games_played && Number(stats.games_played) > 0 
+            ? Number((Number(stats.points || 0) / Number(stats.games_played)).toFixed(2)) 
+            : undefined,
+          avgIceTime: stats?.ice_time_per_game_avg !== '0:00' ? stats?.ice_time_per_game_avg : undefined,
+          shots: stats?.shots ? Number(stats.shots) : undefined,
+          shootingPct: stats?.shooting_percentage ? Number(stats.shooting_percentage) / 100 : undefined,
+          faceoffPct: stats?.faceoff_pct ? Number(stats.faceoff_pct) / 100 : undefined,
+          // Handle zeroed hits/blocks for column hiding
+          blocks: stats?.shots_blocked_by_player && Number(stats.shots_blocked_by_player) !== 0 
+            ? Number(stats.shots_blocked_by_player) 
+            : undefined,
+          hits: stats?.hits && Number(stats.hits) !== 0 
+            ? Number(stats.hits) 
+            : undefined,
+          // Goalie stats
+          savePct: stats?.save_percentage ? Number(stats.save_percentage) : undefined,
+          shutouts: stats?.shutouts ? Number(stats.shutouts) : undefined,
+          wins: stats?.wins ? Number(stats.wins) : undefined,
+          losses: stats?.losses ? Number(stats.losses) : undefined,
+          shotsAgainst: stats?.shots ? Number(stats.shots) : (stats?.shots_against ? Number(stats.shots_against) : undefined),
+          saves: stats?.saves ? Number(stats.saves) : undefined,
+          gaa: stats?.goals_against_average ? Number(stats.goals_against_average) : undefined
       };
       
       const pos = (player.positionCode || '').toLowerCase();
-      if (pos.includes('goalie')) {
+      // Ensure we don't include players with no position info (often ghost rows)
+      if (!pos) continue;
+
+      if (pos === 'g' || pos.includes('goalie')) {
           goalies.push(player);
       } else if (pos.includes('def')) {
           defensemen.push(player);

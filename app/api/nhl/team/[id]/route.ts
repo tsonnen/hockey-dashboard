@@ -126,19 +126,46 @@ export async function GET(
 }
 
 function mapNhlPlayer(p: any, stats?: any): Player {
+    let position = p.positionCode;
+    if (position === 'L') position = 'LW';
+    else if (position === 'R') position = 'RW';
+
+    const formatTime = (seconds?: number) => {
+        if (!seconds) return;
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.round(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
     return {
         id: p.id,
         firstName: p.firstName,
         lastName: p.lastName,
         sweaterNumber: p.sweaterNumber,
-        positionCode: p.positionCode,
+        positionCode: position,
         headshot: p.headshot,
         gamesPlayed: stats?.gamesPlayed,
         goals: stats?.goals,
         assists: stats?.assists,
         points: stats?.points,
         plusMinus: stats?.plusMinus,
-        pim: stats?.penaltyMinutes || stats?.pim
+        pim: stats?.penaltyMinutes || stats?.pim,
+        // Added stats
+        pointsPerGame: stats?.pointsPerGame,
+        avgIceTime: formatTime(stats?.avgTimeOnIcePerGame),
+        shots: stats?.shots,
+        shootingPct: stats?.shootingPctg,
+        faceoffPct: stats?.faceoffWinPctg,
+        blocks: stats?.blockedShots,
+        hits: stats?.hits,
+        // Goalie stats
+        savePct: stats?.savePercentage,
+        shutouts: stats?.shutouts,
+        wins: stats?.wins,
+        losses: stats?.losses,
+        shotsAgainst: stats?.shotsAgainst,
+        saves: stats?.saves,
+        gaa: stats?.goalsAgainstAverage
     };
 }
 
