@@ -42,11 +42,11 @@ export function Multiselect({
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
+    setInternalSelected(selected);
     if (!isOpen) return;
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
-        setInternalSelected(selected);
       }
     }
 

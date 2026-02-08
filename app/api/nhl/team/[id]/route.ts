@@ -5,26 +5,26 @@ const NHL_API_BASE = 'https://api-web.nhle.com/v1';
 
 async function getRoster(teamAbbrev: string) {
   const res = await fetch(`${NHL_API_BASE}/roster/${teamAbbrev}/current`);
-  if (!res.ok) return null;
+  if (!res.ok) return;
   return res.json();
 }
 
 async function getStandings() {
   const res = await fetch(`${NHL_API_BASE}/standings/now`);
-  if (!res.ok) return null;
+  if (!res.ok) return;
   return res.json();
 }
 
 async function getSchedule(teamAbbrev: string) {
   // fetching "now" gives current season schedule usually
   const res = await fetch(`${NHL_API_BASE}/club-schedule-season/${teamAbbrev}/now`);
-  if (!res.ok) return null;
+  if (!res.ok) return;
   return res.json();
 }
 
 async function getClubStats(teamAbbrev: string) {
   const res = await fetch(`${NHL_API_BASE}/club-stats/${teamAbbrev}/now`);
-  if (!res.ok) return null;
+  if (!res.ok) return;
   return res.json();
 }
 
@@ -43,7 +43,7 @@ export async function GET(
   ]);
 
   if (!rosterData) {
-    return NextResponse.json({ id: teamAbbrev } as any, { status: 404 });
+    return NextResponse.json({ id: teamAbbrev } as Partial<TeamDetails>, { status: 404 });
   }
 
   // Process Stats
@@ -51,24 +51,32 @@ export async function GET(
   const goalieStatsMap = new Map();
 
   if (statsData) {
-    (statsData.skaters || []).forEach((s: any) => {
+    for (const s of statsData.skaters ?? []) {
         skaterStatsMap.set(s.playerId, s);
-    });
-    (statsData.goalies || []).forEach((g: any) => {
+    }
+    for (const g of statsData.goalies ?? []) {
         goalieStatsMap.set(g.playerId, g);
-    });
+    }
   }
 
   // Process Roster
-  const forwards = (rosterData.forwards || []).map((p: any) => {
+  interface NhlRosterPlayer {
+    id: number;
+    positionCode?: string;
+    firstName?: { default: string };
+    lastName?: { default: string };
+    sweaterNumber?: number;
+    headshot?: string;
+  }
+  const forwards = (rosterData.forwards ?? []).map((p: NhlRosterPlayer) => {
     const stats = skaterStatsMap.get(p.id);
     return mapNhlPlayer(p, stats);
   });
-  const defensemen = (rosterData.defensemen || []).map((p: any) => {
+  const defensemen = (rosterData.defensemen ?? []).map((p: NhlRosterPlayer) => {
     const stats = skaterStatsMap.get(p.id);
     return mapNhlPlayer(p, stats);
   });
-  const goalies = (rosterData.goalies || []).map((p: any) => {
+  const goalies = (rosterData.goalies ?? []).map((p: NhlRosterPlayer) => {
     const stats = goalieStatsMap.get(p.id);
     return mapNhlPlayer(p, stats);
   });
@@ -78,7 +86,7 @@ export async function GET(
   let teamName = { default: teamAbbrev };
   let logo;
   if (standingsData && standingsData.standings) {
-    const teamStats = standingsData.standings.find((t: any) => t.teamAbbrev.default === teamAbbrev);
+    const teamStats = standingsData.standings.find((t: { teamAbbrev?: { default?: string } }) => t.teamAbbrev?.default === teamAbbrev);
     if (teamStats) {
         teamName = teamStats.teamName;
         logo = teamStats.teamLogo;
@@ -102,11 +110,19 @@ export async function GET(
     const today = new Date().toISOString().split('T')[0];
     const games = scheduleData.games;
     
-    const pastGames = games.filter((g: any) => g.gameDate < today);
-    const futureGames = games.filter((g: any) => g.gameDate >= today);
-    
-    last10Schedule.push(...pastGames.slice(-10).map((g: any) => mapNhlGame(g, teamAbbrev)));
-    upcomingSchedule.push(...futureGames.slice(0, 10).map((g: any) => mapNhlGame(g, teamAbbrev)));
+    interface NhlScheduleGame {
+      id: number;
+      gameDate: string;
+      startTimeUTC?: string;
+      homeTeam?: { id: number; abbrev: string; logo?: string; score?: number };
+      awayTeam?: { id: number; abbrev: string; logo?: string; score?: number };
+      gameState?: string;
+    }
+    const pastGames = games.filter((g: NhlScheduleGame) => g.gameDate < today);
+    const futureGames = games.filter((g: NhlScheduleGame) => g.gameDate >= today);
+
+    last10Schedule.push(...pastGames.slice(-10).map((g: NhlScheduleGame) => mapNhlGame(g, teamAbbrev)));
+    upcomingSchedule.push(...futureGames.slice(0, 10).map((g: NhlScheduleGame) => mapNhlGame(g, teamAbbrev)));
   }
 
   return NextResponse.json({
@@ -125,17 +141,41 @@ export async function GET(
   });
 }
 
-function mapNhlPlayer(p: any, stats?: any): Player {
+function formatTime(seconds?: number): string | undefined {
+    if (seconds === undefined || seconds === null) return;
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.round(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+interface NhlPlayerStats {
+  gamesPlayed?: number;
+  goals?: number;
+  assists?: number;
+  points?: number;
+  plusMinus?: number;
+  penaltyMinutes?: number;
+  pim?: number;
+  pointsPerGame?: number;
+  avgTimeOnIcePerGame?: number;
+  shots?: number;
+  shootingPctg?: number;
+  faceoffWinPctg?: number;
+  blockedShots?: number;
+  hits?: number;
+  savePercentage?: number;
+  shutouts?: number;
+  wins?: number;
+  losses?: number;
+  shotsAgainst?: number;
+  saves?: number;
+  goalsAgainstAverage?: number;
+}
+
+function mapNhlPlayer(p: { id: number; positionCode?: string; firstName?: { default: string }; lastName?: { default: string }; sweaterNumber?: number; headshot?: string }, stats?: NhlPlayerStats): Player {
     let position = p.positionCode;
     if (position === 'L') position = 'LW';
     else if (position === 'R') position = 'RW';
-
-    const formatTime = (seconds?: number) => {
-        if (!seconds) return;
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.round(seconds % 60);
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
 
     return {
         id: p.id,
@@ -169,22 +209,24 @@ function mapNhlPlayer(p: any, stats?: any): Player {
     };
 }
 
-function mapNhlGame(g: any, currentTeamAbbrev: string): ScheduledGame {
+function mapNhlGame(g: { id: number; gameDate: string; startTimeUTC?: string; homeTeam?: { id: number; abbrev: string; logo?: string; score?: number }; awayTeam?: { id: number; abbrev: string; logo?: string; score?: number }; gameState?: string }, _currentTeamAbbrev: string): ScheduledGame {
+   const home = g.homeTeam ?? { id: 0, abbrev: '' };
+   const away = g.awayTeam ?? { id: 0, abbrev: '' };
    return {
        id: g.id,
        date: g.gameDate,
-       startTime: g.startTimeUTC,
+       startTime: g.startTimeUTC ?? '',
        homeTeam: {
-           id: g.homeTeam.id,
-           abbrev: g.homeTeam.abbrev,
-           logo: g.homeTeam.logo,
-           score: g.homeTeam.score
+           id: home.id,
+           abbrev: home.abbrev,
+           logo: home.logo,
+           score: home.score
        },
        awayTeam: {
-           id: g.awayTeam.id,
-           abbrev: g.awayTeam.abbrev,
-           logo: g.awayTeam.logo,
-           score: g.awayTeam.score
+           id: away.id,
+           abbrev: away.abbrev,
+           logo: away.logo,
+           score: away.score
        },
        gameState: g.gameState
    }

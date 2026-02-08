@@ -12,19 +12,19 @@ async function fetchHockeyTech(league: LEAGUES, params: Record<string, string>) 
     url.searchParams.append(key, value);
   }
   // Robust JSON parsing
-  let parsedData = null;
+  let parsedData: unknown;
   try {
      const res = await fetch(url.toString());
-     if (!res.ok) return null;
+     if (!res.ok) return;
      const text = await res.text();
      let jsonString = text.trim();
      if (jsonString.startsWith('(') && jsonString.endsWith(')')) {
          jsonString = jsonString.slice(1, -1);
      }
      parsedData = JSON.parse(jsonString);
-  } catch (e) {
-     console.error('HockeyTech fetch error', e);
-     return null;
+  } catch (error) {
+     console.error('HockeyTech fetch error', error);
+     return;
   }
   return parsedData;
 }
@@ -38,50 +38,57 @@ async function fetchModuleKit(league: LEAGUES, params: Record<string, string>) {
     url.searchParams.append(key, value);
   }
   
-  let parsedData = null;
+  let parsedData: unknown;
   try {
      const res = await fetch(url.toString());
-     if (!res.ok) return null;
+     if (!res.ok) return;
      const text = await res.text();
      let jsonString = text.trim();
      if (jsonString.startsWith('(') && jsonString.endsWith(')')) {
          jsonString = jsonString.slice(1, -1);
      }
      parsedData = JSON.parse(jsonString);
-  } catch (e) {
-     console.error('ModuleKit fetch error', e);
-     return null;
+  } catch (error) {
+     console.error('ModuleKit fetch error', error);
+     return;
   }
   return parsedData;
 }
 
-function extractHockeyTechRows(data: any): any[] {
-    const rows: any[] = [];
+type HockeyTechRow = Record<string, unknown>;
+
+interface HockeyTechSection {
+  data?: Array<HockeyTechRow & { row?: unknown }>;
+}
+
+function extractHockeyTechRows(data: unknown): HockeyTechRow[] {
+    const rows: HockeyTechRow[] = [];
     if (!data) return rows;
-    
+
     // Normalize to array
     const roots = Array.isArray(data) ? data : [data];
-    
+
     for (const root of roots) {
-        if (root.sections) {
-            for (const section of root.sections) {
+        const r = root as HockeyTechRow & { sections?: HockeyTechSection[] };
+        if (r.sections) {
+            for (const section of r.sections) {
                 if (section.data) {
-                    rows.push(...section.data.map((d: any) => d.row || d));
+                    rows.push(...section.data.map((d) => (d.row ?? d) as HockeyTechRow));
                 }
             }
-        } else if (root.roster) {
-           rows.push(...extractHockeyTechRows(root.roster));
-        } else if (root.standings) {
-           rows.push(...extractHockeyTechRows(root.standings));
-        } else if (root.games) {
-           rows.push(...extractHockeyTechRows(root.games));
-        } else if (root.SiteKit) {
-           rows.push(...extractHockeyTechRows(root.SiteKit));
-        } else if (root.Schedule) {
-           rows.push(...extractHockeyTechRows(root.Schedule));
+        } else if (r.roster) {
+           rows.push(...extractHockeyTechRows(r.roster));
+        } else if (r.standings) {
+           rows.push(...extractHockeyTechRows(r.standings));
+        } else if (r.games) {
+           rows.push(...extractHockeyTechRows(r.games));
+        } else if (r.SiteKit) {
+           rows.push(...extractHockeyTechRows(r.SiteKit));
+        } else if (r.Schedule) {
+           rows.push(...extractHockeyTechRows(r.Schedule));
         } else {
-           if (root.person_id || root.game_id || root.team_id || root.id || root.player_id) {
-               rows.push(root);
+           if (r.person_id || r.game_id || r.team_id || r.id || r.player_id) {
+               rows.push(r);
            }
         }
     }
@@ -95,20 +102,21 @@ export async function GET(
   const { league, id } = await params;
   const leagueEnum = league as LEAGUES;
 
-  const rosterData = await fetchHockeyTech(leagueEnum, { view: 'roster', team_id: id });
+  const rosterData = await fetchHockeyTech(leagueEnum, { view: 'roster', team_id: id }) as HockeyTechRow | undefined;
 
   // Get season ID for stats fetch
   let seasonId = '';
   if (rosterData && rosterData.seasonId) {
-      seasonId = rosterData.seasonId;
+      seasonId = String(rosterData.seasonId);
   } else if (rosterData && rosterData.roster && rosterData.seasonID) {
-      seasonId = rosterData.seasonID;
+      seasonId = String(rosterData.seasonID);
   } else {
       // Fallback: fetch current season
       const seasonsData = await fetchModuleKit(leagueEnum, { view: 'seasons' });
-      if (seasonsData && seasonsData.SiteKit && seasonsData.SiteKit.Seasons) {
-          const currentSeason = seasonsData.SiteKit.Seasons.find((s: any) => s.career === '1' && s.playoff === '0');
-          if (currentSeason) seasonId = currentSeason.season_id;
+      const siteKit = seasonsData as { SiteKit?: { Seasons?: Array<{ career?: string; playoff?: string; season_id?: string }> } } | undefined;
+      if (siteKit?.SiteKit?.Seasons) {
+          const currentSeason = siteKit.SiteKit.Seasons.find((s) => s.career === '1' && s.playoff === '0');
+          if (currentSeason?.season_id) seasonId = currentSeason.season_id;
       }
   }
   
@@ -118,14 +126,14 @@ export async function GET(
       type: 'skaters',
       team_id: id,
       season_id: seasonId
-  }) : null;
-  
+  }) : undefined;
+
   const goaliesStatsData = seasonId ? await fetchModuleKit(leagueEnum, { 
       view: 'statviewtype', 
       type: 'goalies',
       team_id: id,
       season_id: seasonId
-  }) : null;
+  }) : undefined;
   
   const standingsParams: Record<string, string> = { view: 'standings' };
   if (seasonId) standingsParams.season_id = seasonId;
@@ -137,16 +145,18 @@ export async function GET(
 
 
   if (!rosterData) {
-      return NextResponse.json({ id } as any, { status: 404 });
+      return NextResponse.json({ id } as Partial<TeamDetails>, { status: 404 });
   }
 
   // Flatten Data
   const players = extractHockeyTechRows(rosterData);
   const games = extractHockeyTechRows(scheduleData);
-  
+
   // Extract stats
-  const skatersStats = skatersStatsData?.SiteKit?.Statviewtype || [];
-  const goaliesStats = goaliesStatsData?.SiteKit?.Statviewtype || [];
+  const skatersStatsDataTyped = skatersStatsData as { SiteKit?: { Statviewtype?: HockeyTechRow[] } } | undefined;
+  const goaliesStatsDataTyped = goaliesStatsData as { SiteKit?: { Statviewtype?: HockeyTechRow[] } } | undefined;
+  const skatersStats = skatersStatsDataTyped?.SiteKit?.Statviewtype ?? [];
+  const goaliesStats = goaliesStatsDataTyped?.SiteKit?.Statviewtype ?? [];
   const allStats = [...skatersStats, ...goaliesStats];
   
   // Create a map of player_id to stats
@@ -192,7 +202,7 @@ export async function GET(
           pointsPerGame: stats?.games_played && Number(stats.games_played) > 0 
             ? Number((Number(stats.points || 0) / Number(stats.games_played)).toFixed(2)) 
             : undefined,
-          avgIceTime: stats?.ice_time_per_game_avg !== '0:00' ? stats?.ice_time_per_game_avg : undefined,
+          avgIceTime: stats?.ice_time_per_game_avg === '0:00' ? undefined : stats?.ice_time_per_game_avg,
           shots: stats?.shots ? Number(stats.shots) : undefined,
           shootingPct: stats?.shooting_percentage ? Number(stats.shooting_percentage) / 100 : undefined,
           faceoffPct: stats?.faceoff_pct ? Number(stats.faceoff_pct) / 100 : undefined,
@@ -231,7 +241,7 @@ export async function GET(
   let teamName = { default: 'Team' };
   let logo;
   
-  const myTeam = teams.find((t: any) => String(t.team_id || t.id) === id);
+  const myTeam = teams.find((t: HockeyTechRow) => String(t.team_id ?? t.id) === id);
   if (myTeam) {
       teamName = { default: myTeam.team_name || myTeam.name };
       logo = myTeam.team_logo_url || myTeam.logo;
@@ -247,7 +257,7 @@ export async function GET(
 
   // Calculate record from games if standings missing or to fill in streak details
   if (games.length > 0) {
-      const finishedGames = games.filter((g: any) => {
+      const finishedGames = games.filter((g: HockeyTechRow) => {
           const status = g.game_status || g.status;
           return status === 'Final' || status === '4' || (typeof status === 'string' && status.toLowerCase().includes('final'));
       });
@@ -259,7 +269,7 @@ export async function GET(
           let points = 0;
 
           // Process in chronological order for record
-          const chronological = [...finishedGames].sort((a: any, b: any) => (a.date_played || a.date || '').localeCompare(b.date_played || b.date || ''));
+          const chronological = [...finishedGames].toSorted((a: HockeyTechRow, b: HockeyTechRow) => String(a.date_played ?? a.date ?? '').localeCompare(String(b.date_played ?? b.date ?? '')));
 
           for (const g of chronological) {
               const isHome = String(g.home_team) === id;
@@ -283,7 +293,7 @@ export async function GET(
           let streakCode = '';
           let streakCount = 0;
           if (chronological.length > 0) {
-              const latest = [...chronological].reverse();
+              const latest = [...chronological].toReversed();
               for (const g of latest) {
                   const isHome = String(g.home_team) === id;
                   const homeScore = Number(g.home_goal_count || 0);
@@ -303,11 +313,11 @@ export async function GET(
               }
           }
 
-          if (!record) {
-              record = { wins, losses, ot, points, streakCode, streakCount };
-          } else {
+          if (record) {
               record.streakCode = record.streakCode || streakCode;
               record.streakCount = record.streakCount || streakCount;
+          } else {
+              record = { wins, losses, ot, points, streakCode, streakCount };
           }
       }
   }
@@ -335,13 +345,13 @@ export async function GET(
   if (games.length > 0) {
       const today = new Date().toISOString().split('T')[0];
       // Safety check for date_played
-      const sorted = games.sort((a: any, b: any) => (a.date_played || '').localeCompare(b.date_played || ''));
-      
-      const past = sorted.filter((g: any) => g.date_played < today);
-      const future = sorted.filter((g: any) => g.date_played >= today);
-      
-      last10Schedule.push(...past.slice(-10).map((g: any) => mapHtGame(g, id)));
-      upcomingSchedule.push(...future.slice(0, 10).map((g: any) => mapHtGame(g, id)));
+      const sorted = games.toSorted((a: HockeyTechRow, b: HockeyTechRow) => String(a.date_played ?? '').localeCompare(String(b.date_played ?? '')));
+
+      const past = sorted.filter((g: HockeyTechRow) => String(g.date_played) < today);
+      const future = sorted.filter((g: HockeyTechRow) => String(g.date_played) >= today);
+
+      last10Schedule.push(...past.slice(-10).map((g: HockeyTechRow) => mapHtGame(g, id)));
+      upcomingSchedule.push(...future.slice(0, 10).map((g: HockeyTechRow) => mapHtGame(g, id)));
   }
 
   // Use team info from roster logic if standings failed
@@ -363,7 +373,7 @@ export async function GET(
   });
 }
 
-function mapHtGame(g: any, myTeamId: string): ScheduledGame {
+function mapHtGame(g: HockeyTechRow, _myTeamId: string): ScheduledGame {
     let gameState = g.game_status || g.status;
     // Normalize game status - "4" is Final in many HockeyTech leagues
     if (g.status === '4' || (typeof gameState === 'string' && gameState.toLowerCase().includes('final'))) {

@@ -10,7 +10,7 @@ test.describe('Team Details Page', () => {
     // In game 2024020049, home team is likely... let's assume we find any link to /team/nhl/...
     
     // We can select the home team section specifically
-    const homeTeamContainer = page.getByTestId('game-score-display').locator('div.flex-col').last();
+    const _homeTeamContainer = page.getByTestId('game-score-display').locator('div.flex-col').last();
     /* Actually structure is:
        Away Team (first flex-col)
        Status
