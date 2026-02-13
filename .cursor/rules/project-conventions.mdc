@@ -1,0 +1,38 @@
+---
+description: Hockey Dashboard project conventions, tone, and architecture
+alwaysApply: true
+---
+
+# Hockey Dashboard - Project Conventions
+
+## Tone
+
+- Be clear and concise.
+- Use hockey analogies where appropriate; don't overdo it.
+- Prioritize readability and maintainability.
+- Follow established patterns in the codebase.
+- When in doubt, refer to existing implementations.
+- Stay humble and practical.
+
+## Architecture
+
+- **Dual API Pattern**: NHL from `api-web.nhle.com`, other leagues from HockeyTech (`lscluster.hockeytech.com`)
+- **Data Normalization**: Convert both APIs to unified `Game` class model ([app/models/game.ts](app/models/game.ts))
+- **Route Structure**: Dynamic routes `/game/[league]/[id]`, API routes `/api/{provider}/{league}/...`
+- **Component Structure**: Co-located in `app/components/{name}/` with `.tsx`, `.module.css`, `.test.tsx`, and `index.ts`
+
+## Key Commands
+
+```bash
+pnpm dev              # Next.js dev server (Turbopack)
+pnpm build            # Production build
+pnpm lint             # ESLint
+pnpm test             # Jest unit tests
+pnpm playwright:test  # E2E tests
+```
+
+## Testing
+
+- Jest + React Testing Library for unit tests; co-locate with components
+- Playwright for E2E tests in `e2e/` directory
+- Mock router via `globalThis.resetRouterMocks()` in jest.setup.js

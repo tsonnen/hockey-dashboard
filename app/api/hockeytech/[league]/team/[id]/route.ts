@@ -12,10 +12,10 @@ async function fetchHockeyTech(league: LEAGUES, params: Record<string, string>) 
     url.searchParams.append(key, value);
   }
   // Robust JSON parsing
-  let parsedData = null;
+  let parsedData: unknown;
   try {
      const res = await fetch(url.toString());
-     if (!res.ok) return null;
+     if (!res.ok) return;
      const text = await res.text();
      let jsonString = text.trim();
      if (jsonString.startsWith('(') && jsonString.endsWith(')')) {
@@ -24,7 +24,7 @@ async function fetchHockeyTech(league: LEAGUES, params: Record<string, string>) 
      parsedData = JSON.parse(jsonString);
   } catch (error) {
      console.error('HockeyTech fetch error', error);
-     return null;
+     return;
   }
   return parsedData;
 }
@@ -38,10 +38,10 @@ async function fetchModuleKit(league: LEAGUES, params: Record<string, string>) {
     url.searchParams.append(key, value);
   }
   
-  let parsedData = null;
+  let parsedData: unknown;
   try {
      const res = await fetch(url.toString());
-     if (!res.ok) return null;
+     if (!res.ok) return;
      const text = await res.text();
      let jsonString = text.trim();
      if (jsonString.startsWith('(') && jsonString.endsWith(')')) {
@@ -50,23 +50,25 @@ async function fetchModuleKit(league: LEAGUES, params: Record<string, string>) {
      parsedData = JSON.parse(jsonString);
   } catch (error) {
      console.error('ModuleKit fetch error', error);
-     return null;
+     return;
   }
   return parsedData;
 }
 
-function extractHockeyTechRows(data: any): any[] {
-    const rows: any[] = [];
+type HockeyTechRow = Record<string, unknown>;
+
+function extractHockeyTechRows(data: unknown): HockeyTechRow[] {
+    const rows: HockeyTechRow[] = [];
     if (!data) return rows;
     
     // Normalize to array
-    const roots = Array.isArray(data) ? data : [data];
+    const roots = (Array.isArray(data) ? data : [data]) as Record<string, unknown>[];
     
     for (const root of roots) {
         if (root.sections) {
-            for (const section of root.sections) {
+            for (const section of (root.sections as Record<string, unknown>[])) {
                 if (section.data) {
-                    rows.push(...section.data.map((d: any) => d.row || d));
+                    rows.push(...(section.data as HockeyTechRow[]).map((d: HockeyTechRow & { row?: HockeyTechRow }) => (d.row ?? d) as HockeyTechRow));
                 }
             }
         } else if (root.roster) {
@@ -95,37 +97,38 @@ export async function GET(
   const { league, id } = await params;
   const leagueEnum = league as LEAGUES;
 
-  const rosterData = await fetchHockeyTech(leagueEnum, { view: 'roster', team_id: id });
+  const rosterData = await fetchHockeyTech(leagueEnum, { view: 'roster', team_id: id }) as Record<string, unknown> | undefined;
 
   // Get season ID for stats fetch
   let seasonId = '';
   if (rosterData && rosterData.seasonId) {
-      seasonId = rosterData.seasonId;
+      seasonId = String(rosterData.seasonId ?? '');
   } else if (rosterData && rosterData.roster && rosterData.seasonID) {
-      seasonId = rosterData.seasonID;
+      seasonId = String(rosterData.seasonID ?? '');
   } else {
       // Fallback: fetch current season
-      const seasonsData = await fetchModuleKit(leagueEnum, { view: 'seasons' });
-      if (seasonsData && seasonsData.SiteKit && seasonsData.SiteKit.Seasons) {
-          const currentSeason = seasonsData.SiteKit.Seasons.find((s: any) => s.career === '1' && s.playoff === '0');
-          if (currentSeason) seasonId = currentSeason.season_id;
+      const seasonsData = (await fetchModuleKit(leagueEnum, { view: 'seasons' })) as Record<string, unknown> | undefined;
+      if (seasonsData?.SiteKit && Array.isArray((seasonsData.SiteKit as Record<string, unknown>).Seasons)) {
+          const seasons = (seasonsData.SiteKit as Record<string, unknown>).Seasons as HockeyTechRow[];
+          const currentSeason = seasons.find((s: HockeyTechRow) => s.career === '1' && s.playoff === '0');
+          if (currentSeason) seasonId = String(currentSeason.season_id ?? '');
       }
   }
   
   // Fetch player stats using modulekit
-  const skatersStatsData = seasonId ? await fetchModuleKit(leagueEnum, { 
+  const skatersStatsData = (seasonId ? await fetchModuleKit(leagueEnum, { 
       view: 'statviewtype', 
       type: 'skaters',
       team_id: id,
       season_id: seasonId
-  }) : null;
+  }) : undefined) as Record<string, unknown> | undefined;
   
-  const goaliesStatsData = seasonId ? await fetchModuleKit(leagueEnum, { 
+  const goaliesStatsData = (seasonId ? await fetchModuleKit(leagueEnum, { 
       view: 'statviewtype', 
       type: 'goalies',
       team_id: id,
       season_id: seasonId
-  }) : null;
+  }) : undefined) as Record<string, unknown> | undefined;
   
   const standingsParams: Record<string, string> = { view: 'standings' };
   if (seasonId) standingsParams.season_id = seasonId;
@@ -137,7 +140,7 @@ export async function GET(
 
 
   if (!rosterData) {
-      return NextResponse.json({ id } as any, { status: 404 });
+      return NextResponse.json({ id } as Partial<TeamDetails>, { status: 404 });
   }
 
   // Flatten Data
@@ -145,8 +148,8 @@ export async function GET(
   const games = extractHockeyTechRows(scheduleData);
   
   // Extract stats
-  const skatersStats = skatersStatsData?.SiteKit?.Statviewtype || [];
-  const goaliesStats = goaliesStatsData?.SiteKit?.Statviewtype || [];
+  const skatersStats = (skatersStatsData?.SiteKit as Record<string, unknown>)?.Statviewtype as HockeyTechRow[] || [];
+  const goaliesStats = (goaliesStatsData?.SiteKit as Record<string, unknown>)?.Statviewtype as HockeyTechRow[] || [];
   const allStats = [...skatersStats, ...goaliesStats];
   
   // Create a map of player_id to stats
@@ -162,11 +165,11 @@ export async function GET(
 
   for (const p of players) {
       // Name handling: OHL feed often just has `name`
-      let fName = p.first_name || p.firstName || '';
-      let lName = p.last_name || p.lastName || '';
+      let fName = String(p.first_name ?? p.firstName ?? '');
+      let lName = String(p.last_name ?? p.lastName ?? '');
       
       if (!fName && !lName && p.name) {
-          const parts = p.name.split(' ');
+          const parts = String(p.name).split(' ');
           fName = parts[0];
           lName = parts.slice(1).join(' ');
       }
@@ -176,12 +179,15 @@ export async function GET(
       const stats = statsMap.get(playerId);
 
       const player: Player = {
-          id: playerId,
+          id: Number(playerId ?? 0),
           firstName: { default: fName },
           lastName: { default: lName },
-          sweaterNumber: p.jersey_number || p.tp_jersey_number || stats?.jersey_number,
-          positionCode: p.position_txt || p.position || stats?.position,
-          headshot: p.player_image || stats?.player_image,
+          sweaterNumber: (() => {
+            const j = p.jersey_number ?? p.tp_jersey_number ?? (stats as HockeyTechRow)?.jersey_number;
+            return j == undefined ? undefined : Number(j);
+          })(),
+          positionCode: String(p.position_txt ?? p.position ?? (stats as HockeyTechRow)?.position ?? '') || undefined,
+          headshot: String(p.player_image ?? (stats as HockeyTechRow)?.player_image ?? '') || undefined,
           gamesPlayed: Number(stats?.games_played || 0),
           goals: Number(stats?.goals || 0),
           assists: Number(stats?.assists || 0),
@@ -229,25 +235,25 @@ export async function GET(
   // Map Standings
   let record: TeamRecord | undefined;
   let teamName = { default: 'Team' };
-  let logo;
+  let logo: string | undefined;
   
-  const myTeam = teams.find((t: any) => String(t.team_id || t.id) === id);
+  const myTeam = teams.find((t: HockeyTechRow) => String(t.team_id ?? t.id ?? '') === id);
   if (myTeam) {
-      teamName = { default: myTeam.team_name || myTeam.name };
-      logo = myTeam.team_logo_url || myTeam.logo;
+      teamName = { default: String(myTeam.team_name ?? myTeam.name ?? 'Team') };
+      logo = String(myTeam.team_logo_url ?? myTeam.logo ?? '') || undefined;
       record = {
           wins: Number(myTeam.wins),
           losses: Number(myTeam.losses),
           ot: Number(myTeam.ot_losses),
           points: Number(myTeam.points),
-          streakCode: myTeam.streak, 
+          streakCode: typeof myTeam.streak === 'string' ? myTeam.streak : undefined,
           streakCount: 0 
       };
   }
 
   // Calculate record from games if standings missing or to fill in streak details
   if (games.length > 0) {
-      const finishedGames = games.filter((g: any) => {
+      const finishedGames = games.filter((g: HockeyTechRow) => {
           const status = g.game_status || g.status;
           return status === 'Final' || status === '4' || (typeof status === 'string' && status.toLowerCase().includes('final'));
       });
@@ -259,14 +265,14 @@ export async function GET(
           let points = 0;
 
           // Process in chronological order for record
-          const chronological = [...finishedGames].sort((a: any, b: any) => (a.date_played || a.date || '').localeCompare(b.date_played || b.date || ''));
+          const chronological = [...finishedGames].toSorted((a: HockeyTechRow, b: HockeyTechRow) => String(a.date_played ?? a.date ?? '').localeCompare(String(b.date_played ?? b.date ?? '')));
 
           for (const g of chronological) {
               const isHome = String(g.home_team) === id;
               const homeScore = Number(g.home_goal_count || 0);
               const awayScore = Number(g.visiting_goal_count || 0);
               const isWin = isHome ? homeScore > awayScore : awayScore > homeScore;
-              const isOTL = !isWin && (g.overtime === '1' || g.shootout === '1' || (g.game_status && g.game_status.toLowerCase().includes('ot')) || (g.game_status && g.game_status.toLowerCase().includes('so')));
+              const isOTL = !isWin && (g.overtime === '1' || g.shootout === '1' || (typeof g.game_status === 'string' && g.game_status.toLowerCase().includes('ot')) || (typeof g.game_status === 'string' && g.game_status.toLowerCase().includes('so')));
               
               if (isWin) {
                   wins++;
@@ -283,13 +289,13 @@ export async function GET(
           let streakCode = '';
           let streakCount = 0;
           if (chronological.length > 0) {
-              const latest = [...chronological].reverse();
+              const latest = [...chronological].toReversed();
               for (const g of latest) {
                   const isHome = String(g.home_team) === id;
                   const homeScore = Number(g.home_goal_count || 0);
                   const awayScore = Number(g.visiting_goal_count || 0);
                   const isWin = isHome ? homeScore > awayScore : awayScore > homeScore;
-                  const isOTL = !isWin && (g.overtime === '1' || g.shootout === '1' || (g.game_status && g.game_status.toLowerCase().includes('ot')) || (g.game_status && g.game_status.toLowerCase().includes('so')));
+                  const isOTL = !isWin && (g.overtime === '1' || g.shootout === '1' || (typeof g.game_status === 'string' && g.game_status.toLowerCase().includes('ot')) || (typeof g.game_status === 'string' && g.game_status.toLowerCase().includes('so')));
                   
                   const currentRes = isWin ? 'W' : (isOTL ? 'OTL' : 'L');
                   if (!streakCode) {
@@ -314,17 +320,17 @@ export async function GET(
   
   // Fallback: Get team info from roster data
   if (!logo && rosterData) {
-      logo = rosterData.teamLogo;
+      logo = String(rosterData.teamLogo ?? '') || undefined;
   }
   
   // Fallback: Get team info from stats data (first player)
   if ((!teamName || teamName.default === 'Team') && allStats.length > 0) {
       const firstPlayer = allStats[0];
       if (firstPlayer.team_name) {
-          teamName = { default: firstPlayer.team_name };
+          teamName = { default: String(firstPlayer.team_name) };
       }
       if (!logo && firstPlayer.logo) {
-          logo = firstPlayer.logo;
+          logo = String(firstPlayer.logo) || undefined;
       }
   }
 
@@ -335,13 +341,13 @@ export async function GET(
   if (games.length > 0) {
       const today = new Date().toISOString().split('T')[0];
       // Safety check for date_played
-      const sorted = games.sort((a: any, b: any) => (a.date_played || '').localeCompare(b.date_played || ''));
+      const sorted = games.toSorted((a: HockeyTechRow, b: HockeyTechRow) => String(a.date_played ?? '').localeCompare(String(b.date_played ?? '')));
       
-      const past = sorted.filter((g: any) => g.date_played < today);
-      const future = sorted.filter((g: any) => g.date_played >= today);
+      const past = sorted.filter((g: HockeyTechRow) => String(g.date_played ?? '') < today);
+      const future = sorted.filter((g: HockeyTechRow) => String(g.date_played ?? '') >= today);
       
-      last10Schedule.push(...past.slice(-10).map((g: any) => mapHtGame(g, id)));
-      upcomingSchedule.push(...future.slice(0, 10).map((g: any) => mapHtGame(g, id)));
+      last10Schedule.push(...past.slice(-10).map((g: HockeyTechRow) => mapHtGame(g, id)));
+      upcomingSchedule.push(...future.slice(0, 10).map((g: HockeyTechRow) => mapHtGame(g, id)));
   }
 
   // Use team info from roster logic if standings failed
@@ -363,27 +369,27 @@ export async function GET(
   });
 }
 
-function mapHtGame(g: any, myTeamId: string): ScheduledGame {
-    let gameState = g.game_status || g.status;
+function mapHtGame(g: HockeyTechRow, _myTeamId: string): ScheduledGame {
+    let gameState = g.game_status ?? g.status;
     // Normalize game status - "4" is Final in many HockeyTech leagues
     if (g.status === '4' || (typeof gameState === 'string' && gameState.toLowerCase().includes('final'))) {
         gameState = 'Final';
     }
 
     return {
-        id: g.game_id || g.id,
-        date: g.date_played || g.date,
-        startTime: g.schedule_time || g.time || g.game_time || '',
+        id: Number(g.game_id ?? g.id ?? 0),
+        date: String(g.date_played ?? g.date ?? ''),
+        startTime: String(g.schedule_time ?? g.time ?? g.game_time ?? ''),
         homeTeam: {
-            id: g.home_team,
-            abbrev: g.home_team_code,
-            score: g.home_goal_count !== undefined && g.home_goal_count !== "" ? Number(g.home_goal_count) : undefined
+            id: Number(g.home_team ?? 0),
+            abbrev: String(g.home_team_code ?? ''),
+            score: g.home_goal_count !== undefined && g.home_goal_count !== '' ? Number(g.home_goal_count) : undefined
         },
         awayTeam: {
-            id: g.visiting_team,
-            abbrev: g.visiting_team_code,
-            score: g.visiting_goal_count !== undefined && g.visiting_goal_count !== "" ? Number(g.visiting_goal_count) : undefined
+            id: Number(g.visiting_team ?? 0),
+            abbrev: String(g.visiting_team_code ?? ''),
+            score: g.visiting_goal_count !== undefined && g.visiting_goal_count !== '' ? Number(g.visiting_goal_count) : undefined
         },
-        gameState: gameState
-    }
+        gameState: typeof gameState === 'string' ? gameState : 'Final'
+    };
 }

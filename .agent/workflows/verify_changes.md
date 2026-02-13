@@ -1,5 +1,5 @@
 ---
-description: Verify changes (Lint, Build, Test)
+description: Verify changes (Lint, Build, Test, Browser)
 ---
 
 This workflow performs a standard verification pass to ensure code quality and build integrity.
@@ -18,4 +18,10 @@ This workflow performs a standard verification pass to ensure code quality and b
 
 4. **E2E Tests**
    - Verifies that e2e tests pass.
-   - Command: `pnpm playwright:test`
+   - Command: `pnpm run playwright:test`
+
+5. **Browser Verification** (when modifying components or pages)
+   - **Delegate to the browser subagent** to verify the UI works correctly in a real browser.
+   - Start dev server: `pnpm dev`
+   - Use browser tools: navigate to affected pages, interact with modified features, confirm correct rendering and behavior.
+   - See `modify_component_or_page.md` for the full browser verification workflow.
