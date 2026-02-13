@@ -48,20 +48,20 @@ function HomePage(): React.JSX.Element {
   const [games, setGames] = useState<Game[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>();
-  const [selectedLeagues, setSelectedLeagues] = useState<string[]>(() => {
-    if (globalThis.window !== undefined) {
-      const currentLeagues = localStorage.getItem('leagues');
-      if (!currentLeagues) {
-        const defaultLeagues = LEAGUE_ENDPOINTS.map((endpoint) => {
-          return endpoint.name.toLowerCase();
-        });
-        localStorage.setItem('leagues', JSON.stringify(defaultLeagues));
-        return defaultLeagues;
-      }
-      return currentLeagues ? JSON.parse(currentLeagues) : [];
+  const [mounted, setMounted] = useState(false);
+  const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
+
+  useEffect(() => {
+    const currentLeagues = localStorage.getItem('leagues');
+    if (currentLeagues) {
+      setSelectedLeagues(JSON.parse(currentLeagues));
+    } else {
+      const defaultLeagues = LEAGUE_ENDPOINTS.map((endpoint) => endpoint.name.toLowerCase());
+      localStorage.setItem('leagues', JSON.stringify(defaultLeagues));
+      setSelectedLeagues(defaultLeagues);
     }
-    return [];
-  });
+    setMounted(true);
+  }, []);
 
   const [selectedDateString, setSelectedDate] = useState<string>(() => {
     // Initialize from URL if present, otherwise use current date
@@ -174,22 +174,31 @@ function HomePage(): React.JSX.Element {
           {error}
         </div>
       )}
-      {selectedLeagues.length > 0 ? (
-        <div className={styles.gamesContainer}>
-          {isLoading ? (
-            <>
-              <GameSkeleton />
-              <GameSkeleton />
-              <GameSkeleton />
-              <GameSkeleton />
-            </>
-          ) : (
-            getGameCards()
-          )}
-        </div>
+      {mounted ? (
+        selectedLeagues.length > 0 ? (
+          <div className={styles.gamesContainer}>
+            {isLoading ? (
+              <>
+                <GameSkeleton />
+                <GameSkeleton />
+                <GameSkeleton />
+                <GameSkeleton />
+              </>
+            ) : (
+              getGameCards()
+            )}
+          </div>
+        ) : (
+          <div className={styles.gamesContainer}>
+            No leagues selected. Please select at least one league to view games.
+          </div>
+        )
       ) : (
         <div className={styles.gamesContainer}>
-          No leagues selected. Please select at least one league to view games.
+          <GameSkeleton />
+          <GameSkeleton />
+          <GameSkeleton />
+          <GameSkeleton />
         </div>
       )}
     </div>

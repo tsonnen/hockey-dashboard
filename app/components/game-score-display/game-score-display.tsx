@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { type ReactElement } from 'react';
 
 import { ImageWithFallback } from '@/app/components/image-with-fallback';
@@ -36,18 +37,23 @@ export function GameScoreDisplay(): ReactElement {
       <div className="flex items-center justify-between">
         {/* Away Team */}
         <div className="flex flex-1 flex-col items-center" data-testid="away-team">
-          <div className="relative mb-2 size-16">
-            {awayTeam.logo && (
-              <ImageWithFallback
-                alt={`${awayTeam.placeName.default} logo`}
-                className="object-contain"
-                fill
-                src={awayTeam.logo}
-                dataTestId="away-team-logo"
-              />
-            )}
-          </div>
-          <div className="text-center text-lg font-semibold">{awayTeam.placeName.default}</div>
+          <Link
+            className="flex flex-col items-center hover:opacity-80"
+            href={`/team/${game.league}/${game.league === 'nhl' ? awayTeam.abbrev : awayTeam.id}`}
+          >
+            <div className="relative mb-2 size-16">
+              {awayTeam.logo && (
+                <ImageWithFallback
+                  alt={`${awayTeam.placeName.default} logo`}
+                  className="object-contain"
+                  fill
+                  src={awayTeam.logo}
+                  dataTestId="away-team-logo"
+                />
+              )}
+            </div>
+            <div className="text-center text-lg font-semibold">{awayTeam.placeName.default}</div>
+          </Link>
           <div className="mt-2 text-3xl font-bold" data-testid="away-team-score">
             {awayScore}
           </div>
@@ -69,18 +75,23 @@ export function GameScoreDisplay(): ReactElement {
 
         {/* Home Team */}
         <div className="flex flex-1 flex-col items-center">
-          <div className="relative mb-2 size-16">
-            {homeTeam.logo && (
-              <ImageWithFallback
-                alt={`${homeTeam.placeName.default} logo`}
-                className="object-contain"
-                fill
-                src={homeTeam.logo}
-                dataTestId="home-team-logo"
-              />
-            )}
-          </div>
-          <div className="text-center text-lg font-semibold">{homeTeam.placeName.default}</div>
+          <Link
+            className="flex flex-col items-center hover:opacity-80"
+            href={`/team/${game.league}/${game.league === 'nhl' ? homeTeam.abbrev : homeTeam.id}`}
+          >
+            <div className="relative mb-2 size-16">
+              {homeTeam.logo && (
+                <ImageWithFallback
+                  alt={`${homeTeam.placeName.default} logo`}
+                  className="object-contain"
+                  fill
+                  src={homeTeam.logo}
+                  dataTestId="home-team-logo"
+                />
+              )}
+            </div>
+            <div className="text-center text-lg font-semibold">{homeTeam.placeName.default}</div>
+          </Link>
           <div className="mt-2 text-3xl font-bold" data-testid="home-team-score">
             {homeScore}
           </div>

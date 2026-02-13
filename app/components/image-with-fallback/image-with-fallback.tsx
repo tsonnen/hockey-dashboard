@@ -11,6 +11,7 @@ export function ImageWithFallback({
   quality,
   className,
   fill = undefined,
+  priority = false,
   fallBackSrc = fallback.src,
   dataTestId = 'image-with-fallback',
 }: {
@@ -18,6 +19,7 @@ export function ImageWithFallback({
   alt: string;
   fallBackSrc?: string;
   fill?: boolean;
+  priority?: boolean;
   height?: number;
   width?: number;
   quality?: number;
@@ -27,7 +29,7 @@ export function ImageWithFallback({
   const [imageError, setImageError] = useState<boolean>(!src);
 
   return (
-    <div>
+    <div className={fill ? 'relative size-full' : undefined}>
       <Image
         alt={alt}
         className={className}
@@ -36,6 +38,7 @@ export function ImageWithFallback({
         quality={quality}
         src={imageError ? fallBackSrc : src}
         width={width}
+        priority={priority}
         onError={() => {
           setImageError(true);
         }}

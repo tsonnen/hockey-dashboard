@@ -16,6 +16,8 @@ const config = [
     ignores: [
       '.next/**',
       'public/**',
+      'playwright-report/**',
+      'test-results/**',
       'next.config.js',
       'postcss.config.js',
       'coverage/**',
