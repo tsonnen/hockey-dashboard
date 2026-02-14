@@ -5,12 +5,12 @@ import React from 'react';
  */
 export const TeamDetailsSkeleton: React.FC = () => {
   return (
-    <div className="container mx-auto animate-pulse p-4">
+    <div className="container mx-auto animate-pulse p-4" data-testid="team-details-skeleton">
       {/* Back Button Skeleton */}
-      <div className="mb-6 h-10 w-24 rounded bg-gray-200 dark:bg-gray-700" />
+      <div className="mb-6 h-10 w-24 rounded bg-gray-200 dark:bg-gray-700" data-testid="back-button-skeleton" />
       {/* Header Skeleton */}
-      <div className="mb-8 flex flex-col items-center space-y-4 text-center md:flex-row md:space-x-8 md:space-y-0 md:text-left">
-        <div className="size-32 rounded-full bg-gray-200 dark:bg-gray-700" />
+      <div className="mb-8 flex flex-col items-center space-y-4 text-center md:flex-row md:space-x-8 md:space-y-0 md:text-left" data-testid="header-skeleton">
+        <div className="size-32 rounded-full bg-gray-200 dark:bg-gray-700" data-testid="logo-skeleton" />
         <div className="space-y-2">
           <div className="h-10 w-64 rounded bg-gray-200 dark:bg-gray-700" />
           <div className="h-6 w-48 rounded bg-gray-200 dark:bg-gray-700" />
@@ -19,7 +19,7 @@ export const TeamDetailsSkeleton: React.FC = () => {
       </div>
       <div className="space-y-12">
         {/* Schedule Section Skeleton */}
-        <section>
+        <section data-testid="schedule-skeleton">
           <div className="mb-4 h-8 w-40 rounded border-b bg-gray-200 pb-2 dark:bg-gray-700" />
           <div className="grid gap-6 md:grid-cols-2">
             {[1, 2].map((i) => (
@@ -36,7 +36,7 @@ export const TeamDetailsSkeleton: React.FC = () => {
           </div>
         </section>
         {/* Roster Section Skeleton */}
-        <section>
+        <section data-testid="roster-skeleton">
           <div className="mb-4 h-8 w-40 rounded border-b bg-gray-200 pb-2 dark:bg-gray-700" />
           <div className="space-y-12">
             {[1, 2].map((i) => (

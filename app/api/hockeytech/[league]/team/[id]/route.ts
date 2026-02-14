@@ -193,7 +193,10 @@ function mapTeamRecord(myTeam: HockeyTechRow): TeamRecord {
 
 function calculateRecord(games: HockeyTechRow[], id: string, existing: TeamRecord | undefined): TeamRecord | undefined {
     const sStr = (g: HockeyTechRow) => (g.game_status || g.status || '').toString().toLowerCase();
-    const finished = games.filter(g => sStr(g) === 'final' || sStr(g) === '4');
+    const finished = games.filter(g => {
+        const status = sStr(g);
+        return status.includes('final') || status === '4';
+    });
     
     if (finished.length === 0 || existing?.streakCode) return existing;
 
@@ -229,13 +232,17 @@ function calculateStreak(chron: HockeyTechRow[], id: string) {
     return { streakCode, streakCount };
 }
 
+function isOvertimeOrShootout(g: HockeyTechRow, stat: string): boolean {
+    return g.overtime === '1' || g.shootout === '1' || stat.includes('ot') || stat.includes('so');
+}
+
 function getGameResult(g: HockeyTechRow, id: string) {
     const isHome = String(g.home_team) === id;
     const hS = Number(g.home_goal_count || 0);
     const vS = Number(g.visiting_goal_count || 0);
     const isWin = isHome ? hS > vS : vS > hS;
-    const stat = String(g.game_status).toLowerCase();
-    const isOTL = !isWin && (g.overtime === '1' || g.shootout === '1' || stat.includes('ot') || stat.includes('so'));
+    const stat = String(g.game_status ?? g.status).toLowerCase();
+    const isOTL = !isWin && isOvertimeOrShootout(g, stat);
     return { isWin, isOTL, res: isWin ? 'W' : (isOTL ? 'OTL' : 'L') };
 }
 
