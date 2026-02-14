@@ -3,8 +3,8 @@ import { type ReactElement } from 'react';
 
 import { ImageWithFallback } from '@/app/components/image-with-fallback';
 import { useGame } from '@/app/contexts/game-context';
-import { Game } from '@/app/models/game';
-import { Team } from '@/app/models/team';
+import type { Game } from '@/app/models/game';
+import type { Team } from '@/app/models/team';
 import styles from './game-score-display.module.css';
 
 export function GameScoreDisplay(): ReactElement {

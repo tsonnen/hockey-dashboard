@@ -2,16 +2,20 @@ import { Player } from '@/app/models/team-details';
 
 export type HockeyTechRow = Record<string, unknown>;
 
+function toNumber(value: unknown): number | undefined {
+    return value !== null && value !== undefined ? Number(value) : undefined;
+}
+
 export function mapHtPlayerStats(s?: HockeyTechRow): Partial<Player> {
     if (!s) return {};
     return {
-        gamesPlayed: s.games_played ? Number(s.games_played) : undefined,
-        goals: s.goals ? Number(s.goals) : undefined,
-        assists: s.assists ? Number(s.assists) : undefined,
-        points: s.points ? Number(s.points) : undefined,
+        gamesPlayed: toNumber(s.games_played),
+        goals: toNumber(s.goals),
+        assists: toNumber(s.assists),
+        points: toNumber(s.points),
         plusMinus: s.plus_minus === undefined ? undefined : Number(s.plus_minus),
-        savePct: s.save_percentage ? Number(s.save_percentage) : undefined,
-        gaa: s.goals_against_average ? Number(s.goals_against_average) : undefined
+        savePct: toNumber(s.save_percentage),
+        gaa: toNumber(s.goals_against_average)
     };
 }
 
@@ -61,20 +65,28 @@ export function mapHtPlayer(p: HockeyTechRow, clientCode?: string, s?: HockeyTec
     };
 }
 
+function isStaff(posStr: string): boolean {
+    const staffKeywords = ['COACH', 'MANAGER', 'STAFF', 'TRAINER', 'EQUIPMENT', 'SCOUT', 'EXECUTIVE', 'DIRECTOR', 'PRESIDENT', 'OWNER', 'ANALYST', 'COORDINATOR'];
+    return staffKeywords.some(kw => posStr.includes(kw));
+}
+
+function isDefenseman(positionCode: string): boolean {
+    return positionCode === 'D' || positionCode === 'LD' || positionCode === 'RD';
+}
+
 export function processRoster(players: HockeyTechRow[], statsMap: Map<string, HockeyTechRow>, clientCode?: string) {
     const forwards: Player[] = [], defensemen: Player[] = [], goalies: Player[] = [];
-    const staffKeywords = ['COACH', 'MANAGER', 'STAFF', 'TRAINER', 'EQUIPMENT', 'SCOUT', 'EXECUTIVE', 'DIRECTOR', 'PRESIDENT', 'OWNER', 'ANALYST', 'COORDINATOR'];
     
     for (const p of players) {
         const posStr = String(p.position ?? p.role ?? '').toUpperCase();
-        if (staffKeywords.some(kw => posStr.includes(kw))) continue;
+        if (isStaff(posStr)) continue;
         
         const id = p.player_id ?? p.person_id ?? p.id;
         if (!id) continue;
         
         const player = mapHtPlayer(p, clientCode, statsMap.get(String(id)));
         if (player.positionCode === 'G') goalies.push(player);
-        else if (player.positionCode === 'D') defensemen.push(player);
+        else if (isDefenseman(player.positionCode)) defensemen.push(player);
         else forwards.push(player);
     }
     return { forwards, defensemen, goalies };
