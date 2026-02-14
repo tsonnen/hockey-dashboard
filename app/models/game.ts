@@ -84,39 +84,112 @@ export class Game {
     this.season = data.season ?? 0;
     this.gameType = data.gameType ?? 0;
     this.gameDate = data.gameDate;
-    this.venue = data.venue ?? { default: '' };
     this.neutralSite = data.neutralSite ?? false;
-    this.startTimeUTC = data.startTimeUTC ?? '';
-    this.easternUTCOffset = data.easternUTCOffset ?? '';
-    this.venueUTCOffset = data.venueUTCOffset ?? '';
-    this.venueTimezone = data.venueTimezone ?? '';
-    this.gameState = data.gameState ?? GameState.FUTURE;
-    this.gameScheduleState = data.gameScheduleState ?? '';
-    this.tvBroadcasts = data.tvBroadcasts ?? [];
-    this.awayTeam = data.awayTeam ? new Team(data.awayTeam) : new Team({});
-    this.homeTeam = data.homeTeam ? new Team(data.homeTeam) : new Team({});
-    this.periodDescriptor = data.periodDescriptor ?? {
-      number: 0,
-      periodType: '',
-      maxRegulationPeriods: 0,
-    };
-    this.ticketsLink = data.ticketsLink ?? '';
-    this.ticketsLinkFr = data.ticketsLinkFr ?? '';
-    this.gameCenterLink = data.gameCenterLink ?? '';
-    this.clock = data.clock;
-    this.period = data.period;
-    this.situation = data.situation;
     this.league = data.league ?? '';
-    this.venueLocation = data.venueLocation;
-    this.limitedScoring = data.limitedScoring ?? false;
-    this.shootoutInUse = data.shootoutInUse ?? false;
-    this.maxPeriods = data.maxPeriods ?? 3;
-    this.regPeriods = data.regPeriods ?? 3;
-    this.otInUse = data.otInUse ?? false;
-    this.tiesInUse = data.tiesInUse ?? false;
-    this.summary = data.summary ? new GameSummary(data.summary) : undefined;
-    this.matchup = data.matchup;
-    this.plays = data.plays ?? [];
+    
+    const venueData = this.getVenueData(data);
+    this.venue = venueData.venue;
+    this.venueLocation = venueData.venueLocation;
+    this.venueUTCOffset = venueData.venueUTCOffset;
+    this.venueTimezone = venueData.venueTimezone;
+
+    const timeData = this.getTimeData(data);
+    this.startTimeUTC = timeData.startTimeUTC;
+    this.easternUTCOffset = timeData.easternUTCOffset;
+    this.clock = timeData.clock;
+
+    const teamData = this.getTeamData(data);
+    this.awayTeam = teamData.awayTeam;
+    this.homeTeam = teamData.homeTeam;
+
+    const linkData = this.getLinkData(data);
+    this.ticketsLink = linkData.ticketsLink;
+    this.ticketsLinkFr = linkData.ticketsLinkFr;
+    this.gameCenterLink = linkData.gameCenterLink;
+
+    const stateData = this.getGameStateData(data);
+    this.gameState = stateData.gameState;
+    this.gameScheduleState = stateData.gameScheduleState;
+    this.periodDescriptor = stateData.periodDescriptor;
+    this.period = stateData.period;
+    this.status = stateData.status;
+    this.statusCode = stateData.statusCode;
+
+    const miscData = this.getMiscData(data);
+    this.tvBroadcasts = miscData.tvBroadcasts;
+    this.situation = miscData.situation;
+    this.limitedScoring = miscData.limitedScoring;
+    this.shootoutInUse = miscData.shootoutInUse;
+    this.maxPeriods = miscData.maxPeriods;
+    this.regPeriods = miscData.regPeriods;
+    this.otInUse = miscData.otInUse;
+    this.tiesInUse = miscData.tiesInUse;
+    this.summary = miscData.summary;
+    this.matchup = miscData.matchup;
+    this.plays = miscData.plays;
+  }
+
+  private getVenueData(data: Partial<Game>) {
+    return {
+      venue: data.venue ?? { default: '' },
+      venueLocation: data.venueLocation,
+      venueUTCOffset: data.venueUTCOffset ?? '',
+      venueTimezone: data.venueTimezone ?? '',
+    };
+  }
+
+  private getTimeData(data: Partial<Game>) {
+    return {
+      startTimeUTC: data.startTimeUTC ?? '',
+      easternUTCOffset: data.easternUTCOffset ?? '',
+      clock: data.clock,
+    };
+  }
+
+  private getTeamData(data: Partial<Game>) {
+    return {
+      awayTeam: data.awayTeam ? new Team(data.awayTeam) : new Team({}),
+      homeTeam: data.homeTeam ? new Team(data.homeTeam) : new Team({}),
+    };
+  }
+
+  private getLinkData(data: Partial<Game>) {
+    return {
+      ticketsLink: data.ticketsLink ?? '',
+      ticketsLinkFr: data.ticketsLinkFr ?? '',
+      gameCenterLink: data.gameCenterLink ?? '',
+    };
+  }
+
+  private getGameStateData(data: Partial<Game>) {
+    return {
+      gameState: data.gameState ?? GameState.FUTURE,
+      gameScheduleState: data.gameScheduleState ?? '',
+      periodDescriptor: data.periodDescriptor ?? {
+        number: 0,
+        periodType: '',
+        maxRegulationPeriods: 0,
+      },
+      period: data.period,
+      status: data.status,
+      statusCode: data.statusCode,
+    };
+  }
+
+  private getMiscData(data: Partial<Game>) {
+    return {
+      tvBroadcasts: data.tvBroadcasts ?? [],
+      situation: data.situation,
+      limitedScoring: data.limitedScoring ?? false,
+      shootoutInUse: data.shootoutInUse ?? false,
+      maxPeriods: data.maxPeriods ?? 3,
+      regPeriods: data.regPeriods ?? 3,
+      otInUse: data.otInUse ?? false,
+      tiesInUse: data.tiesInUse ?? false,
+      summary: data.summary ? new GameSummary(data.summary) : undefined,
+      matchup: data.matchup,
+      plays: data.plays ?? [],
+    };
   }
 
   get gameInProgress(): boolean {

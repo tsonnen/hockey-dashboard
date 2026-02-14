@@ -51,55 +51,41 @@ function GamePageContent({ params }: GamePageProps): JSX.Element {
   const { game, setGame } = useGame();
 
   useEffect(() => {
+    async function fetchNhlGame(id: string): Promise<Game> {
+      const response = await fetch(`/api/nhl/game/${id}`);
+      if (!response.ok) throw new Error('Failed to fetch game');
+      const data = (await response.json()) as Partial<Game>;
+      return new Game({ ...data, league: 'nhl' });
+    }
+
+    async function fetchHtGame(league: string, id: string): Promise<Game> {
+      const response = await fetch(`/api/hockeytech/${league}/game/${id}`);
+      if (!response.ok) throw new Error('Failed to fetch game');
+      
+      const data = (await response.json()) as HockeyTechGameDetails;
+      const newGame = new Game(convertHockeyTechGameDetails(data, league));
+
+      if (newGame.gameState === GameState.FUTURE) {
+        try {
+          const pRes = await fetch(`/api/hockeytech/${league}/game/${id}/preview`);
+          if (pRes.ok) {
+            const pData = (await pRes.json()) as HockeyTechGamePreview;
+            newGame.matchup = convertHockeyTechGamePreview(pData, league) as GameMatchup;
+          }
+        } catch (error) {
+          console.error('Error fetching preview:', error);
+        }
+      }
+      return newGame;
+    }
+
     async function fetchGame(): Promise<void> {
       try {
         const { league, id } = await params;
-
-        switch (league) {
-          case 'nhl': {
-            const response = await fetch(`/api/nhl/game/${id}`);
-            if (!response.ok) {
-              throw new Error('Failed to fetch game');
-            }
-            const data = (await response.json()) as Partial<Game>;
-            setGame(new Game({ ...data, league: 'nhl' }));
-            break;
-          }
-          case 'ohl':
-          case 'whl':
-          case 'qmjhl':
-          case 'ahl':
-          case 'echl':
-          case 'pwhl': {
-            const response = await fetch(`/api/hockeytech/${league}/game/${id}`);
-            if (!response.ok) {
-              throw new Error('Failed to fetch game');
-            }
-            const data = (await response.json()) as HockeyTechGameDetails;
-            const gameData = convertHockeyTechGameDetails(data, league);
-            const newGame = new Game(gameData);
-
-            // Fetch preview data if game hasn't started yet
-            if (newGame.gameState === GameState.FUTURE) {
-              try {
-                const previewResponse = await fetch(`/api/hockeytech/${league}/game/${id}/preview`);
-                if (previewResponse.ok) {
-                  const previewData = (await previewResponse.json()) as HockeyTechGamePreview;
-                  const matchupData = convertHockeyTechGamePreview(previewData, league);
-                  newGame.matchup = matchupData as GameMatchup;
-                }
-              } catch (error) {
-                console.error('Error fetching preview data:', error);
-                // Continue without preview data
-              }
-            }
-
-            setGame(newGame);
-            break;
-          }
-          default: {
-            break;
-          }
+        if (league === 'nhl') {
+          setGame(await fetchNhlGame(id));
+        } else if (['ohl', 'whl', 'qmjhl', 'ahl', 'echl', 'pwhl'].includes(league)) {
+          setGame(await fetchHtGame(league, id));
         }
       } catch (error) {
         console.error('Error fetching game:', error);

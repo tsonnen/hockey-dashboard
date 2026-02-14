@@ -11,7 +11,7 @@ export function ImageWithFallback({
   quality,
   className,
   fill = undefined,
-  priority = false,
+  priority = undefined,
   fallBackSrc = fallback.src,
   dataTestId = 'image-with-fallback',
 }: {
