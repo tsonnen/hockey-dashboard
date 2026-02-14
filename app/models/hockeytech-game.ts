@@ -1,6 +1,6 @@
 import { Game } from './game';
 import { GameState } from './game-state';
-import { Team } from './team';
+import { mapHockeyTechGameState, mapHockeyTechTeam } from './hockeytech-mapper';
 
 export interface HockeyTechGame {
   ID: string;
@@ -27,28 +27,8 @@ export interface HockeyTechGame {
   TicketUrl: string;
 }
 
-function mapGameStatusToGameState(gameStatus: string): GameState {
-  switch (gameStatus) {
-    case '1': {
-      return GameState.FUTURE;
-    }
-    case '2': {
-      return GameState.LIVE;
-    }
-    case '3': {
-      return GameState.OFFICIAL;
-    }
-    case '4': {
-      return GameState.FINAL;
-    }
-    default: {
-      return GameState.FUTURE;
-    }
-  }
-}
-
 export function convertHockeyTechGame(data: HockeyTechGame, league: string): Game {
-  const gameState = mapGameStatusToGameState(data.GameStatus);
+  const gameState = mapHockeyTechGameState(data.GameStatus, data.GameDateISO8601);
 
   return new Game({
     id: Number.parseInt(data.ID),
@@ -58,30 +38,26 @@ export function convertHockeyTechGame(data: HockeyTechGame, league: string): Gam
     neutralSite: false,
     startTimeUTC: data.GameDateISO8601,
     gameState,
-    homeTeam: new Team({
-      id: Number.parseInt(data.HomeID),
-      placeName: { default: data.HomeCity },
-      commonName: { default: data.HomeNickname },
-      name: { default: data.HomeLongName },
-      logo: data.HomeLogo,
-      score: Number.parseInt(data.HomeGoals) || 0,
-      abbrev: data.HomeNickname.slice(0, 3).toUpperCase(),
-      awaySplitSquad: false,
-      radioLink: '',
-      odds: [],
-    }),
-    awayTeam: new Team({
-      id: Number.parseInt(data.VisitorID),
-      placeName: { default: data.VisitorCity },
-      commonName: { default: data.VisitorNickname },
-      name: { default: data.VisitorLongName },
-      logo: data.VisitorLogo,
-      score: Number.parseInt(data.VisitorGoals) || 0,
-      abbrev: data.VisitorNickname.slice(0, 3).toUpperCase(),
-      awaySplitSquad: false,
-      radioLink: '',
-      odds: [],
-    }),
+    homeTeam: mapHockeyTechTeam(
+      {
+        id: data.HomeID,
+        city: data.HomeCity,
+        nickname: data.HomeNickname,
+        name: data.HomeLongName,
+        logo: data.HomeLogo,
+      },
+      { goals: data.HomeGoals },
+    ),
+    awayTeam: mapHockeyTechTeam(
+      {
+        id: data.VisitorID,
+        city: data.VisitorCity,
+        nickname: data.VisitorNickname,
+        name: data.VisitorLongName,
+        logo: data.VisitorLogo,
+      },
+      { goals: data.VisitorGoals },
+    ),
     period: Number.parseInt(data.Period) || undefined,
     ticketsLink: data.TicketUrl,
     clock: data.GameClock

@@ -51,7 +51,7 @@ describe('GameScoreDisplay', () => {
   });
 
   it('renders game information correctly', () => {
-    const game = new Game({ homeTeam, awayTeam });
+    const game = new Game({ homeTeam, awayTeam, gameState: GameState.LIVE });
     renderWithGame(game);
 
     expect(screen.getByText('Toronto Maple Leafs')).toBeInTheDocument();
@@ -68,6 +68,26 @@ describe('GameScoreDisplay', () => {
     expect(screen.getByText('3')).toBeInTheDocument();
     expect(screen.getByText('SOG: 25')).toBeInTheDocument();
     expect(screen.getByText('SOG: 30')).toBeInTheDocument();
+  });
+
+  it('renders does not render score if game has not started', () => {
+    const game = new Game({ homeTeam, awayTeam, gameState: GameState.FUTURE });
+    renderWithGame(game);
+
+    expect(screen.getByText('Toronto Maple Leafs')).toBeInTheDocument();
+    expect(screen.getByText('Montreal Canadiens')).toBeInTheDocument();
+    expect(screen.getByAltText('Toronto Maple Leafs logo')).toHaveAttribute(
+      'src',
+      '/images/leafs.png',
+    );
+    expect(screen.getByAltText('Montreal Canadiens logo')).toHaveAttribute(
+      'src',
+      '/images/habs.png',
+    );
+    expect(screen.queryByText('2')).not.toBeInTheDocument();
+    expect(screen.queryByText('3')).not.toBeInTheDocument();
+    expect(screen.queryByText('SOG: 25')).not.toBeInTheDocument();
+    expect(screen.queryByText('SOG: 30')).not.toBeInTheDocument();
   });
 
   it('shows game status string', () => {
