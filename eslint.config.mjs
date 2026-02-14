@@ -56,6 +56,7 @@ const config = [
       },
     },
     rules: {
+      'complexity': ['error', { max: 10 }],
       'no-undef': 'error',
       'react/react-in-jsx-scope': 'off',
       'tailwindcss/no-custom-classname': 'off',

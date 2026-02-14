@@ -1,5 +1,6 @@
 import { Player } from '@/app/models/team-details';
 import { ImageWithFallback } from '../image-with-fallback';
+import headshotFallback from '@/app/assets/headshot-fallback.png';
 
 interface TeamRosterProps {
   roster: {
@@ -60,18 +61,13 @@ function RosterTable({
               <td className="whitespace-nowrap px-3 py-2">
                 <div className="flex items-center space-x-2">
                   <div className="relative size-6 shrink-0 overflow-hidden rounded-full bg-gray-100">
-                    {p.headshot ? (
-                      <ImageWithFallback
-                        src={p.headshot}
-                        alt={`${p.firstName.default} ${p.lastName.default}`}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="flex size-full items-center justify-center text-[10px] text-gray-400">
-                        ?
-                      </div>
-                    )}
+                    <ImageWithFallback
+                      src={p.headshot || headshotFallback.src}
+                      alt={`${p.firstName.default} ${p.lastName.default}`}
+                      fill
+                      className="object-cover"
+                      fallBackSrc={headshotFallback.src}
+                    />
                   </div>
                   <span className="text-sm font-medium">
                     {p.firstName.default} {p.lastName.default}
