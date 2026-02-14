@@ -1,26 +1,26 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { TeamDetailsSkeleton } from './team-details-skeleton';
 import { describe, it, expect } from '@jest/globals';
 
 describe('TeamDetailsSkeleton', () => {
   it('renders all main skeleton sections', () => {
-    const { container } = render(<TeamDetailsSkeleton />);
+    render(<TeamDetailsSkeleton />);
+    
+    // Check for main container
+    expect(screen.getByTestId('team-details-skeleton')).toBeInTheDocument();
     
     // Check for back button skeleton
-    const backButton = container.querySelector('.mb-6.h-10.w-24');
-    expect(backButton).toBeInTheDocument();
+    expect(screen.getByTestId('back-button-skeleton')).toBeInTheDocument();
     
     // Check for header skeleton (logo + team info)
-    const logo = container.querySelector('.size-32.rounded-full');
-    expect(logo).toBeInTheDocument();
+    expect(screen.getByTestId('header-skeleton')).toBeInTheDocument();
+    expect(screen.getByTestId('logo-skeleton')).toBeInTheDocument();
     
     // Check for schedule section
-    const scheduleSections = container.querySelectorAll('section');
-    expect(scheduleSections.length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByTestId('schedule-skeleton')).toBeInTheDocument();
     
-    // Check for roster section - should have multiple subsections
-    const rosterSubsections = container.querySelectorAll('.space-y-12 > div > div');
-    expect(rosterSubsections.length).toBeGreaterThan(0);
+    // Check for roster section
+    expect(screen.getByTestId('roster-skeleton')).toBeInTheDocument();
   });
 });
