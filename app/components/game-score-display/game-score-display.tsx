@@ -26,7 +26,8 @@ export function GameScoreDisplay(): ReactElement {
       <div className="flex items-center justify-between">
         <TeamDisplay 
           isHome={false} 
-          league={game.league} 
+          league={game.league}
+          gameStarted={game.gameStarted}
           score={awayScore} 
           team={awayTeam} 
         />
@@ -43,7 +44,8 @@ export function GameScoreDisplay(): ReactElement {
 
         <TeamDisplay 
           isHome={true} 
-          league={game.league} 
+          league={game.league}
+          gameStarted={game.gameStarted}
           score={homeScore} 
           team={homeTeam} 
         />
@@ -60,7 +62,7 @@ function calculateScore(game: Game, isHome: boolean): number {
   return summaryGoals ?? (isHome ? game.homeTeam.score : game.awayTeam.score) ?? 0;
 }
 
-function TeamDisplay({ team, score, league, isHome }: { team: Team, score: number, league: string, isHome: boolean }) {
+function TeamDisplay({ team, score, league, gameStarted, isHome }: { team: Team, score: number, league: string, gameStarted: boolean, isHome: boolean }) {
   const testId = isHome ? 'home-team' : 'away-team';
   const teamId = league === 'nhl' ? team.abbrev : team.id;
   
@@ -83,10 +85,12 @@ function TeamDisplay({ team, score, league, isHome }: { team: Team, score: numbe
         </div>
         <div className="text-center text-lg font-semibold">{team.placeName.default}</div>
       </Link>
-      <div className="mt-2 text-3xl font-bold" data-testid={`${testId}-score`}>
-        {score}
-      </div>
-      {team.sog !== undefined && (
+      {gameStarted && (
+        <div className="mt-2 text-3xl font-bold" data-testid={`${testId}-score`}>
+          {score}
+        </div>
+      )}
+      {team.sog !== undefined && gameStarted && (
         <div className="mt-1 text-sm text-gray-600">SOG: {team.sog}</div>
       )}
     </div>

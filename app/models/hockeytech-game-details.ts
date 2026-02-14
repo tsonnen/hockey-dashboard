@@ -1,7 +1,7 @@
 import type { Game } from '@/app/models/game';
-import { GameState } from '@/app/models/game-state';
 import { GameSummary } from '@/app/models/game-summary';
 import { Team } from '@/app/models/team';
+import { mapHockeyTechGameState, mapHockeyTechTeam } from './hockeytech-mapper';
 
 export interface HockeyTechPlayer {
   info: {
@@ -200,27 +200,6 @@ export interface HockeyTechGameDetails {
   };
 }
 
-function mapGameDetailsStatusToGameState(status: string): GameState {
-  switch (status) {
-    case 'Scheduled': {
-      return GameState.FUTURE;
-    }
-    case 'Final':
-    case 'Final OT': {
-      return GameState.FINAL;
-    }
-    case 'Official': {
-      return GameState.OFFICIAL;
-    }
-    default: {
-      if (status.startsWith('In Progress')) {
-        return GameState.LIVE;
-      }
-      return GameState.FUTURE;
-    }
-  }
-}
-
 export function convertHockeyTechGameDetails(
   data: HockeyTechGameDetails,
   league: string,
@@ -326,35 +305,11 @@ export function convertHockeyTechGameDetails(
     venue: { default: data.details.venue },
     neutralSite: false,
     startTimeUTC: data.details.GameDateISO8601,
-    gameState: mapGameDetailsStatusToGameState(data.details.status),
+    gameState: mapHockeyTechGameState(data.details.status, data.details.GameDateISO8601),
     clock,
     period,
-    homeTeam: new Team({
-      id: data.homeTeam.info.id,
-      placeName: { default: data.homeTeam.info.city },
-      commonName: { default: data.homeTeam.info.nickname },
-      name: { default: data.homeTeam.info.name },
-      logo: data.homeTeam.info.logo,
-      score: data.homeTeam.stats.goals,
-      abbrev: data.homeTeam.info.abbreviation,
-      awaySplitSquad: false,
-      radioLink: '',
-      odds: [],
-      sog: homeSOG,
-    }),
-    awayTeam: new Team({
-      id: data.visitingTeam.info.id,
-      placeName: { default: data.visitingTeam.info.city },
-      commonName: { default: data.visitingTeam.info.nickname },
-      name: { default: data.visitingTeam.info.name },
-      logo: data.visitingTeam.info.logo,
-      score: data.visitingTeam.stats.goals,
-      abbrev: data.visitingTeam.info.abbreviation,
-      awaySplitSquad: false,
-      radioLink: '',
-      odds: [],
-      sog: awaySOG,
-    }),
+    homeTeam: mapHockeyTechTeam(data.homeTeam.info, { ...data.homeTeam.stats, shots: homeSOG }),
+    awayTeam: mapHockeyTechTeam(data.visitingTeam.info, { ...data.visitingTeam.stats, shots: awaySOG }),
     ticketsLink: data.details.ticketsUrl,
     league,
     summary: new GameSummary({
