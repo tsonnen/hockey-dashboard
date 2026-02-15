@@ -87,7 +87,7 @@ export function mapHockeyTechTeam(info: HockeyTechTeamInfo, stats: HockeyTechTea
   const teamId = typeof info.id === 'string' ? Number.parseInt(info.id) : info.id;
   const score = parseHockeyTechValue(stats.goals);
   const sog = parseHockeyTechValue(stats.shots);
-  const abbrev = info.abbreviation ?? (info.nickname?.slice(0, 3).toUpperCase() ?? '');
+  const abbrev = info.abbreviation ?? info.nickname?.slice(0, 3).toUpperCase() ?? '';
 
   return new Team({
     id: teamId,

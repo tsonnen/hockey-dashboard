@@ -66,7 +66,7 @@ export interface TeamDetails {
   abbrev: string;
   name: LocalizedName;
   logo?: string;
-  
+
   roster: {
     forwards: Player[];
     defensemen: Player[];

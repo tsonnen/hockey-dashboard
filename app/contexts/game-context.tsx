@@ -17,11 +17,7 @@ interface GameProviderProps {
 export function GameProvider({ children, initialGame }: GameProviderProps): JSX.Element {
   const [game, setGame] = useState<Game | undefined>(initialGame);
 
-  return (
-    <GameContext.Provider value={{ game, setGame }}>
-      {children}
-    </GameContext.Provider>
-  );
+  return <GameContext.Provider value={{ game, setGame }}>{children}</GameContext.Provider>;
 }
 
 export function useGame(): GameContextType {

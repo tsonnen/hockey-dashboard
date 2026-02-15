@@ -86,7 +86,7 @@ export class Game {
     this.gameDate = data.gameDate;
     this.neutralSite = data.neutralSite ?? false;
     this.league = data.league ?? '';
-    
+
     const venueData = this.getVenueData(data);
     this.venue = venueData.venue;
     this.venueLocation = venueData.venueLocation;

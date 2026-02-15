@@ -13,17 +13,20 @@ This workflow guides modifications to UI components or pages, including delegate
 ### Steps
 
 1. **Implement the Change**
+
    - Follow patterns in [.github/copilot-instructions.md](../../.github/copilot-instructions.md)
    - Co-locate tests with components
    - Use Tailwind CSS and CSS Modules per project conventions
 
 2. **Run Automated Checks**
+
    - Lint: `pnpm run lint`
    - Build: `pnpm run build`
    - Unit tests: `pnpm run test`
    - E2E tests: `pnpm run playwright:test`
 
 3. **Delegate Browser Verification**
+
    - **CRITICAL**: Delegate to the browser subagent (cursor-ide-browser MCP) to verify the changes visually and interactively.
    - Ensure the dev server is running: `pnpm dev`
    - Browser workflow:
@@ -36,6 +39,7 @@ This workflow guides modifications to UI components or pages, including delegate
      7. Use `browser_unlock` when done
 
 4. **Page-Specific Verification Targets**
+
    - **Landing page** (`/`): Date picker (#datepickerInput), league selector, game cards, correct date in URL
    - **Game details** (`/game/nhl/[id]`, `/game/qmjhl/[id]`): Score display, team logos, team links
    - **Team details** (`/team/[league]/[id]`): Team name, logo, Schedule, Roster, Skaters, Goalies sections

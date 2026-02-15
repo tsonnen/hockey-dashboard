@@ -8,6 +8,9 @@ interface GameProviderWrapperProps {
   initialGame?: Game;
 }
 
-export function GameProviderWrapper({ children, initialGame }: GameProviderWrapperProps): ReactElement {
+export function GameProviderWrapper({
+  children,
+  initialGame,
+}: GameProviderWrapperProps): ReactElement {
   return <GameProvider initialGame={initialGame}>{children}</GameProvider>;
 }

@@ -1,5 +1,5 @@
 export interface PeriodDescriptor {
-    number: number;
-    periodType: string;
-    maxRegulationPeriods: number;
+  number: number;
+  periodType: string;
+  maxRegulationPeriods: number;
 }

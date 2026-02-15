@@ -309,7 +309,10 @@ export function convertHockeyTechGameDetails(
     clock,
     period,
     homeTeam: mapHockeyTechTeam(data.homeTeam.info, { ...data.homeTeam.stats, shots: homeSOG }),
-    awayTeam: mapHockeyTechTeam(data.visitingTeam.info, { ...data.visitingTeam.stats, shots: awaySOG }),
+    awayTeam: mapHockeyTechTeam(data.visitingTeam.info, {
+      ...data.visitingTeam.stats,
+      shots: awaySOG,
+    }),
     ticketsLink: data.details.ticketsUrl,
     league,
     summary: new GameSummary({

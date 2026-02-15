@@ -61,7 +61,7 @@ function GamePageContent({ params }: GamePageProps): JSX.Element {
     async function fetchHtGame(league: string, id: string): Promise<Game> {
       const response = await fetch(`/api/hockeytech/${league}/game/${id}`);
       if (!response.ok) throw new Error('Failed to fetch game');
-      
+
       const data = (await response.json()) as HockeyTechGameDetails;
       const newGame = new Game(convertHockeyTechGameDetails(data, league));
 

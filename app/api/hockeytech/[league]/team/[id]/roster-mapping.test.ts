@@ -7,7 +7,7 @@ describe('HockeyTech Roster Mapping', () => {
       const p: HockeyTechRow = {
         player_id: 123,
         name: 'Cloutier, Rafaël',
-        position: 'F'
+        position: 'F',
       };
       const result = mapHtPlayer(p);
       expect(result.firstName.default).toBe('Cloutier');
@@ -18,7 +18,7 @@ describe('HockeyTech Roster Mapping', () => {
       const p: HockeyTechRow = {
         player_id: 456,
         name: 'Danny Dupont',
-        position: 'F'
+        position: 'F',
       };
       const result = mapHtPlayer(p);
       expect(result.firstName.default).toBe('Danny');
@@ -30,7 +30,7 @@ describe('HockeyTech Roster Mapping', () => {
         player_id: 789,
         first_name: 'John',
         last_name: 'Doe',
-        position: 'D'
+        position: 'D',
       };
       const result = mapHtPlayer(p);
       expect(result.firstName.default).toBe('John');
@@ -41,7 +41,7 @@ describe('HockeyTech Roster Mapping', () => {
       const p: HockeyTechRow = {
         person_id: 999,
         name: 'Test Player',
-        position: 'F'
+        position: 'F',
       };
       const result = mapHtPlayer(p);
       expect(result.id).toBe(999);
@@ -51,7 +51,7 @@ describe('HockeyTech Roster Mapping', () => {
       const p: HockeyTechRow = {
         player_id: 21_651,
         name: 'Rafaël Cloutier',
-        position: 'F'
+        position: 'F',
       };
       const result = mapHtPlayer(p, 'lhjmq');
       expect(result.headshot).toBe('https://assets.leaguestat.com/lhjmq/240x240/21651.jpg');
@@ -62,14 +62,13 @@ describe('HockeyTech Roster Mapping', () => {
         player_id: 123,
         name: 'Test Player',
         position: 'F',
-        face_image: 'https://example.com/custom.jpg'
+        face_image: 'https://example.com/custom.jpg',
       };
       const result = mapHtPlayer(p, 'lhjmq');
       expect(result.headshot).toBe('https://example.com/custom.jpg');
     });
 
     it('should normalize detailed positions correctly', () => {
-      
       expect(mapHtPlayer({ position: 'LW' }).positionCode).toBe('LW');
       expect(mapHtPlayer({ position: 'RW' }).positionCode).toBe('RW');
       expect(mapHtPlayer({ position: 'C' }).positionCode).toBe('C');
@@ -92,21 +91,19 @@ describe('HockeyTech Roster Mapping', () => {
         { player_id: 1, name: 'Player One', position: 'F' },
         { player_id: 2, name: 'Coach Smith', role: 'Head Coach' },
         { player_id: 3, name: 'Danny Dupont', role: 'General Manager' },
-        { player_id: 4, name: 'Staff Member', role: 'Equipment Manager' }
+        { player_id: 4, name: 'Staff Member', role: 'Equipment Manager' },
       ];
       const statsMap = new Map<string, HockeyTechRow>();
-      
+
       const result = processRoster(players, statsMap);
-      
+
       expect(result.forwards).toHaveLength(1);
       expect(result.forwards[0].lastName.default).toBe('One');
       expect(result.goalies).toHaveLength(0);
     });
 
     it('should skip rows without an ID', () => {
-      const players: HockeyTechRow[] = [
-        { name: 'No ID Player', position: 'F' }
-      ];
+      const players: HockeyTechRow[] = [{ name: 'No ID Player', position: 'F' }];
       const statsMap = new Map<string, HockeyTechRow>();
       const result = processRoster(players, statsMap);
       expect(result.forwards).toHaveLength(0);

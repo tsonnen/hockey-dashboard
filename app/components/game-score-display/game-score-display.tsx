@@ -24,12 +24,12 @@ export function GameScoreDisplay(): ReactElement {
       data-testid="game-score-display"
     >
       <div className="flex items-center justify-between">
-        <TeamDisplay 
-          isHome={false} 
+        <TeamDisplay
+          isHome={false}
           league={game.league}
           gameStarted={game.gameStarted}
-          score={awayScore} 
-          team={awayTeam} 
+          score={awayScore}
+          team={awayTeam}
         />
 
         <div className={styles.gameStatus}>
@@ -42,12 +42,12 @@ export function GameScoreDisplay(): ReactElement {
           <div className={styles.startTime}>{game.statusString}</div>
         </div>
 
-        <TeamDisplay 
-          isHome={true} 
+        <TeamDisplay
+          isHome={true}
           league={game.league}
           gameStarted={game.gameStarted}
-          score={homeScore} 
-          team={homeTeam} 
+          score={homeScore}
+          team={homeTeam}
         />
       </div>
     </div>
@@ -62,10 +62,22 @@ function calculateScore(game: Game, isHome: boolean): number {
   return summaryGoals ?? (isHome ? game.homeTeam.score : game.awayTeam.score) ?? 0;
 }
 
-function TeamDisplay({ team, score, league, gameStarted, isHome }: { team: Team, score: number, league: string, gameStarted: boolean, isHome: boolean }) {
+function TeamDisplay({
+  team,
+  score,
+  league,
+  gameStarted,
+  isHome,
+}: {
+  team: Team;
+  score: number;
+  league: string;
+  gameStarted: boolean;
+  isHome: boolean;
+}) {
   const testId = isHome ? 'home-team' : 'away-team';
   const teamId = league === 'nhl' ? team.abbrev : team.id;
-  
+
   return (
     <div className="flex flex-1 flex-col items-center" data-testid={testId}>
       <Link
