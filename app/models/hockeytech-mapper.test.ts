@@ -45,7 +45,9 @@ describe('hockeytech-mapper', () => {
     });
 
     it('maps "In Progress" to LIVE if time is appropriate', () => {
-      expect(mapHockeyTechGameState('In Progress (12:34 remaining in 1st)', justStartedTime)).toBe(GameState.LIVE);
+      expect(mapHockeyTechGameState('In Progress (12:34 remaining in 1st)', justStartedTime)).toBe(
+        GameState.LIVE,
+      );
     });
 
     it('maps "In Progress" to FUTURE if too far in advance', () => {

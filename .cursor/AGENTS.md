@@ -11,12 +11,12 @@ This file provides instructions for AI agents working on the Hockey Dashboard pr
 
 Reference these workflows when performing the corresponding tasks:
 
-| Task | Workflow |
-|------|----------|
-| Add new API endpoint | [.agent/workflows/add_endpoint.md](../.agent/workflows/add_endpoint.md) |
-| Run all tests | [.agent/workflows/run_tests.md](../.agent/workflows/run_tests.md) |
-| Verify changes (lint, build, test) | [.agent/workflows/verify_changes.md](../.agent/workflows/verify_changes.md) |
-| **Modify component or page** | [.agent/workflows/modify_component_or_page.md](../.agent/workflows/modify_component_or_page.md) |
+| Task                               | Workflow                                                                                        |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Add new API endpoint               | [.agent/workflows/add_endpoint.md](../.agent/workflows/add_endpoint.md)                         |
+| Run all tests                      | [.agent/workflows/run_tests.md](../.agent/workflows/run_tests.md)                               |
+| Verify changes (lint, build, test) | [.agent/workflows/verify_changes.md](../.agent/workflows/verify_changes.md)                     |
+| **Modify component or page**       | [.agent/workflows/modify_component_or_page.md](../.agent/workflows/modify_component_or_page.md) |
 
 ## Component/Page Changes → Browser Verification
 

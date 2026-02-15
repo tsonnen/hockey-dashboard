@@ -40,7 +40,8 @@ export default function TeamPage({ params }: TeamPageProps): JSX.Element {
   }, [params]);
 
   if (loading) return <TeamDetailsSkeleton />;
-  if (!team) return <div className="p-8 text-center text-red-500">Failed to load team details.</div>;
+  if (!team)
+    return <div className="p-8 text-center text-red-500">Failed to load team details.</div>;
 
   return (
     <div className="container mx-auto p-4">
@@ -67,15 +68,25 @@ export default function TeamPage({ params }: TeamPageProps): JSX.Element {
 
 function TeamHeader({ team }: { team: TeamDetails }) {
   const record = team.record;
-  const streak = record?.streakCode ? `${record.streakCode}${record.streakCount ? ` (${record.streakCount})` : ''}` : undefined;
+  const streak = record?.streakCode
+    ? `${record.streakCode}${record.streakCount ? ` (${record.streakCount})` : ''}`
+    : undefined;
 
   return (
     <div className="mb-8 flex flex-col items-center space-y-4 text-center md:flex-row md:space-x-8 md:space-y-0 md:text-left">
       <div className="relative size-32">
         {team.logo ? (
-          <ImageWithFallback src={team.logo} alt="Team Logo" fill className="object-contain" priority />
+          <ImageWithFallback
+            src={team.logo}
+            alt="Team Logo"
+            fill
+            className="object-contain"
+            priority
+          />
         ) : (
-          <div className="flex size-full items-center justify-center rounded-full bg-gray-200">No Logo</div>
+          <div className="flex size-full items-center justify-center rounded-full bg-gray-200">
+            No Logo
+          </div>
         )}
       </div>
       <div>
@@ -86,9 +97,7 @@ function TeamHeader({ team }: { team: TeamDetails }) {
             {record.ties === undefined ? '' : `-${record.ties}`} ({record.points} pts)
           </div>
         )}
-        {streak && (
-          <div className="text-sm text-gray-500">Streak: {streak}</div>
-        )}
+        {streak && <div className="text-sm text-gray-500">Streak: {streak}</div>}
       </div>
     </div>
   );
