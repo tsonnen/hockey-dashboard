@@ -307,6 +307,12 @@ function isOvertimeOrShootout(g: HockeyTechRow, stat: string): boolean {
   return g.overtime === '1' || g.shootout === '1' || stat.includes('ot') || stat.includes('so');
 }
 
+function gameResultCode(isWin: boolean, isOTL: boolean): string {
+  if (isWin) return 'W';
+  if (isOTL) return 'OTL';
+  return 'L';
+}
+
 function getGameResult(g: HockeyTechRow, id: string) {
   const isHome = String(g.home_team) === id;
   const hS = Number(g.home_goal_count || 0);
@@ -314,7 +320,7 @@ function getGameResult(g: HockeyTechRow, id: string) {
   const isWin = isHome ? hS > vS : vS > hS;
   const stat = String(g.game_status ?? g.status).toLowerCase();
   const isOTL = !isWin && isOvertimeOrShootout(g, stat);
-  return { isWin, isOTL, res: isWin ? 'W' : isOTL ? 'OTL' : 'L' };
+  return { isWin, isOTL, res: gameResultCode(isWin, isOTL) };
 }
 
 function getSchedules(games: HockeyTechRow[], id: string) {
