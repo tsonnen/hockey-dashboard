@@ -8,6 +8,7 @@ This workflow outlines the steps and references for adding a new API endpoint wr
 
 - **PWHL (HockeyTechDB)**: [PWHL-Data-Reference](https://github.com/IsabelleLefebvre97/PWHL-Data-Reference/blob/main/README.md)
   - Use this for any PWHL / HockeyTechDB related endpoints.
+  - **Local Reference**: [external-api-docs/hockeyTechApi.md](../external-api-docs/hockeyTechApi.md)
 - **NHL**: [NHL-API-Reference](https://github.com/Zmalski/NHL-API-Reference/blob/main/README.md)
   - Use this for any NHL related endpoints.
 
@@ -31,4 +32,5 @@ This workflow outlines the steps and references for adding a new API endpoint wr
    - Run this verification immediately after implementation.
 
 4. **Update Documentation**
-   - If applicable, update any internal API documentation.
+   - Update any internal API documentation.
+   - Ensure that the exact shape of the data is recorded for better reference down the line

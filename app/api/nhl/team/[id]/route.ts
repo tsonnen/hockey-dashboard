@@ -3,6 +3,7 @@ import { TeamDetails, ScheduledGame } from '@/app/models/team-details';
 import { mapNhlPlayer, mapNhlGame } from './mapping';
 
 const NHL_API_BASE = 'https://api-web.nhle.com/v1';
+// See /external-api-docs/nhlApi.md for more information on the API and its endpoints.
 
 async function getRoster(teamAbbrev: string) {
   const res = await fetch(`${NHL_API_BASE}/roster/${teamAbbrev}/current`);

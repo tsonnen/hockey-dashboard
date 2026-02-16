@@ -3,7 +3,8 @@ import { Team } from './team';
 
 const TIME_BUFFER_MS = 10 * 60 * 1000;
 
-function mapNumericStatus(status: string, gameStart: Date, now: Date): GameState | undefined {
+function mapNumericStatus(status: string, gameStart: Date): GameState | undefined {
+  const now = new Date();
   switch (status) {
     case '1': {
       return GameState.FUTURE;
@@ -26,7 +27,8 @@ function mapNumericStatus(status: string, gameStart: Date, now: Date): GameState
   }
 }
 
-function mapStringStatus(status: string, gameStart: Date, now: Date): GameState | undefined {
+function mapStringStatus(status: string, gameStart: Date): GameState | undefined {
+  const now = new Date();
   if (status === 'scheduled') return GameState.FUTURE;
   if (status === 'official') return GameState.OFFICIAL;
   if (status.includes('final')) return GameState.FINAL;
@@ -50,10 +52,10 @@ export function mapHockeyTechGameState(status: string | number, startTimeUTC: st
   const gameStart = new Date(startTimeUTC);
   const statusStr = String(status).toLowerCase();
 
-  const numericResult = mapNumericStatus(statusStr, gameStart, now);
+  const numericResult = mapNumericStatus(statusStr, gameStart);
   if (numericResult) return numericResult;
 
-  const stringResult = mapStringStatus(statusStr, gameStart, now);
+  const stringResult = mapStringStatus(statusStr, gameStart);
   if (stringResult) return stringResult;
 
   // Fallback: Use start time if status is unclear

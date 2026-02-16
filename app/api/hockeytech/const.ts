@@ -10,6 +10,7 @@ export enum LEAGUES {
 // These are publicly available API keys for HockeyTech's public endpoints.
 // They are safe to commit to version control as they are not sensitive credentials.
 // These keys are used to identify which league's data to fetch from the public API.
+// See /external-api-docs/hockeyTechApi.md for more information on the API and its endpoints.
 export const LEAGUE_KEY_MAPPINGS: Record<LEAGUES, { key: string; client_code: string }> =
   Object.freeze({
     ohl: { key: '2976319eb44abe94', client_code: 'ohl' },
