@@ -15,7 +15,20 @@ export function mapHtPlayerStats(s?: HockeyTechRow): Partial<Player> {
     points: toNumber(s.points),
     plusMinus: s.plus_minus === undefined ? undefined : Number(s.plus_minus),
     savePct: toNumber(s.save_percentage),
+    wins: toNumber(s.wins),
+    losses: toNumber(s.losses),
+    shotsAgainst: toNumber(s.shots),
+    saves: toNumber(s.saves),
+    shutouts: toNumber(s.shutouts),
     gaa: toNumber(s.goals_against_average),
+    shots: toNumber(s.shots),
+    pointsPerGame: toNumber(s.points_per_game),
+    faceoffPct: toNumber(s.faceoff_percentage),
+    avgIceTime: s.avg_time_on_ice as string,
+    pim: toNumber(s.penalty_minutes),
+    hits: toNumber(s.hits),
+    blocks: toNumber(s.blocks),
+    shootingPct: toNumber((s.shooting_percentage as number) / 100),
   };
 }
 
