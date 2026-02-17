@@ -14,6 +14,7 @@ interface TeamDisplayProps {
   league?: string;
   size?: 'sm' | 'lg';
   showName?: boolean;
+  dataTestId?: string;
 }
 
 interface TeamContentProps {
@@ -22,9 +23,17 @@ interface TeamContentProps {
   score: number;
   showName: boolean;
   logoSize: number;
+  dataTestId?: string;
 }
 
-function TeamContent({ team, gameStarted, score, showName, logoSize }: TeamContentProps) {
+function TeamContent({
+  team,
+  gameStarted,
+  score,
+  showName,
+  logoSize,
+  dataTestId,
+}: TeamContentProps) {
   return (
     <>
       <div className={styles.logo}>
@@ -34,13 +43,19 @@ function TeamContent({ team, gameStarted, score, showName, logoSize }: TeamConte
           quality={100}
           src={team.logo ?? ''}
           width={logoSize}
+          dataTestId={dataTestId ? `${dataTestId}-logo` : undefined}
         />
       </div>
       <div className={styles.teamInfo}>
         {showName && <div className={styles.teamName}>{team.placeName.default}</div>}
         {gameStarted && (
           <div className={styles.teamStats}>
-            <div className={styles.score}>{score}</div>
+            <div
+              className={styles.score}
+              data-testid={dataTestId ? `${dataTestId}-score` : undefined}
+            >
+              {score}
+            </div>
             {team.sog !== undefined && <div className={styles.shots}>SOG: {team.sog ?? 0}</div>}
           </div>
         )}
@@ -56,6 +71,7 @@ export function TeamDisplay({
   league,
   size = 'sm',
   showName = false,
+  dataTestId,
 }: TeamDisplayProps): JSX.Element {
   const displayScore = score ?? team.score ?? 0;
   const isLarge = size === 'lg';
@@ -71,6 +87,7 @@ export function TeamDisplay({
       score={displayScore}
       showName={showName}
       logoSize={logoSize}
+      dataTestId={dataTestId}
     />
   );
 

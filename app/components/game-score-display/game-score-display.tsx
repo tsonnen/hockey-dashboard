@@ -28,6 +28,7 @@ export function GameScoreDisplay(): ReactElement {
           league={game.league}
           size="lg"
           showName={true}
+          dataTestId="away-team"
         />
 
         <div className={styles.gameStatus}>
@@ -47,6 +48,7 @@ export function GameScoreDisplay(): ReactElement {
           league={game.league}
           size="lg"
           showName={true}
+          dataTestId="home-team"
         />
       </div>
     </div>
