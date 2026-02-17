@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { TeamDetails, ScheduledGame } from '@/app/models/team-details';
+import { TeamDetails } from '@/app/models/team-details';
 import { mapNhlPlayer, mapNhlGame } from './mapping';
 
 const NHL_API_BASE = 'https://api-web.nhle.com/v1';
@@ -122,20 +122,17 @@ function processNhlStandings(standingsData: Record<string, unknown>, teamAbbrev:
   return { teamName, logo, record };
 }
 
+import { splitSchedule } from '@/app/utils/scheduler';
+
 function processNhlSchedule(scheduleData: Record<string, unknown>) {
-  const upcomingSchedule: ScheduledGame[] = [];
-  const last10Schedule: ScheduledGame[] = [];
-  if (scheduleData?.games) {
-    const today = new Date().toISOString().split('T')[0];
-    const games = scheduleData.games as Record<string, unknown>[];
-    const past = games.filter((g: Record<string, unknown>) => String(g.gameDate ?? '') < today);
-    const future = games.filter((g: Record<string, unknown>) => String(g.gameDate ?? '') >= today);
-    last10Schedule.push(...past.slice(-10).map((g: Record<string, unknown>) => mapNhlGame(g)));
-    upcomingSchedule.push(
-      ...future.slice(0, 10).map((g: Record<string, unknown>) => mapNhlGame(g)),
-    );
+  if (!scheduleData?.games) {
+    return { upcomingSchedule: [], last10Schedule: [] };
   }
-  return { upcomingSchedule, last10Schedule };
+
+  const games = (scheduleData.games as Record<string, unknown>[]).map((g) => mapNhlGame(g));
+  const { last10, upcoming } = splitSchedule(games);
+
+  return { upcomingSchedule: upcoming, last10Schedule: last10 };
 }
 
 // mapping logic removed and imported from mapping.ts

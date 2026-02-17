@@ -1,8 +1,10 @@
 import { describe, it, expect } from '@jest/globals';
-import { processRoster, mapHtPlayer, mapHtPlayerStats, HockeyTechRow } from './mapping';
+import { processRoster, mapHtPlayer, mapHtSkaterStats, mapHtGoalieStats } from './mapping';
+import type { HockeyTechRow } from '../../../types';
 
 describe('HockeyTech Roster Mapping', () => {
   describe('mapHtPlayer', () => {
+    // ... existing mapHtPlayer tests ...
     it('should split fullName into firstName and lastName correctly', () => {
       const p: HockeyTechRow = {
         player_id: 123,
@@ -85,7 +87,7 @@ describe('HockeyTech Roster Mapping', () => {
     });
   });
 
-  describe('mapHtPlayerStats', () => {
+  describe('mapHtSkaterStats', () => {
     it('should correctly parse numeric fields', () => {
       const input: HockeyTechRow = {
         games_played: '10',
@@ -93,7 +95,7 @@ describe('HockeyTech Roster Mapping', () => {
         assists: 3, // Already a number
         points: '8',
       };
-      const result = mapHtPlayerStats(input);
+      const result = mapHtSkaterStats(input);
       expect(result.gamesPlayed).toBe(10);
       expect(result.goals).toBe(5);
       expect(result.assists).toBe(3);
@@ -101,7 +103,7 @@ describe('HockeyTech Roster Mapping', () => {
     });
 
     it('should handle missing or undefined input', () => {
-      expect(mapHtPlayerStats()).toEqual({});
+      expect(mapHtSkaterStats()).toEqual({});
     });
 
     it('should handle null or undefined fields gracefully', () => {
@@ -109,7 +111,7 @@ describe('HockeyTech Roster Mapping', () => {
         goals: undefined,
         assists: undefined,
       };
-      const result = mapHtPlayerStats(input);
+      const result = mapHtSkaterStats(input);
       expect(result.goals).toBeUndefined();
       expect(result.assists).toBeUndefined();
     });
@@ -118,7 +120,7 @@ describe('HockeyTech Roster Mapping', () => {
       const input: HockeyTechRow = {
         shooting_percentage: '15.5',
       };
-      const result = mapHtPlayerStats(input);
+      const result = mapHtSkaterStats(input);
       // Logic is value / 100
       expect(result.shootingPct).toBe(0.155);
     });
@@ -128,9 +130,23 @@ describe('HockeyTech Roster Mapping', () => {
       const inputNegative: HockeyTechRow = { plus_minus: '-2' };
       const inputZero: HockeyTechRow = { plus_minus: '0' };
 
-      expect(mapHtPlayerStats(inputPositive).plusMinus).toBe(5);
-      expect(mapHtPlayerStats(inputNegative).plusMinus).toBe(-2);
-      expect(mapHtPlayerStats(inputZero).plusMinus).toBe(0);
+      expect(mapHtSkaterStats(inputPositive).plusMinus).toBe(5);
+      expect(mapHtSkaterStats(inputNegative).plusMinus).toBe(-2);
+      expect(mapHtSkaterStats(inputZero).plusMinus).toBe(0);
+    });
+  });
+
+  describe('mapHtGoalieStats', () => {
+    it('should correctly parse numeric fields', () => {
+      const input: HockeyTechRow = {
+        games_played: '10',
+        save_percentage: '0.925',
+        goals_against_average: '2.50',
+      };
+      const result = mapHtGoalieStats(input);
+      expect(result.gamesPlayed).toBe(10);
+      expect(result.savePct).toBe(0.925);
+      expect(result.gaa).toBe(2.5);
     });
   });
 
