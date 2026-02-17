@@ -1,11 +1,10 @@
-<img src="/logo.svg" alt="logo" width="50"/>
+# HockeyTech Data Documentation
 
-# PWHL Data Documentation
+[Original Source](https://github.com/IsabelleLefebvre97/PWHL-Data-Reference/blob/main/README.md)
 
-This document serves as an unofficial reference for the Professional Women's Hockey League (PWHL) data sources.
-Corrections and suggestions are welcome!
+This document serves as an unofficial reference for the HockeyTech data sources. Endpoints use PWHL as the client code, but this should apply for all CHL leagues, AHL, and ECHL as well.
 
-There appear to be two primary sources for PWHL APIs:
+There appear to be two primary sources for HockeyTech APIs:
 
 1. **HockeyTech/LeagueStat API** (`lscluster.hockeytech.com`) - Used primarily for historical data and statistics
 

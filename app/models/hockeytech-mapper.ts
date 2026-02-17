@@ -1,3 +1,5 @@
+import type { HockeyTechRow } from '../api/hockeytech/types';
+import type { ScheduledGame } from './team-details';
 import { GameState } from './game-state';
 import { Team } from './team';
 
@@ -104,4 +106,28 @@ export function mapHockeyTechTeam(info: HockeyTechTeamInfo, stats: HockeyTechTea
     odds: [],
     sog,
   });
+}
+function mapHtGameTeam(g: HockeyTechRow, isHome: boolean) {
+  const prefix = isHome ? 'home' : 'visiting';
+  const scoreKey = isHome ? 'home_goal_count' : 'visiting_goal_count';
+  const score = g[scoreKey];
+  return {
+    id: Number(g[`${prefix}_team`] ?? g[`${prefix}_team_id`] ?? 0),
+    abbrev: String(g[`${prefix}_team_code`] ?? g[`${prefix}_team_abbrev`] ?? ''),
+    score: score === undefined || score === '' || score === null ? undefined : Number(score),
+  };
+}
+
+export function mapHtGame(g: HockeyTechRow, _id?: string): ScheduledGame {
+  return {
+    id: Number(g.game_id ?? g.id ?? 0),
+    date: String(g.date_played ?? g.date ?? ''),
+    startTime: String(g.GameDateISO8601 ?? ''),
+    homeTeam: mapHtGameTeam(g, true),
+    awayTeam: mapHtGameTeam(g, false),
+    gameState: mapHockeyTechGameState(
+      String(g.game_status ?? g.status ?? ''),
+      String(g.GameDateISO8601 ?? ''),
+    ),
+  };
 }

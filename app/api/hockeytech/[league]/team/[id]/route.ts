@@ -1,92 +1,12 @@
 import { NextResponse } from 'next/server';
-import { getBaseUrl, getKeyAndClientCode } from '../../../utils';
+import { getKeyAndClientCode } from '../../../utils';
 import { LEAGUES } from '../../../const';
-import { TeamDetails, ScheduledGame, TeamRecord } from '@/app/models/team-details';
-import { processRoster, HockeyTechRow } from './mapping';
-import { mapHockeyTechGameState } from '@/app/models/hockeytech-mapper';
-
-// Helper to fetch data from statviewfeed
-async function fetchHockeyTech(league: LEAGUES, params: Record<string, string>) {
-  const url = getBaseUrl(league);
-  url.searchParams.append('feed', 'statviewfeed');
-  url.searchParams.append('fmt', 'json');
-  for (const [key, value] of Object.entries(params)) {
-    url.searchParams.append(key, value);
-  }
-  try {
-    const res = await fetch(url.toString());
-    if (!res.ok) return;
-    const text = await res.text();
-    let jsonString = text.trim();
-    if (jsonString.startsWith('(') && jsonString.endsWith(')')) {
-      jsonString = jsonString.slice(1, -1);
-    }
-    return JSON.parse(jsonString);
-  } catch (error) {
-    console.error('HockeyTech fetch error', error);
-    return;
-  }
-}
-
-// Helper to fetch data from modulekit (for stats)
-async function fetchModuleKit(league: LEAGUES, params: Record<string, string>) {
-  const url = getBaseUrl(league);
-  url.searchParams.append('feed', 'modulekit');
-  url.searchParams.append('fmt', 'json');
-  for (const [key, value] of Object.entries(params)) {
-    url.searchParams.append(key, value);
-  }
-  try {
-    const res = await fetch(url.toString());
-    if (!res.ok) return;
-    const text = await res.text();
-    let jsonString = text.trim();
-    if (jsonString.startsWith('(') && jsonString.endsWith(')')) {
-      jsonString = jsonString.slice(1, -1);
-    }
-    return JSON.parse(jsonString);
-  } catch (error) {
-    console.error('ModuleKit fetch error', error);
-    return;
-  }
-}
-
-function extractHockeyTechRows(data: unknown): HockeyTechRow[] {
-  if (!data) return [];
-  const roots = (Array.isArray(data) ? data : [data]) as Record<string, unknown>[];
-  const rows: HockeyTechRow[] = [];
-  for (const root of roots) {
-    if (root.sections) {
-      const sections = root.sections as Record<string, unknown>[];
-      for (const section of sections) {
-        if (section.data) {
-          rows.push(
-            ...(section.data as HockeyTechRow[]).map(
-              (d: HockeyTechRow & { row?: HockeyTechRow }) => (d.row ?? d) as HockeyTechRow,
-            ),
-          );
-        }
-      }
-    } else {
-      rows.push(...extractSubRows(root));
-    }
-  }
-  return rows;
-}
-
-function extractSubRows(root: Record<string, unknown>): HockeyTechRow[] {
-  if (root.roster) return extractHockeyTechRows(root.roster);
-  if (root.standings) return extractHockeyTechRows(root.standings);
-  if (root.games) return extractHockeyTechRows(root.games);
-  if (root.SiteKit) return extractHockeyTechRows(root.SiteKit);
-  return extractSubRowsContinued(root);
-}
-
-function extractSubRowsContinued(root: Record<string, unknown>): HockeyTechRow[] {
-  if (root.Schedule) return extractHockeyTechRows(root.Schedule);
-  if (root.person_id || root.game_id || root.team_id || root.id || root.player_id) return [root];
-  return [];
-}
+import { TeamDetails, TeamRecord } from '@/app/models/team-details';
+import { processRoster } from './mapping';
+import { mapHtGame } from '@/app/models/hockeytech-mapper';
+import { fetchHockeyTech, fetchModuleKit, extractHockeyTechRows } from '../../../utils';
+import { splitSchedule } from '@/app/utils/scheduler';
+import type { HockeyTechRow } from '../../../types';
 
 async function getSeasonId(
   league: LEAGUES,
@@ -325,39 +245,10 @@ function getGameResult(g: HockeyTechRow, id: string) {
 }
 
 function getSchedules(games: HockeyTechRow[], id: string) {
-  const today = new Date().toISOString().split('T')[0];
-  const sorted = games.toSorted((a, b) =>
-    String(a.date_played ?? '').localeCompare(String(b.date_played ?? '')),
-  );
-  const past = sorted.filter((g) => String(g.date_played ?? '') < today);
-  const future = sorted.filter((g) => String(g.date_played ?? '') >= today);
+  const mappedGames = games.map((g) => mapHtGame(g, id));
+  const { last10, upcoming } = splitSchedule(mappedGames);
   return {
-    upcomingSchedule: future.slice(0, 10).map((g) => mapHtGame(g, id)),
-    last10Schedule: past.slice(-10).map((g) => mapHtGame(g, id)),
-  };
-}
-
-function mapHtGame(g: HockeyTechRow, _id: string): ScheduledGame {
-  return {
-    id: Number(g.game_id ?? g.id ?? 0),
-    date: String(g.date_played ?? g.date ?? ''),
-    startTime: String(g.GameDateISO8601 ?? ''),
-    homeTeam: mapHtGameTeam(g, true),
-    awayTeam: mapHtGameTeam(g, false),
-    gameState: mapHockeyTechGameState(
-      String(g.game_status ?? g.status ?? ''),
-      String(g.GameDateISO8601 ?? ''),
-    ),
-  };
-}
-
-function mapHtGameTeam(g: HockeyTechRow, isHome: boolean) {
-  const prefix = isHome ? 'home' : 'visiting';
-  const scoreKey = isHome ? 'home_goal_count' : 'visiting_goal_count';
-  const score = g[scoreKey];
-  return {
-    id: Number(g[`${prefix}_team`] ?? g[`${prefix}_team_id`] ?? 0),
-    abbrev: String(g[`${prefix}_team_code`] ?? g[`${prefix}_team_abbrev`] ?? ''),
-    score: score === undefined || score === '' || score === null ? undefined : Number(score),
+    upcomingSchedule: upcoming,
+    last10Schedule: last10,
   };
 }
