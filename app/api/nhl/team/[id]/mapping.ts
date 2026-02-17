@@ -1,11 +1,5 @@
 import { Player, ScheduledGame } from '@/app/models/team-details';
-
-export function formatTime(seconds?: number) {
-  if (!seconds) return;
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.round(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
+import { formatTime } from '@/app/utils/format-time';
 
 export function normalizeNhlPosition(pos: string): string {
   if (pos === 'L') return 'LW';

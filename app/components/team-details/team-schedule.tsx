@@ -1,4 +1,6 @@
+import { GameState } from '@/app/models/game-state';
 import { ScheduledGame } from '@/app/models/team-details';
+import startTime from '@/app/utils/start-time';
 import Link from 'next/link';
 
 interface TeamScheduleProps {
@@ -28,20 +30,22 @@ function GameRow({ game, league }: { game: ScheduledGame; league: string }) {
       <div className="flex flex-1 items-center justify-center space-x-4">
         <div className="text-right">
           <div className="font-semibold">{game.awayTeam.abbrev}</div>
-          {game.awayTeam.score !== undefined && (
+          {game.awayTeam.score !== undefined && game.gameState !== GameState.FUTURE && (
             <div className="text-lg">{game.awayTeam.score}</div>
           )}
         </div>
         <div className="text-gray-400">@</div>
         <div className="text-left">
           <div className="font-semibold">{game.homeTeam.abbrev}</div>
-          {game.homeTeam.score !== undefined && (
+          {game.homeTeam.score !== undefined && game.gameState !== GameState.FUTURE && (
             <div className="text-lg">{game.homeTeam.score}</div>
           )}
         </div>
       </div>
       <div className="w-20 text-right text-sm font-medium">
-        {game.gameState === 'Final' || game.gameState === 'OFFICIAL' ? 'Final' : game.startTime}
+        {game.gameState === GameState.FINAL || game.gameState === GameState.OFFICIAL
+          ? 'Final'
+          : startTime(game.startTime)}
       </div>
     </Link>
   );

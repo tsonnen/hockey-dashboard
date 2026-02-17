@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@jest/globals';
-import { processRoster, mapHtPlayer, HockeyTechRow } from './mapping';
+import { processRoster, mapHtPlayer, mapHtPlayerStats, HockeyTechRow } from './mapping';
 
 describe('HockeyTech Roster Mapping', () => {
   describe('mapHtPlayer', () => {
@@ -85,6 +85,55 @@ describe('HockeyTech Roster Mapping', () => {
     });
   });
 
+  describe('mapHtPlayerStats', () => {
+    it('should correctly parse numeric fields', () => {
+      const input: HockeyTechRow = {
+        games_played: '10',
+        goals: '5',
+        assists: 3, // Already a number
+        points: '8',
+      };
+      const result = mapHtPlayerStats(input);
+      expect(result.gamesPlayed).toBe(10);
+      expect(result.goals).toBe(5);
+      expect(result.assists).toBe(3);
+      expect(result.points).toBe(8);
+    });
+
+    it('should handle missing or undefined input', () => {
+      expect(mapHtPlayerStats()).toEqual({});
+    });
+
+    it('should handle null or undefined fields gracefully', () => {
+      const input: HockeyTechRow = {
+        goals: undefined,
+        assists: undefined,
+      };
+      const result = mapHtPlayerStats(input);
+      expect(result.goals).toBeUndefined();
+      expect(result.assists).toBeUndefined();
+    });
+
+    it('should calculate shooting percentage correctly', () => {
+      const input: HockeyTechRow = {
+        shooting_percentage: '15.5',
+      };
+      const result = mapHtPlayerStats(input);
+      // Logic is value / 100
+      expect(result.shootingPct).toBe(0.155);
+    });
+
+    it('should handle plusMinus specifically (allowing negative)', () => {
+      const inputPositive: HockeyTechRow = { plus_minus: '5' };
+      const inputNegative: HockeyTechRow = { plus_minus: '-2' };
+      const inputZero: HockeyTechRow = { plus_minus: '0' };
+
+      expect(mapHtPlayerStats(inputPositive).plusMinus).toBe(5);
+      expect(mapHtPlayerStats(inputNegative).plusMinus).toBe(-2);
+      expect(mapHtPlayerStats(inputZero).plusMinus).toBe(0);
+    });
+  });
+
   describe('processRoster', () => {
     it('should filter out staff based on keywords', () => {
       const players: HockeyTechRow[] = [
@@ -107,6 +156,25 @@ describe('HockeyTech Roster Mapping', () => {
       const statsMap = new Map<string, HockeyTechRow>();
       const result = processRoster(players, statsMap);
       expect(result.forwards).toHaveLength(0);
+    });
+
+    it('should merge stats from statsMap', () => {
+      const players: HockeyTechRow[] = [{ player_id: 10, name: 'Scoring Winger', position: 'LW' }];
+      const statsMap = new Map<string, HockeyTechRow>();
+      statsMap.set('10', {
+        games_played: '20',
+        goals: '10',
+        points: '15',
+      });
+
+      const result = processRoster(players, statsMap);
+      const player = result.forwards[0];
+
+      expect(player).toBeDefined();
+      expect(player.id).toBe(10);
+      expect(player.gamesPlayed).toBe(20);
+      expect(player.goals).toBe(10);
+      expect(player.points).toBe(15);
     });
   });
 });

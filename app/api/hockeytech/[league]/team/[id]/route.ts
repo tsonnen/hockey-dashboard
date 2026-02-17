@@ -3,6 +3,7 @@ import { getBaseUrl, getKeyAndClientCode } from '../../../utils';
 import { LEAGUES } from '../../../const';
 import { TeamDetails, ScheduledGame, TeamRecord } from '@/app/models/team-details';
 import { processRoster, HockeyTechRow } from './mapping';
+import { mapHockeyTechGameState } from '@/app/models/hockeytech-mapper';
 
 // Helper to fetch data from statviewfeed
 async function fetchHockeyTech(league: LEAGUES, params: Record<string, string>) {
@@ -340,10 +341,13 @@ function mapHtGame(g: HockeyTechRow, _id: string): ScheduledGame {
   return {
     id: Number(g.game_id ?? g.id ?? 0),
     date: String(g.date_played ?? g.date ?? ''),
-    startTime: String(g.schedule_time ?? g.time ?? g.game_time ?? ''),
+    startTime: String(g.GameDateISO8601 ?? ''),
     homeTeam: mapHtGameTeam(g, true),
     awayTeam: mapHtGameTeam(g, false),
-    gameState: normalizeHtStatus(g.game_status ?? g.status),
+    gameState: mapHockeyTechGameState(
+      String(g.game_status ?? g.status ?? ''),
+      String(g.GameDateISO8601 ?? ''),
+    ),
   };
 }
 
@@ -356,10 +360,4 @@ function mapHtGameTeam(g: HockeyTechRow, isHome: boolean) {
     abbrev: String(g[`${prefix}_team_code`] ?? g[`${prefix}_team_abbrev`] ?? ''),
     score: score === undefined || score === '' || score === null ? undefined : Number(score),
   };
-}
-
-function normalizeHtStatus(status: unknown): string {
-  const s = String(status || '').toLowerCase();
-  if (s === '4' || s.includes('final')) return 'Final';
-  return typeof status === 'string' ? status : 'Final';
 }
