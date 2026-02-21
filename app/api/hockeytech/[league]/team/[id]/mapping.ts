@@ -1,12 +1,11 @@
 import { Player } from '@/app/models/team-details';
-
-export type HockeyTechRow = Record<string, unknown>;
+import type { HockeyTechRow } from '../../../types';
 
 function toNumber(value: unknown): number | undefined {
   return value !== null && value !== undefined ? Number(value) : undefined;
 }
 
-export function mapHtPlayerStats(s?: HockeyTechRow): Partial<Player> {
+export function mapHtSkaterStats(s?: HockeyTechRow): Partial<Player> {
   if (!s) return {};
   return {
     gamesPlayed: toNumber(s.games_played),
@@ -14,13 +13,6 @@ export function mapHtPlayerStats(s?: HockeyTechRow): Partial<Player> {
     assists: toNumber(s.assists),
     points: toNumber(s.points),
     plusMinus: s.plus_minus === undefined ? undefined : Number(s.plus_minus),
-    savePct: toNumber(s.save_percentage),
-    wins: toNumber(s.wins),
-    losses: toNumber(s.losses),
-    shotsAgainst: toNumber(s.shots),
-    saves: toNumber(s.saves),
-    shutouts: toNumber(s.shutouts),
-    gaa: toNumber(s.goals_against_average),
     shots: toNumber(s.shots),
     pointsPerGame: toNumber(s.points_per_game),
     faceoffPct: toNumber(s.faceoff_percentage),
@@ -29,6 +21,23 @@ export function mapHtPlayerStats(s?: HockeyTechRow): Partial<Player> {
     hits: toNumber(s.hits),
     blocks: toNumber(s.blocks),
     shootingPct: toNumber((s.shooting_percentage as number) / 100),
+  };
+}
+
+export function mapHtGoalieStats(s?: HockeyTechRow): Partial<Player> {
+  if (!s) return {};
+  return {
+    gamesPlayed: toNumber(s.games_played),
+    savePct: toNumber(s.save_percentage),
+    wins: toNumber(s.wins),
+    losses: toNumber(s.losses),
+    shotsAgainst: toNumber(s.shots),
+    saves: toNumber(s.saves),
+    shutouts: toNumber(s.shutouts),
+    gaa: toNumber(s.goals_against_average),
+    // Some goalie stats might overlap with skater stats in data structure but have different meaning or usage
+    // e.g. shots usually means shots against for goalies in some contexts, but HockeyTech often has 'shots' as SOG for skaters
+    // We strictly map what we know.
   };
 }
 
@@ -62,6 +71,14 @@ function parsePlayerName(p: HockeyTechRow) {
   return { firstName, lastName };
 }
 
+function getPlayerStats(pos: string, s?: HockeyTechRow) {
+  if (pos === 'G') return mapHtGoalieStats(s);
+  if (isDefenseman(pos) || pos === 'F' || ['LW', 'RW', 'C'].includes(pos)) {
+    return mapHtSkaterStats(s);
+  }
+  return {};
+}
+
 export function mapHtPlayer(p: HockeyTechRow, clientCode?: string, s?: HockeyTechRow): Player {
   const pos = String(p.position ?? p.role ?? '').toUpperCase();
   const id = Number(p.player_id ?? p.person_id ?? p.id ?? 0);
@@ -74,7 +91,7 @@ export function mapHtPlayer(p: HockeyTechRow, clientCode?: string, s?: HockeyTec
     sweaterNumber: Number(p.jersey ?? p.tp_jersey_number),
     positionCode: normalizeHtPosition(pos),
     headshot: getHeadshotUrl(p, clientCode, id),
-    ...mapHtPlayerStats(s),
+    ...getPlayerStats(pos, s),
   };
 }
 
