@@ -12,13 +12,13 @@ export async function GET(
   }: {
     params: Promise<{
       id: string;
-      league: LEAGUES;
+      league: string;
     }>;
   },
 ): Promise<NextResponse<Partial<Game>>> {
   const { league, id } = await params;
 
-  const data = await fetchHockeyTech<Record<string, unknown>>(league, {
+  const data = await fetchHockeyTech<Record<string, unknown>>(league as LEAGUES, {
     view: 'gameSummary',
     game_id: id,
   });

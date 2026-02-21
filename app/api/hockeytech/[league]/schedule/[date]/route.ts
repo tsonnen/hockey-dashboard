@@ -8,10 +8,10 @@ import { calculateDaysByDate } from '@/app/utils/calculate-days-by-date';
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ league: LEAGUES; date: string }> },
+  { params }: { params: Promise<{ league: string; date: string }> },
 ): Promise<NextResponse<Game[]>> {
   const { league, date } = await params;
-  const baseUrl = getBaseUrl(league);
+  const baseUrl = getBaseUrl(league as LEAGUES);
   const { daysAhead, daysBack } = calculateDaysByDate(new Date(Date.parse(date)));
   const bufferDays = 1; // Buffer the search to ensure all games are captured
 
@@ -24,7 +24,7 @@ export async function GET(
   const response = await fetch(baseUrl.toString());
   const data = (await response.json()) as { SiteKit: { Scorebar: HockeyTechGame[] } };
 
-  const games = data.SiteKit.Scorebar.map((game) => convertHockeyTechGame(game, league));
+  const games = data.SiteKit.Scorebar.map((game) => convertHockeyTechGame(game, league as LEAGUES));
 
   return NextResponse.json(games);
 }

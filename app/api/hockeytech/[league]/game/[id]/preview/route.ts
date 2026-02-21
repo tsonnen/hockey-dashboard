@@ -10,13 +10,13 @@ export async function GET(
   }: {
     params: Promise<{
       id: string;
-      league: LEAGUES;
+      league: string;
     }>;
   },
 ): Promise<NextResponse<Record<string, unknown>>> {
   const { league, id } = await params;
 
-  const url = getBaseUrl(league);
+  const url = getBaseUrl(league as LEAGUES);
   url.searchParams.append('feed', 'gc');
   url.searchParams.append('tab', 'preview');
   url.searchParams.append('game_id', id);
