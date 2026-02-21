@@ -4,7 +4,7 @@
 /node_modules
 /.pnp
 .pnp.*
-.yarn/*
+pnpm-lock.yaml
 
 # next.js
 /.next/
