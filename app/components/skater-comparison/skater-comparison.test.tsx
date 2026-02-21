@@ -120,10 +120,10 @@ describe('SkaterComparison', () => {
     expect(screen.getByText(/#44 D/)).toBeInTheDocument();
   });
 
-  it('handles empty leaders array', () => {
-    render(<SkaterComparison leaders={[]} />);
-    expect(screen.getByText('Skater Stat Leaders')).toBeInTheDocument();
-    // Should not crash and should still render the header
+  it('handles empty leaders array by rendering nothing', () => {
+    const { container } = render(<SkaterComparison leaders={[]} />);
+    expect(container).toBeEmptyDOMElement();
+    expect(screen.queryByText('Skater Stat Leaders')).not.toBeInTheDocument();
   });
 
   it('handles single category', () => {
@@ -132,5 +132,69 @@ describe('SkaterComparison', () => {
     expect(screen.getByText('Goals')).toBeInTheDocument();
     expect(screen.queryByText('Assists')).not.toBeInTheDocument();
     expect(screen.queryByText('Points')).not.toBeInTheDocument();
+  });
+
+  it('renders placeholder when awayLeader is missing', () => {
+    const missingAway: SkaterComparisonProps['leaders'] = [
+      {
+        category: 'goals',
+        awayLeader: undefined,
+        homeLeader: mockLeaders[0].homeLeader,
+      },
+    ];
+    render(<SkaterComparison leaders={missingAway} />);
+    expect(screen.getByText('Goals')).toBeInTheDocument();
+    expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+    expect(screen.getByText('Leader data unavailable')).toBeInTheDocument();
+  });
+
+  it('renders placeholder when homeLeader is missing', () => {
+    const missingHome: SkaterComparisonProps['leaders'] = [
+      {
+        category: 'goals',
+        awayLeader: mockLeaders[0].awayLeader,
+        homeLeader: undefined,
+      },
+    ];
+    render(<SkaterComparison leaders={missingHome} />);
+    expect(screen.getByText('Goals')).toBeInTheDocument();
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.getByText('Leader data unavailable')).toBeInTheDocument();
+  });
+
+  it('omits category when both leaders are missing', () => {
+    const missingBoth: SkaterComparisonProps['leaders'] = [
+      {
+        category: 'goals',
+        awayLeader: undefined,
+        homeLeader: undefined,
+      },
+      {
+        category: 'assists',
+        awayLeader: mockLeaders[1].awayLeader,
+        homeLeader: mockLeaders[1].homeLeader,
+      },
+    ];
+    render(<SkaterComparison leaders={missingBoth} />);
+    expect(screen.queryByText('Goals')).not.toBeInTheDocument();
+    expect(screen.getByText('Assists')).toBeInTheDocument();
+  });
+
+  it('renders nothing when all leaders are missing', () => {
+    const allMissing: SkaterComparisonProps['leaders'] = [
+      {
+        category: 'goals',
+        awayLeader: undefined,
+        homeLeader: undefined,
+      },
+      {
+        category: 'assists',
+        awayLeader: undefined,
+        homeLeader: undefined,
+      },
+    ];
+    const { container } = render(<SkaterComparison leaders={allMissing} />);
+    expect(container).toBeEmptyDOMElement();
+    expect(screen.queryByText('Skater Stat Leaders')).not.toBeInTheDocument();
   });
 });

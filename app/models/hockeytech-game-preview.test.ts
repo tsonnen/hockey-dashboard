@@ -100,10 +100,10 @@ describe('hockeytech-game-preview', () => {
       const goalCategory = result.skaterComparison?.leaders.find((l) => l.category === 'Goals');
 
       expect(goalCategory).toBeDefined();
-      expect(goalCategory?.homeLeader.playerId).toBe(101); // John Doe with 25 goals
-      expect(goalCategory?.homeLeader.value).toBe('25');
-      expect(goalCategory?.awayLeader.playerId).toBe(201); // Bob Johnson with 30 goals
-      expect(goalCategory?.awayLeader.value).toBe('30');
+      expect(goalCategory?.homeLeader?.playerId).toBe(101); // John Doe with 25 goals
+      expect(goalCategory?.homeLeader?.value).toBe('25');
+      expect(goalCategory?.awayLeader?.playerId).toBe(201); // Bob Johnson with 30 goals
+      expect(goalCategory?.awayLeader?.value).toBe('30');
     });
 
     it('identifies assist leaders correctly', () => {
@@ -111,10 +111,10 @@ describe('hockeytech-game-preview', () => {
       const assistCategory = result.skaterComparison?.leaders.find((l) => l.category === 'Assists');
 
       expect(assistCategory).toBeDefined();
-      expect(assistCategory?.homeLeader.playerId).toBe(102); // Jane Smith with 35 assists
-      expect(assistCategory?.homeLeader.value).toBe('35');
-      expect(assistCategory?.awayLeader.playerId).toBe(202); // Alice Brown with 40 assists
-      expect(assistCategory?.awayLeader.value).toBe('40');
+      expect(assistCategory?.homeLeader?.playerId).toBe(102); // Jane Smith with 35 assists
+      expect(assistCategory?.homeLeader?.value).toBe('35');
+      expect(assistCategory?.awayLeader?.playerId).toBe(202); // Alice Brown with 40 assists
+      expect(assistCategory?.awayLeader?.value).toBe('40');
     });
 
     it('identifies point leaders correctly', () => {
@@ -123,27 +123,27 @@ describe('hockeytech-game-preview', () => {
 
       expect(pointCategory).toBeDefined();
       // All players have 55 points, so it should pick the first one after sorting
-      expect(pointCategory?.homeLeader.playerId).toBeGreaterThan(0);
-      expect(pointCategory?.homeLeader.value).toBe('55');
-      expect(pointCategory?.awayLeader.value).toBe('55');
+      expect(pointCategory?.homeLeader?.playerId).toBeGreaterThan(0);
+      expect(pointCategory?.homeLeader?.value).toBe('55');
+      expect(pointCategory?.awayLeader?.value).toBe('55');
     });
 
     it('formats player names correctly', () => {
       const result = convertHockeyTechGamePreview(mockPreviewData, 'ohl');
       const goalCategory = result.skaterComparison?.leaders.find((l) => l.category === 'Goals');
 
-      expect(goalCategory?.homeLeader.name.default).toBe('John Doe');
-      expect(goalCategory?.awayLeader.name.default).toBe('Bob Johnson');
+      expect(goalCategory?.homeLeader?.name.default).toBe('John Doe');
+      expect(goalCategory?.awayLeader?.name.default).toBe('Bob Johnson');
     });
 
     it('generates correct headshot URLs', () => {
       const result = convertHockeyTechGamePreview(mockPreviewData, 'ohl');
       const goalCategory = result.skaterComparison?.leaders.find((l) => l.category === 'Goals');
 
-      expect(goalCategory?.homeLeader.headshot).toBe(
+      expect(goalCategory?.homeLeader?.headshot).toBe(
         'https://assets.leaguestat.com/ohl/120x160/101.jpg',
       );
-      expect(goalCategory?.awayLeader.headshot).toBe(
+      expect(goalCategory?.awayLeader?.headshot).toBe(
         'https://assets.leaguestat.com/ohl/120x160/201.jpg',
       );
     });
@@ -152,8 +152,8 @@ describe('hockeytech-game-preview', () => {
       const result = convertHockeyTechGamePreview(mockPreviewData, 'ohl');
       const goalCategory = result.skaterComparison?.leaders.find((l) => l.category === 'Goals');
 
-      expect(goalCategory?.homeLeader.sweaterNumber).toBe(99);
-      expect(goalCategory?.awayLeader.sweaterNumber).toBe(77);
+      expect(goalCategory?.homeLeader?.sweaterNumber).toBe(99);
+      expect(goalCategory?.awayLeader?.sweaterNumber).toBe(77);
     });
 
     it('creates all three stat categories', () => {
@@ -164,6 +164,30 @@ describe('hockeytech-game-preview', () => {
       expect(categories).toContain('Goals');
       expect(categories).toContain('Assists');
       expect(categories).toContain('Points');
+    });
+    it('handles empty leadingScorers correctly', () => {
+      const emptyData: HockeyTechGamePreview = {
+        GC: {
+          Preview: {
+            ...mockPreviewData.GC.Preview,
+            home_team: {
+              ...mockPreviewData.GC.Preview.home_team,
+              leadingScorers: [],
+            },
+            visitor_team: {
+              ...mockPreviewData.GC.Preview.visitor_team,
+              leadingScorers: [],
+            },
+          },
+        },
+      };
+
+      const result = convertHockeyTechGamePreview(emptyData, 'ohl');
+      expect(result.skaterComparison?.leaders).toHaveLength(3);
+      for (const cat of result.skaterComparison?.leaders ?? []) {
+        expect(cat.homeLeader).toBeUndefined();
+        expect(cat.awayLeader).toBeUndefined();
+      }
     });
   });
 });

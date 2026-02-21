@@ -126,4 +126,11 @@ describe('GoalieComparison', () => {
     expect(screen.getByText(/#31/)).toBeInTheDocument();
     expect(screen.getByText(/#1/)).toBeInTheDocument();
   });
+
+  it('renders nothing when no goalies have played games', () => {
+    const emptyTeam: GoalieComparisonProps['homeTeam'] = { leaders: [] };
+    const { container } = render(<GoalieComparison homeTeam={emptyTeam} awayTeam={emptyTeam} />);
+    expect(container).toBeEmptyDOMElement();
+    expect(screen.queryByText('Goalies')).not.toBeInTheDocument();
+  });
 });
