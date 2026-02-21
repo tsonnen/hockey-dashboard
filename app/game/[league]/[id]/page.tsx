@@ -21,7 +21,19 @@ import { GoalieComparison } from '@/app/components/goalie-comparison/goalie-comp
 import { GameMatchup } from '@/app/models/game-matchup';
 import { GameState } from '@/app/models/game-state';
 
-function GameMatchupSection(matchup: GameMatchup): JSX.Element {
+function GameMatchupSection(matchup: GameMatchup): JSX.Element | null | undefined {
+  const hasSkaterLeaders = matchup.skaterComparison?.leaders.some(
+    (cat) => cat.awayLeader || cat.homeLeader,
+  );
+  const hasGoalieLeaders =
+    matchup.goalieComparison &&
+    (matchup.goalieComparison.homeTeam.leaders.some((g) => g.gamesPlayed > 0) ||
+      matchup.goalieComparison.awayTeam.leaders.some((g) => g.gamesPlayed > 0));
+
+  if (!hasSkaterLeaders && !hasGoalieLeaders) {
+    return;
+  }
+
   return (
     <section className="mb-6">
       <h2 className="mb-2 text-center text-xl font-semibold">Game Matchup</h2>

@@ -14,6 +14,11 @@ export function GoalieComparison({
 }) {
   const homeGoalies = filterGoaliesWhoPlayed(homeTeam.leaders);
   const awayGoalies = filterGoaliesWhoPlayed(awayTeam.leaders);
+
+  if (homeGoalies.length === 0 && awayGoalies.length === 0) {
+    return;
+  }
+
   return (
     <div className="mb-4">
       <h3 className="mb-2 text-lg font-semibold">Goalies</h3>

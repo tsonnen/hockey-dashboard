@@ -76,8 +76,8 @@ export function convertHockeyTechGamePreview(
 
     return {
       category,
-      homeLeader: convertLeadingScorer(homeLeader, key, league),
-      awayLeader: convertLeadingScorer(awayLeader, key, league),
+      homeLeader: homeLeader ? convertLeadingScorer(homeLeader, key, league) : undefined,
+      awayLeader: awayLeader ? convertLeadingScorer(awayLeader, key, league) : undefined,
     };
   });
 

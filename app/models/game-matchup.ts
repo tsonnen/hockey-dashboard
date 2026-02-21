@@ -38,8 +38,8 @@ export interface SkaterComparisonProps {
   contextSeason: number;
   leaders: {
     category: string;
-    awayLeader: StatLeaderProps;
-    homeLeader: StatLeaderProps;
+    awayLeader?: StatLeaderProps | undefined;
+    homeLeader?: StatLeaderProps | undefined;
   }[];
 }
 
