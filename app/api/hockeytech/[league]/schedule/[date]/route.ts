@@ -12,7 +12,10 @@ export async function GET(
 ): Promise<NextResponse<Game[]>> {
   const { league, date } = await params;
   const baseUrl = getBaseUrl(league as LEAGUES);
-  const { daysAhead, daysBack } = calculateDaysByDate(new Date(Date.parse(date)));
+  const targetDate = new Date(Date.parse(date));
+  const { daysAhead, daysBack } = calculateDaysByDate(
+    new Date(targetDate.getUTCFullYear(), targetDate.getUTCMonth(), targetDate.getUTCDate()),
+  );
   const bufferDays = 1; // Buffer the search to ensure all games are captured
 
   baseUrl.searchParams.append('numberofdaysahead', `${daysAhead + bufferDays}`);
