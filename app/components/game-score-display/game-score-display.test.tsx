@@ -56,6 +56,7 @@ describe('GameScoreDisplay', () => {
 
     expect(screen.getByText('Toronto Maple Leafs')).toBeInTheDocument();
     expect(screen.getByText('Montreal Canadiens')).toBeInTheDocument();
+    expect(screen.getByTestId('game-date')).toBeInTheDocument();
     expect(screen.getByAltText('Toronto Maple Leafs logo')).toHaveAttribute(
       'src',
       '/images/leafs.png',
