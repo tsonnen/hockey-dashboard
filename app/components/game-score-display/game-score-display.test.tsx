@@ -56,6 +56,7 @@ describe('GameScoreDisplay', () => {
 
     expect(screen.getByText('Toronto Maple Leafs')).toBeInTheDocument();
     expect(screen.getByText('Montreal Canadiens')).toBeInTheDocument();
+    expect(screen.getByTestId('game-date')).toBeInTheDocument();
     expect(screen.getByAltText('Toronto Maple Leafs logo')).toHaveAttribute(
       'src',
       '/images/leafs.png',
@@ -112,5 +113,16 @@ describe('GameScoreDisplay', () => {
     renderWithGame(game);
     expect(screen.getByText('12:34')).toBeInTheDocument();
     expect(screen.getByText('Period 2')).toBeInTheDocument();
+  });
+
+  it('shows period even if clock is missing if game is in progress', () => {
+    const game = new Game({
+      homeTeam,
+      awayTeam,
+      gameState: GameState.LIVE,
+      period: 3,
+    });
+    renderWithGame(game);
+    expect(screen.getByText('Period 3')).toBeInTheDocument();
   });
 });

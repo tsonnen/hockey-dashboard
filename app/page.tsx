@@ -11,6 +11,7 @@ import { Game } from '@/app/models/game';
 
 import styles from './page.module.css';
 import { Multiselect } from './components/multiselect';
+import { formatLocalDate, parseLocalDate } from '@/app/utils';
 
 interface LeagueEndpoint {
   url: string;
@@ -34,7 +35,10 @@ async function fetchGamesForDate(endpoint: LeagueEndpoint, dateStr: string): Pro
       throw new Error(`Failed to fetch ${endpoint.name} games: ${response.statusText}`);
     }
     const games = (await response.json()) as Partial<Game>[];
-    const filteredGames = games.filter((game): game is Game => game.gameDate === dateStr);
+    const filteredGames = games.filter((game): game is Game => {
+      if (!game.startTimeUTC) return false;
+      return formatLocalDate(game.startTimeUTC) === dateStr;
+    });
     return filteredGames;
   } catch (error) {
     console.error(`Error fetching ${endpoint.name} games:`, error);
@@ -68,11 +72,11 @@ function HomePage(): React.JSX.Element {
     const dateParam = searchParams.get('date');
     if (dateParam) {
       try {
-        const parsedDate = Date.parse(dateParam);
-        if (Number.isNaN(parsedDate)) {
+        const parsedDate = parseLocalDate(dateParam);
+        if (Number.isNaN(parsedDate.getTime())) {
           throw new TypeError(`Invalid Date format ${dateParam}`);
         }
-        return new Date(parsedDate).toISOString().slice(0, 10);
+        return formatLocalDate(parsedDate);
       } catch (error) {
         setError(
           error instanceof Error ? error.message : 'An error occurred while parsing the date',
@@ -80,14 +84,12 @@ function HomePage(): React.JSX.Element {
       }
     }
 
-    const date = new Date();
-    date.setHours(0, 0, 0, 0);
-    return date.toISOString().slice(0, 10);
+    return formatLocalDate(new Date());
   });
 
   // Update URL when date changes
   const handleDateChange = (newDate: Date): void => {
-    const dateStr = newDate.toISOString().slice(0, 10);
+    const dateStr = formatLocalDate(newDate);
     setSelectedDate(dateStr);
     router.push(`/?date=${dateStr}`, { scroll: false });
   };
@@ -144,7 +146,7 @@ function HomePage(): React.JSX.Element {
         <div className="grid place-items-center">
           <DateSelector
             disabled={isLoading}
-            selectedDate={new Date(Date.parse(selectedDateString))}
+            selectedDate={parseLocalDate(selectedDateString)}
             onDateChange={handleDateChange}
           />
         </div>

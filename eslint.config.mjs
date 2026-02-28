@@ -6,7 +6,7 @@ import tailwind from 'eslint-plugin-tailwindcss';
 import { FlatCompat } from '@eslint/eslintrc';
 
 const compat = new FlatCompat({
-  // import.meta.dirname is available after Node.js v20.11.0
+  // import.meta.dirname is avail able after Node.js v20.11.0
   baseDirectory: import.meta.dirname,
 });
 
@@ -24,6 +24,7 @@ const config = [
       'postcss.config.mjs',
       'next.config.mjs',
       'eslint.config.mjs',
+      'next-env.d.ts',
     ],
   },
   { files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'] },

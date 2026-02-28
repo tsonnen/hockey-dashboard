@@ -2,6 +2,7 @@ import { type ReactElement } from 'react';
 import { TeamDisplay } from '@/app/components/team-display';
 import { useGame } from '@/app/contexts/game-context';
 import type { Game } from '@/app/models/game';
+import { formatDate } from '@/app/utils';
 import styles from './game-score-display.module.css';
 
 export function GameScoreDisplay(): ReactElement {
@@ -32,10 +33,13 @@ export function GameScoreDisplay(): ReactElement {
         />
 
         <div className={styles.gameStatus}>
-          {game.gameInProgress && game.clock && (
+          <div className={styles.gameDate} data-testid="game-date">
+            {formatDate(game.startTimeUTC)}
+          </div>
+          {game.gameInProgress && (
             <>
-              <div className={styles.clock}>{game.clock.timeRemaining}</div>
-              <div className={styles.period}>Period {game.period}</div>
+              {game.clock && <div className={styles.clock}>{game.clock.timeRemaining}</div>}
+              <div className={styles.period}>{game.periodName}</div>
             </>
           )}
           <div className={styles.startTime}>{game.statusString}</div>

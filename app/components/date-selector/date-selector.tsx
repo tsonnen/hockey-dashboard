@@ -3,12 +3,11 @@ import Datepicker, { type DateValueType } from 'react-tailwindcss-datepicker';
 
 import styles from './date-selector.module.css';
 import { DAY_IN_MS } from '@/app/consts/date-consts';
+import { formatLocalDate } from '@/app/utils';
 
-const getLocalMidnight = (utcDate: Date): Date => {
-  const [year, month, day] = utcDate.toISOString().slice(0, 10).split('-');
-  const updatedDate = new Date(`${year}-${month}-${day}T00:00:00`);
-
-  return updatedDate;
+const getLocalMidnight = (date: Date): Date => {
+  const localDateStr = formatLocalDate(date);
+  return new Date(`${localDateStr}T00:00:00`);
 };
 
 export interface DateSelectorProps {
@@ -44,10 +43,8 @@ export function DateSelector({
   const handleDateChange = (newValue: DateValueType): void => {
     setValue(newValue);
     if (newValue?.startDate) {
-      const newDate = newValue.startDate;
-      onDateChange(
-        new Date(`${newDate.getFullYear()}-${newDate.getMonth() + 1}-${newDate.getDate()}`),
-      );
+      const newDate = new Date(newValue.startDate);
+      onDateChange(newDate);
     }
   };
 

@@ -3,3 +3,4 @@ export * from './title-case';
 export * from './ordinal-suffix-of';
 export * from './start-time';
 export * from './format-time';
+export * from './format-date';
