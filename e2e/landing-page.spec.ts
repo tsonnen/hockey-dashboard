@@ -30,7 +30,30 @@ test.describe('Landing Page', () => {
     });
 
     await test.step('correct games are displayed', async () => {
-      await expect(page.locator('[data-testid-gamecard]')).toHaveCount(13);
+      const gameCards = page.locator('[data-testid-gamecard]');
+      await expect(gameCards).toHaveCount(13, { timeout: 10_000 });
+
+      const expectedMatchups = [
+        ['Tampa Bay', 'Carolina'],
+        ['Brantford', 'Ottawa'],
+        ['Owen Sound', 'Niagara'],
+        ['Barrie', 'London'],
+        ['Sudbury', 'Kingston'],
+        ['North Bay', 'Erie'],
+        ['Windsor', 'Brampton'],
+        ['Oshawa', 'Sarnia'],
+        ['Kitchener', 'Sault Ste. Marie'],
+        ['Peterborough', 'Guelph'],
+        ['Chicago', 'Winnipeg'],
+        ['Philadelphia', 'Vancouver'],
+        ['St. Louis', 'Vegas'],
+      ];
+
+      for (const [i, [away, home]] of expectedMatchups.entries()) {
+        const card = gameCards.nth(i);
+        await expect(card.locator(`img[alt="${away} logo"]`)).toBeVisible();
+        await expect(card.locator(`img[alt="${home} logo"]`)).toBeVisible();
+      }
     });
   });
 });

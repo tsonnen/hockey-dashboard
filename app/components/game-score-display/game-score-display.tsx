@@ -36,10 +36,10 @@ export function GameScoreDisplay(): ReactElement {
           <div className={styles.gameDate} data-testid="game-date">
             {formatDate(game.startTimeUTC)}
           </div>
-          {game.gameInProgress && game.clock && (
+          {game.gameInProgress && (
             <>
-              <div className={styles.clock}>{game.clock.timeRemaining}</div>
-              <div className={styles.period}>Period {game.period}</div>
+              {game.clock && <div className={styles.clock}>{game.clock.timeRemaining}</div>}
+              <div className={styles.period}>{game.periodName}</div>
             </>
           )}
           <div className={styles.startTime}>{game.statusString}</div>

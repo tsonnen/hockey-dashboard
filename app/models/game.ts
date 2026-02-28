@@ -168,9 +168,9 @@ export class Game {
       periodDescriptor: data.periodDescriptor ?? {
         number: 0,
         periodType: '',
-        maxRegulationPeriods: 0,
+        maxRegulationPeriods: data.regPeriods ?? 3,
       },
-      period: data.period,
+      period: data.period ?? data.periodDescriptor?.number,
       status: data.status,
       statusCode: data.statusCode,
     };
@@ -204,6 +204,12 @@ export class Game {
     switch (this.gameState) {
       case GameState.FINAL:
       case GameState.OFFICIAL: {
+        if (this.period && this.period > this.periodDescriptor.maxRegulationPeriods) {
+          if (this.periodDescriptor.periodType === 'SO') {
+            return 'Final/SO';
+          }
+          return 'Final/OT';
+        }
         return 'Final';
       }
       case GameState.LIVE: {
@@ -216,5 +222,17 @@ export class Game {
         return startTime(this.startTimeUTC);
       }
     }
+  }
+
+  get periodName(): string {
+    if (!this.period) return '';
+    if (this.period <= this.periodDescriptor.maxRegulationPeriods) {
+      return `Period ${this.period}`;
+    }
+    if (this.periodDescriptor.periodType === 'SO') {
+      return 'Shootout';
+    }
+    const otLevel = this.period - this.periodDescriptor.maxRegulationPeriods;
+    return otLevel === 1 ? 'OT' : `${otLevel}OT`;
   }
 }

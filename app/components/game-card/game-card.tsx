@@ -33,10 +33,10 @@ export function GameCard({ game }: GameCardProps): JSX.Element {
       <div className={styles.scoreDisplay}>
         <TeamDisplay gameStarted={game.gameStarted} team={game.awayTeam} />
         <div className={styles.gameStatus}>
-          {game.gameInProgress && game.clock && (
+          {game.gameInProgress && (
             <>
-              <div className={styles.clock}>{game.clock.timeRemaining}</div>
-              <div className={styles.period}>Period {game.period}</div>
+              {game.clock && <div className={styles.clock}>{game.clock.timeRemaining}</div>}
+              <div className={styles.period}>{game.periodName}</div>
             </>
           )}
 
