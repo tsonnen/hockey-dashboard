@@ -44,30 +44,54 @@ export async function GET(
   { params }: { params: Promise<{ date: string }> },
 ): Promise<NextResponse<Partial<Game>[]>> {
   const { date } = await params;
-  const [gameWeek, gameScores] = await Promise.all([getSchedule(date), getScores(date)]);
+  const targetDate = new Date(date);
+
+  const dateMinus1 = new Date(targetDate);
+  dateMinus1.setDate(targetDate.getDate() - 1);
+  const dateMinus1Str = dateMinus1.toISOString().split('T')[0];
+
+  const datePlus1 = new Date(targetDate);
+  datePlus1.setDate(targetDate.getDate() + 1);
+  const datePlus1Str = datePlus1.toISOString().split('T')[0];
+
+  // Fetch schedules for yesterday and today to cover all possible local midnight games
+  // Fetch scores for yesterday, today, and tomorrow to ensure we have score data for all games
+  const [gameWeekMinus1, gameWeek, gameScoresMinus1, gameScores, gameScoresPlus1] =
+    await Promise.all([
+      getSchedule(dateMinus1Str),
+      getSchedule(date),
+      getScores(dateMinus1Str),
+      getScores(date),
+      getScores(datePlus1Str),
+    ]);
+
+  const allGameScores = [...gameScoresMinus1, ...gameScores, ...gameScoresPlus1];
+  const allGameWeeks = [...gameWeekMinus1, ...gameWeek];
 
   const allGames: Partial<Game>[] = [];
+  const seenGameIds = new Set<number>();
 
-  for (const gameDay of gameWeek) {
-    const games = gameDay.games.map((game: Partial<Game>) => {
-      const gameScore = gameScores.find((gameScore: Partial<Game>) => gameScore.id === game.id);
+  for (const gameDay of allGameWeeks) {
+    for (const game of gameDay.games) {
+      if (seenGameIds.has(game.id)) continue;
+      seenGameIds.add(game.id);
+
+      let mergedGame: Partial<Game> = { ...game };
+      const gameScore = allGameScores.find((gs) => gs.id === game.id);
 
       if (gameScore) {
-        game = {
-          ...game,
+        mergedGame = {
+          ...mergedGame,
           ...gameScore,
         };
 
-        game.homeTeam = { ...game.homeTeam, ...gameScore.homeTeam };
-        game.awayTeam = { ...game.awayTeam, ...gameScore.awayTeam };
+        mergedGame.homeTeam = { ...mergedGame.homeTeam, ...gameScore.homeTeam };
+        mergedGame.awayTeam = { ...mergedGame.awayTeam, ...gameScore.awayTeam };
       }
 
-      game.league = 'nhl';
-
-      return game;
-    });
-
-    allGames.push(...games);
+      mergedGame.league = 'nhl';
+      allGames.push(mergedGame);
+    }
   }
 
   return NextResponse.json(allGames);
